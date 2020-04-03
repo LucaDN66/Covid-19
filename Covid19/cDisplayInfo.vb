@@ -25,24 +25,24 @@
         End Get
     End Property
     Public Enum enItalianValueType As Integer
-        ricoverati_con_sintomi = 0
-        terapia_intensiva = 1
-        totale_ospedalizzati = 2
-        isolamento_domiciliare = 3
-        totale_positivi = 4
-        variazione_totale_positivi = 5
-        nuovi_positivi = 6
-        dimessi_guariti = 7
-        deceduti = 8
-        totale_casi = 9
-        tamponi = 10
+        Hospitalized_with_Sypmtoms = 0
+        Intensive_Care = 1
+        Total_Hospitalized = 2
+        Self_Isolating = 3
+        Current_Positives = 4
+        Current_Positives_Variation = 5
+        New_Positives = 6
+        Recovered = 7
+        Deaths = 8
+        Total_Cases = 9
+        Tests = 10
     End Enum
     Public Enum enWorldValueType
         Deaths = 0
         Confirmed = 1
         Recovered = 2
     End Enum
-    Public ActiveItalianData As enItalianValueType = enItalianValueType.deceduti
+    Public ActiveItalianData As enItalianValueType = enItalianValueType.Deaths
     Public ActiveWorldData As enWorldValueType = enWorldValueType.Deaths
     Public ActiveUSData As enWorldValueType = enWorldValueType.Deaths
     Public ActiveWorldRegions As New List(Of cCountryListboxItem)

@@ -51,12 +51,14 @@ Public Class frmMain
 
             Dim wc As New WebClient()
 
+            AddInfoText("Checking for available updates, please wait ..." + vbCrLf)
+
             'Italian data
             Try
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                AddInfoText("Checking for available updates (Italy full data), please wait ...")
+                AddInfoText("Italy (full data)")
                 Application.DoEvents()
                 wc.DownloadFile(ITAFullDataUrl, Csv_TmpPath)
                 Application.DoEvents()
@@ -71,7 +73,7 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                AddInfoText("Checking for available updates (Italy-Regions), please wait ...")
+                AddInfoText("Italy (Regions)")
                 Application.DoEvents()
                 wc.DownloadFile(ITARegionsDataUrl, Csv_TmpPath)
                 Application.DoEvents()
@@ -86,7 +88,7 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                AddInfoText("Checking for available updates (Italy-Provinces), please wait ...")
+                AddInfoText("Italy (Provinces)")
                 Application.DoEvents()
                 wc.DownloadFile(ITAProvincesDataUrl, Csv_TmpPath)
                 Application.DoEvents()
@@ -101,7 +103,7 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                AddInfoText("Checking for available updates (World deaths), please wait ...")
+                AddInfoText("World Deaths")
                 Application.DoEvents()
                 wc.DownloadFile(globalDeathsUrl, Csv_TmpPath)
                 Application.DoEvents()
@@ -116,7 +118,7 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                AddInfoText("Checking for available updates (World confirmed), please wait ...")
+                AddInfoText("World Confirmed")
                 Application.DoEvents()
                 wc.DownloadFile(globalConfirmedUrl, Csv_TmpPath)
                 Application.DoEvents()
@@ -131,7 +133,7 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                AddInfoText("Checking for available updates (World recovered), please wait ...")
+                AddInfoText("World Recovered")
                 Application.DoEvents()
                 wc.DownloadFile(globalRecoveredUrl, Csv_TmpPath)
                 Application.DoEvents()
@@ -146,7 +148,7 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                AddInfoText("Checking for available updates (US confirmed), please wait ...")
+                AddInfoText("US Confirmed")
                 Application.DoEvents()
                 wc.DownloadFile(USConfirmedDataUrl, Csv_TmpPath)
                 Application.DoEvents()
@@ -161,7 +163,7 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                AddInfoText("Checking for available updates (US deaths), please wait ...")
+                AddInfoText("US Deaths")
                 Application.DoEvents()
                 wc.DownloadFile(USDeathsDataUrl, Csv_TmpPath)
                 Application.DoEvents()
@@ -269,7 +271,7 @@ Public Class frmMain
 
             lstItaProvinces.SuspendLayout()
             lstItaProvinces.Items.Clear()
-            Dim allITAProvinceNames As System.Collections.Generic.List(Of cCountryListboxItem) = italianProvincesRecords.GetRegionNames(cDisplayInfo.enItalianValueType.totale_casi)
+            Dim allITAProvinceNames As System.Collections.Generic.List(Of cCountryListboxItem) = italianProvincesRecords.GetRegionNames(cDisplayInfo.enItalianValueType.Total_Cases)
             For iCounter As Integer = 0 To allITAProvinceNames.Count - 1
                 lstItaProvinces.Items.Add(allITAProvinceNames(iCounter))
             Next
@@ -296,7 +298,7 @@ Public Class frmMain
                 cbChartItemITA.Items.Add(myITATypes(iCounter).ToString)
             Next
             Try
-                cbChartItemITA.SelectedIndex = cDisplayInfo.enItalianValueType.deceduti
+                cbChartItemITA.SelectedIndex = cDisplayInfo.enItalianValueType.Deaths
             Catch ex2 As Exception
             End Try
 
@@ -490,8 +492,8 @@ Public Class frmMain
                 Case cDisplayInfo.enActiveArea.ITA_Provinces
                     btShowMap.Enabled = False
                     cbChartItemITA.Enabled = False
-                    If cbChartItemITA.SelectedIndex <> cDisplayInfo.enItalianValueType.totale_casi Then
-                        cbChartItemITA.SelectedIndex = cDisplayInfo.enItalianValueType.totale_casi
+                    If cbChartItemITA.SelectedIndex <> cDisplayInfo.enItalianValueType.Total_Cases Then
+                        cbChartItemITA.SelectedIndex = cDisplayInfo.enItalianValueType.Total_Cases
                     End If
                 Case cDisplayInfo.enActiveArea.ITA_Regions
                     btShowMap.Enabled = True

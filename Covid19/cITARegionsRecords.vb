@@ -35,27 +35,27 @@ Public Class cITARegionsRecords
     Public Function GetCountryValuesFromType(ByVal dataType As cDisplayInfo.enItalianValueType) As List(Of cCountryValues)
         Dim targetList As New List(Of cCountryValues)
         Select Case dataType
-            Case cDisplayInfo.enItalianValueType.ricoverati_con_sintomi
+            Case cDisplayInfo.enItalianValueType.Hospitalized_with_Sypmtoms
                 targetList = ricoverati_con_sintomi
-            Case cDisplayInfo.enItalianValueType.terapia_intensiva
+            Case cDisplayInfo.enItalianValueType.Intensive_Care
                 targetList = terapia_intensiva
-            Case cDisplayInfo.enItalianValueType.totale_ospedalizzati
+            Case cDisplayInfo.enItalianValueType.Total_Hospitalized
                 targetList = totale_ospedalizzati
-            Case cDisplayInfo.enItalianValueType.isolamento_domiciliare
+            Case cDisplayInfo.enItalianValueType.Self_Isolating
                 targetList = isolamento_domiciliare
-            Case cDisplayInfo.enItalianValueType.totale_positivi
+            Case cDisplayInfo.enItalianValueType.Current_Positives
                 targetList = totale_positivi
-            Case cDisplayInfo.enItalianValueType.variazione_totale_positivi
+            Case cDisplayInfo.enItalianValueType.Current_Positives_Variation
                 targetList = variazione_totale_positivi
-            Case cDisplayInfo.enItalianValueType.nuovi_positivi
+            Case cDisplayInfo.enItalianValueType.New_Positives
                 targetList = nuovi_positivi
-            Case cDisplayInfo.enItalianValueType.dimessi_guariti
+            Case cDisplayInfo.enItalianValueType.Recovered
                 targetList = dimessi_guariti
-            Case cDisplayInfo.enItalianValueType.deceduti
+            Case cDisplayInfo.enItalianValueType.Deaths
                 targetList = deceduti
-            Case cDisplayInfo.enItalianValueType.totale_casi
+            Case cDisplayInfo.enItalianValueType.Total_Cases
                 targetList = totale_casi
-            Case cDisplayInfo.enItalianValueType.tamponi
+            Case cDisplayInfo.enItalianValueType.Tests
                 targetList = tamponi
         End Select
         Return targetList

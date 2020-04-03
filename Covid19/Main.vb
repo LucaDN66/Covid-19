@@ -90,7 +90,7 @@
             Dim dailyValsList As New List(Of List(Of cDailyValue))
             Dim prevValue As Integer = 0
             Dim curValue As Integer = 0
-            Dim dailyVals As List(Of cDailyValue) = ItaProvincesRecords.GetDailyValues(cDisplayInfo.enItalianValueType.totale_casi, displayInfo.ActiveITAProvinces(0))
+            Dim dailyVals As List(Of cDailyValue) = ItaProvincesRecords.GetDailyValues(cDisplayInfo.enItalianValueType.Total_Cases, displayInfo.ActiveITAProvinces(0))
             For iCounter As Integer = 0 To dailyVals.Count - 1
                 curValue = dailyVals(iCounter).RecordValue
                 retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
@@ -164,27 +164,27 @@
 
         For iCounter As Integer = 0 To ItaRecords.Count - 1
             Select Case displayInfo.ActiveItalianData
-                Case cDisplayInfo.enItalianValueType.deceduti
+                Case cDisplayInfo.enItalianValueType.Deaths
                     curValue = ItaRecords(iCounter).deceduti
-                Case cDisplayInfo.enItalianValueType.dimessi_guariti
+                Case cDisplayInfo.enItalianValueType.Recovered
                     curValue = ItaRecords(iCounter).dimessi_guariti
-                Case cDisplayInfo.enItalianValueType.isolamento_domiciliare
+                Case cDisplayInfo.enItalianValueType.Self_Isolating
                     curValue = ItaRecords(iCounter).isolamento_domiciliare
-                Case cDisplayInfo.enItalianValueType.nuovi_positivi
+                Case cDisplayInfo.enItalianValueType.New_Positives
                     curValue = ItaRecords(iCounter).nuovi_positivi
-                Case cDisplayInfo.enItalianValueType.ricoverati_con_sintomi
+                Case cDisplayInfo.enItalianValueType.Hospitalized_with_Sypmtoms
                     curValue = ItaRecords(iCounter).ricoverati_con_sintomi
-                Case cDisplayInfo.enItalianValueType.tamponi
+                Case cDisplayInfo.enItalianValueType.Tests
                     curValue = ItaRecords(iCounter).tamponi
-                Case cDisplayInfo.enItalianValueType.terapia_intensiva
+                Case cDisplayInfo.enItalianValueType.Intensive_Care
                     curValue = ItaRecords(iCounter).terapia_intensiva
-                Case cDisplayInfo.enItalianValueType.totale_positivi
+                Case cDisplayInfo.enItalianValueType.Current_Positives
                     curValue = ItaRecords(iCounter).totale_positivi
-                Case cDisplayInfo.enItalianValueType.variazione_totale_positivi
+                Case cDisplayInfo.enItalianValueType.Current_Positives_Variation
                     curValue = ItaRecords(iCounter).variazione_totale_positivi
-                Case cDisplayInfo.enItalianValueType.totale_casi
+                Case cDisplayInfo.enItalianValueType.Total_Cases
                     curValue = ItaRecords(iCounter).totale_casi
-                Case cDisplayInfo.enItalianValueType.totale_ospedalizzati
+                Case cDisplayInfo.enItalianValueType.Total_Hospitalized
                     curValue = ItaRecords(iCounter).totale_ospedalizzati
             End Select
             retVal.Add(New Tuple(Of Date, Double)(ItaRecords(iCounter).data, (curValue - prevValue) * normalizer))
@@ -248,7 +248,7 @@
                     Dim prevValue As Double = 0
                     Dim curValue As Double = 0
                     Dim pointsGlobal As New List(Of Tuple(Of Date, Double))
-                    Dim dailyVals As List(Of cDailyValue) = italianProvincesRecords.GetDailyValues(cDisplayInfo.enItalianValueType.totale_casi, displayInfo.ActiveITAProvinces(rCounter))
+                    Dim dailyVals As List(Of cDailyValue) = italianProvincesRecords.GetDailyValues(cDisplayInfo.enItalianValueType.Total_Cases, displayInfo.ActiveITAProvinces(rCounter))
                     For iCounter As Integer = 0 To dailyVals.Count - 1
                         curValue = dailyVals(iCounter).RecordValue
                         pointsGlobal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
@@ -463,7 +463,7 @@
                 Dim StartDateInitialized As Boolean = False
                 For pCounter As Integer = 0 To pointsITAProvincesList.Count - 1
                     Dim dataSeriesItaProvinces As New System.Windows.Forms.DataVisualization.Charting.Series
-                    dataSeriesItaProvinces.Name = cDisplayInfo.enItalianValueType.totale_casi.ToString + vbCrLf + displayInfo.ActiveITAProvinces(pCounter).ToString
+                    dataSeriesItaProvinces.Name = cDisplayInfo.enItalianValueType.Total_Cases.ToString + vbCrLf + displayInfo.ActiveITAProvinces(pCounter).ToString
                     dataSeriesItaProvinces.IsVisibleInLegend = True
                     dataSeriesItaProvinces.BorderWidth = 3
                     dataSeriesItaProvinces.IsXValueIndexed = True

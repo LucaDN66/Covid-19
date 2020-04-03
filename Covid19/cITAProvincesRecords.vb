@@ -25,7 +25,7 @@ Public Class cITAProvincesRecords
     Public Function GetCountryValuesFromType(ByVal dataType As cDisplayInfo.enItalianValueType) As List(Of cCountryValues)
         Dim targetList As New List(Of cCountryValues)
         Select Case dataType
-            Case cDisplayInfo.enItalianValueType.totale_casi
+            Case cDisplayInfo.enItalianValueType.Total_Cases
                 targetList = totale_casi
         End Select
         Return targetList
