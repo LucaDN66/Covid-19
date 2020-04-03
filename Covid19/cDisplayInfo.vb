@@ -1,4 +1,5 @@
 ﻿Public Class cDisplayInfo
+
     Public Enum enActiveArea As Integer
         ITA = 0
         ITA_Regions = 1
@@ -7,7 +8,7 @@
         US = 4
         UK = 5
     End Enum
-    Public ActiveArea As enActiveArea = enActiveArea.ITA
+    Public ActiveArea As enActiveArea = enActiveArea.World
     Public ReadOnly Property ShowITA As Boolean
         Get
             Return (ActiveArea = enActiveArea.ITA) Or (ActiveArea = enActiveArea.ITA_Provinces) Or (ActiveArea = enActiveArea.ITA_Regions)

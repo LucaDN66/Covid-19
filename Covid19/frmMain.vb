@@ -267,7 +267,7 @@ Public Class frmMain
             If lstItaProvinces.Items.Count > 0 Then
                 lstItaProvinces.SelectedIndex = 0
             End If
-
+            DataLoaded = True
             Return True
         Catch ex As Exception
             MsgBox(ex.Message)

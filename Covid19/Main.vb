@@ -1,4 +1,5 @@
 ﻿Module Main
+    Public DataLoaded As Boolean = False
     Private myPopulation As cPopulation = Nothing
     Public Function Population() As cPopulation
         If myPopulation Is Nothing Then
@@ -140,7 +141,7 @@
             Dim dailyValsList As New List(Of List(Of cDailyValue))
             Dim prevValue As Integer = 0
             Dim curValue As Integer = 0
-            Dim dailyVals As List(Of cDailyValue) = usRecords.GetDailyValues(displayInfo.ActiveusData, displayInfo.ActiveUSRegions(0))
+            Dim dailyVals As List(Of cDailyValue) = usRecords.GetDailyValues(displayInfo.ActiveUSData, displayInfo.ActiveUSRegions(0))
             For iCounter As Integer = 0 To dailyVals.Count - 1
                 curValue = dailyVals(iCounter).RecordValue
                 retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
@@ -194,6 +195,7 @@
         Return retVal
     End Function
     Public Sub RefreshVisualization(ByVal aChart As DataVisualization.Charting.Chart, ByVal ItaRecords As cITARecords, ByVal italianRegionRecords As cITARegionsRecords, ByVal italianProvincesRecords As cITAProvincesRecords, ByVal worldRecords As cWorldRecords, ByVal USRecords As cWorldRecords, ByVal displayInfo As cDisplayInfo)
+        If Not DataLoaded Then Return
         Try
             aChart.Series.Clear()
             aChart.ResetAutoValues()
@@ -706,7 +708,7 @@
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Country")
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#Value", displayInfo.ActiveUSData.ToString)
                 Else
-                        HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Province")
+                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Province")
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#Value", displayInfo.ActiveItalianData.ToString)
                 End If
                 insertPos = lCounter + 1
