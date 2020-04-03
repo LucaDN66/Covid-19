@@ -140,8 +140,23 @@
                 Dim itemCopy As String = myGlobalPopulation(pCounter).Item1.Replace(" ", "-").ToUpper.Trim
                 If itemCopy = regionCopy Then
                     Return myGlobalPopulation(pCounter).Item2
+                Else
+                    If regionCopy.Contains("-") Then
+                        'Maybe it's scrambled up (e.g. South-Korea <> Korea-South)
+                        Dim regionParts() As String = regionCopy.Split("-")
+                        Dim allFound As Boolean = True
+                        For iCounter As Integer = 0 To regionParts.Count - 1
+                            If Not itemCopy.Contains(regionParts(iCounter)) Then
+                                allFound = False
+                            End If
+                        Next
+                        If allFound Then
+                            Return myGlobalPopulation(pCounter).Item2
+                        End If
+                    End If
                 End If
             Next
+
             Return 0
         End Get
     End Property
