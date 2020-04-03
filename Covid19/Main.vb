@@ -877,4 +877,37 @@
 
     End Sub
 
+#Region "Window capture"
+    <System.Runtime.InteropServices.DllImport("gdi32.dll")> Private Function BitBlt(ByVal hdc As IntPtr,
+                                       ByVal nXDest As Integer,
+                                       ByVal nYDest As Integer,
+                                       ByVal nWidth As Integer,
+                                       ByVal nHeight As Integer,
+                                       ByVal hdcSrc As IntPtr,
+                                       ByVal nXSrc As Integer,
+                                       ByVal nYSrc As Integer,
+                                       ByVal dwRop As CopyPixelOperation) As Boolean
+    End Function
+    Public Function GetWindowImageGrayed(ByVal aForm As System.Windows.Forms.Form) As Bitmap
+        Try
+            Dim b As New Bitmap(aForm.ClientSize.Width, aForm.ClientSize.Height, Imaging.PixelFormat.Format24bppRgb)
+            Using img As Graphics = Graphics.FromImage(b)
+                Dim ImageHDC As IntPtr = img.GetHdc
+                Using window As Graphics = Graphics.FromHwnd(aForm.Handle)
+                    Dim WindowHDC As IntPtr = window.GetHdc
+                    BitBlt(ImageHDC, 0, 0, aForm.ClientSize.Width, aForm.ClientSize.Height, WindowHDC, 0, 0, CopyPixelOperation.SourceCopy)
+                    window.ReleaseHdc()
+                End Using
+                img.ReleaseHdc()
+            End Using
+
+            Return System.Windows.Forms.ToolStripRenderer.CreateDisabledImage(b)
+        Catch ex As Exception
+            Return New Bitmap(3, 3)
+        End Try
+    End Function
+#End Region
+
+
+
 End Module

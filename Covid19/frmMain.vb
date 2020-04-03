@@ -8,9 +8,23 @@ Public Class frmMain
     Private myDisplayInfo As New cDisplayInfo
     Private italianRegionRecords As New cITARegionsRecords
     Private italianProvincesRecords As New cITAProvincesRecords
-
+    Private Sub AddInfoText(ByVal message As String)
+        labSnapshot.Text = labSnapshot.Text + vbCrLf + message
+        labSnapshot.Refresh()
+        Application.DoEvents()
+    End Sub
     Private Function GetLatestInfo() As Boolean
         Try
+            labSnapshot.Text = ""
+            labSnapshot.Visible = False
+            Me.Refresh()
+            Application.DoEvents()
+            labSnapshot.Image = GetWindowImageGrayed(Me)
+            labSnapshot.Visible = True
+            labSnapshot.BringToFront()
+            Me.Refresh()
+            Application.DoEvents()
+
             Dim globalDeathsUrl As String = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
             globalDeathsUrl = globalDeathsUrl.Replace("/open?id=", "/uc?export=download&id=")
 
@@ -42,10 +56,9 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                SetInfoText("Checking for available updates (Italy full data), please wait ...")
+                AddInfoText("Checking for available updates (Italy full data), please wait ...")
                 Application.DoEvents()
                 wc.DownloadFile(ITAFullDataUrl, Csv_TmpPath)
-                SetInfoText(WindowTitle)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_Ita_Filename, True)
@@ -58,10 +71,9 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                SetInfoText("Checking for available updates (Italy-Regions), please wait ...")
+                AddInfoText("Checking for available updates (Italy-Regions), please wait ...")
                 Application.DoEvents()
                 wc.DownloadFile(ITARegionsDataUrl, Csv_TmpPath)
-                SetInfoText(WindowTitle)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_ItaRegions_Filename, True)
@@ -74,10 +86,9 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                SetInfoText("Checking for available updates (Italy-Provinces), please wait ...")
+                AddInfoText("Checking for available updates (Italy-Provinces), please wait ...")
                 Application.DoEvents()
                 wc.DownloadFile(ITAProvincesDataUrl, Csv_TmpPath)
-                SetInfoText(WindowTitle)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_ItaProvinces_Filename, True)
@@ -90,10 +101,9 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                SetInfoText("Checking for available updates (World deaths), please wait ...")
+                AddInfoText("Checking for available updates (World deaths), please wait ...")
                 Application.DoEvents()
                 wc.DownloadFile(globalDeathsUrl, Csv_TmpPath)
-                SetInfoText(WindowTitle)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_World_Deaths_Filename, True)
@@ -106,10 +116,9 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                SetInfoText("Checking for available updates (World confirmed), please wait ...")
+                AddInfoText("Checking for available updates (World confirmed), please wait ...")
                 Application.DoEvents()
                 wc.DownloadFile(globalConfirmedUrl, Csv_TmpPath)
-                SetInfoText(WindowTitle)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_World_Confirmed_Filename, True)
@@ -122,10 +131,9 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                SetInfoText("Checking for available updates (World recovered), please wait ...")
+                AddInfoText("Checking for available updates (World recovered), please wait ...")
                 Application.DoEvents()
                 wc.DownloadFile(globalRecoveredUrl, Csv_TmpPath)
-                SetInfoText(WindowTitle)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_World_Recovered_Filename, True)
@@ -138,10 +146,9 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                SetInfoText("Checking for available updates (US confirmed), please wait ...")
+                AddInfoText("Checking for available updates (US confirmed), please wait ...")
                 Application.DoEvents()
                 wc.DownloadFile(USConfirmedDataUrl, Csv_TmpPath)
-                SetInfoText(WindowTitle)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_US_Confirmed_Filename, True)
@@ -154,10 +161,9 @@ Public Class frmMain
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Delete(Csv_TmpPath)
                 End If
-                SetInfoText("Checking for available updates (US deaths), please wait ...")
+                AddInfoText("Checking for available updates (US deaths), please wait ...")
                 Application.DoEvents()
                 wc.DownloadFile(USDeathsDataUrl, Csv_TmpPath)
-                SetInfoText(WindowTitle)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_US_Deaths_Filename, True)
@@ -170,6 +176,10 @@ Public Class frmMain
         Catch ex As Exception
             Call MsgBox(ex.Message)
             Return False
+        Finally
+            labSnapshot.Visible = False
+            Me.Refresh()
+            Application.DoEvents()
         End Try
     End Function
     Private Function LoadInfoFromLocalFiles() As Boolean
@@ -567,27 +577,6 @@ Public Class frmMain
             MsgBox(ex.Message)
         End Try
     End Sub
-    Public Sub SetInfoText(ByVal newText As String)
-        Try
-            If MyBase.InvokeRequired Then
-                Dim myD As New cNormalDist.SetInfoText_delegate(AddressOf SetInfoText_ex)
-                MyBase.BeginInvoke(myD, newText)
-            Else
-                SetInfoText_ex(newText)
-            End If
-        Catch ex As Exception
-            MsgBox(ex.Message)
-        End Try
-    End Sub
-    Private Sub SetInfoText_ex(ByVal newText As String)
-        Try
-            Me.Text = newText
-            Me.Refresh()
-            Application.DoEvents()
-        Catch ex As Exception
-            MsgBox(ex.Message)
-        End Try
-    End Sub
     Private Sub cbChartItem_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbChartItemITA.SelectedIndexChanged, cbChartItemWorld.SelectedIndexChanged, cbChartItemUS.SelectedIndexChanged
         If sender Is cbChartItemWorld Then
             myDisplayInfo.ActiveWorldData = cbChartItemWorld.SelectedIndex
@@ -654,6 +643,16 @@ Public Class frmMain
     End Sub
     Private Sub btEstimate_Click(sender As Object, e As EventArgs) Handles btEstimate.Click
         Try
+            labSnapshot.Text = ""
+            labSnapshot.Visible = False
+            Me.Refresh()
+            Application.DoEvents()
+            labSnapshot.Image = GetWindowImageGrayed(Me)
+            labSnapshot.Visible = True
+            labSnapshot.BringToFront()
+            Me.Refresh()
+            Application.DoEvents()
+
             Dim NormalDistribution As New cNormalDist
             NormalDistribution.ExpectedMax = myDisplayInfo.EstimatedFinalValue
             NormalDistribution.Sigma = myDisplayInfo.EstimatedSigma
@@ -662,15 +661,15 @@ Public Class frmMain
             Me.Refresh()
             Application.DoEvents()
             If myDisplayInfo.ShowWorld Then
-                NormalDistribution.FindBestEstimate(GetPlotPointsWorldRegionFirst(worldRecords, myDisplayInfo), AddressOf SetInfoText)
-            ElseIf myDisplayInfo.ShowIta Then
+                NormalDistribution.FindBestEstimate(GetPlotPointsWorldRegionFirst(worldRecords, myDisplayInfo), AddressOf AddInfoText)
+            ElseIf myDisplayInfo.ShowITA Then
                 Select Case myDisplayInfo.ActiveArea
                     Case cDisplayInfo.enActiveArea.ITA
-                        NormalDistribution.FindBestEstimate(GetPlotPointsIta(italianRecords, myDisplayInfo), AddressOf SetInfoText)
+                        NormalDistribution.FindBestEstimate(GetPlotPointsIta(italianRecords, myDisplayInfo), AddressOf AddInfoText)
                     Case cDisplayInfo.enActiveArea.ITA_Provinces
-                        NormalDistribution.FindBestEstimate(GetPlotPointsItaProvinceFirst(italianProvincesRecords, myDisplayInfo), AddressOf SetInfoText)
+                        NormalDistribution.FindBestEstimate(GetPlotPointsItaProvinceFirst(italianProvincesRecords, myDisplayInfo), AddressOf AddInfoText)
                     Case cDisplayInfo.enActiveArea.ITA_Regions
-                        NormalDistribution.FindBestEstimate(GetPlotPointsItaRegionFirst(italianRegionRecords, myDisplayInfo), AddressOf SetInfoText)
+                        NormalDistribution.FindBestEstimate(GetPlotPointsItaRegionFirst(italianRegionRecords, myDisplayInfo), AddressOf AddInfoText)
                 End Select
             End If
             udEstimatedMax.Value = NormalDistribution.ExpectedMax
@@ -680,7 +679,7 @@ Public Class frmMain
         Catch ex As Exception
             MsgBox(ex.Message)
         Finally
-            SetInfoText(WindowTitle)
+            labSnapshot.Visible = False
             Me.UseWaitCursor = False
             Me.Refresh()
             Application.DoEvents()
