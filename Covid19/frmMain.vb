@@ -49,7 +49,7 @@ Public Class frmMain
             Dim USConfirmedDataUrl As String = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
             USConfirmedDataUrl = USConfirmedDataUrl.Replace("/open?id=", "/uc?export=download&id=")
 
-            Dim wc As New WebClient()
+            Dim tmpWebClient As New WebClient()
 
             AddInfoText("Checking for available updates, please wait ..." + vbCrLf)
 
@@ -60,7 +60,7 @@ Public Class frmMain
                 End If
                 AddInfoText("Italy (full data)")
                 Application.DoEvents()
-                wc.DownloadFile(ITAFullDataUrl, Csv_TmpPath)
+                tmpWebClient.DownloadFile(ITAFullDataUrl, Csv_TmpPath)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_Ita_Filename, True)
@@ -75,7 +75,7 @@ Public Class frmMain
                 End If
                 AddInfoText("Italy (Regions)")
                 Application.DoEvents()
-                wc.DownloadFile(ITARegionsDataUrl, Csv_TmpPath)
+                tmpWebClient.DownloadFile(ITARegionsDataUrl, Csv_TmpPath)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_ItaRegions_Filename, True)
@@ -90,7 +90,7 @@ Public Class frmMain
                 End If
                 AddInfoText("Italy (Provinces)")
                 Application.DoEvents()
-                wc.DownloadFile(ITAProvincesDataUrl, Csv_TmpPath)
+                tmpWebClient.DownloadFile(ITAProvincesDataUrl, Csv_TmpPath)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_ItaProvinces_Filename, True)
@@ -105,7 +105,7 @@ Public Class frmMain
                 End If
                 AddInfoText("World Deaths")
                 Application.DoEvents()
-                wc.DownloadFile(globalDeathsUrl, Csv_TmpPath)
+                tmpWebClient.DownloadFile(globalDeathsUrl, Csv_TmpPath)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_World_Deaths_Filename, True)
@@ -120,7 +120,7 @@ Public Class frmMain
                 End If
                 AddInfoText("World Confirmed")
                 Application.DoEvents()
-                wc.DownloadFile(globalConfirmedUrl, Csv_TmpPath)
+                tmpWebClient.DownloadFile(globalConfirmedUrl, Csv_TmpPath)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_World_Confirmed_Filename, True)
@@ -135,7 +135,7 @@ Public Class frmMain
                 End If
                 AddInfoText("World Recovered")
                 Application.DoEvents()
-                wc.DownloadFile(globalRecoveredUrl, Csv_TmpPath)
+                tmpWebClient.DownloadFile(globalRecoveredUrl, Csv_TmpPath)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_World_Recovered_Filename, True)
@@ -150,7 +150,7 @@ Public Class frmMain
                 End If
                 AddInfoText("US Confirmed")
                 Application.DoEvents()
-                wc.DownloadFile(USConfirmedDataUrl, Csv_TmpPath)
+                tmpWebClient.DownloadFile(USConfirmedDataUrl, Csv_TmpPath)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_US_Confirmed_Filename, True)
@@ -165,7 +165,7 @@ Public Class frmMain
                 End If
                 AddInfoText("US Deaths")
                 Application.DoEvents()
-                wc.DownloadFile(USDeathsDataUrl, Csv_TmpPath)
+                tmpWebClient.DownloadFile(USDeathsDataUrl, Csv_TmpPath)
                 Application.DoEvents()
                 If System.IO.File.Exists(Csv_TmpPath) Then
                     System.IO.File.Copy(Csv_TmpPath, Csv_US_Deaths_Filename, True)
@@ -190,7 +190,7 @@ Public Class frmMain
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_Ita_Filename)
                 ReplaceCommasInQuotations(infoLines)
                 italianRecords = New cITARecords(infoLines)
-                labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianRecords.LastDate.ToShortDateString
+                labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianRecords.LastDate.ToLongDateString
             End If
 
             If System.IO.File.Exists(Csv_ItaRegions_Filename) Then
@@ -374,21 +374,21 @@ Public Class frmMain
                 End If
                 Select Case myDisplayInfo.ActiveArea
                     Case cDisplayInfo.enActiveArea.ITA
-                        labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianRecords.LastDate.ToShortDateString
+                        labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianRecords.LastDate.ToLongDateString
                         mnMainItem.Text = mnITAFull.Text
                         mnMainItem.Image = mnITAFull.Image
                         lstItaProvinces.Visible = False
                         lstItaRegions.Visible = False
                         labSelectionHintITA.Visible = False
                     Case cDisplayInfo.enActiveArea.ITA_Provinces
-                        labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianProvincesRecords.LastDate.ToShortDateString
+                        labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianProvincesRecords.LastDate.ToLongDateString
                         mnMainItem.Text = mnITAProvinces.Text
                         mnMainItem.Image = mnITAProvinces.Image
                         lstItaRegions.Visible = False
                         lstItaProvinces.Visible = True
                         labSelectionHintITA.Visible = True
                     Case cDisplayInfo.enActiveArea.ITA_Regions
-                        labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianRegionRecords.LastDate.ToShortDateString
+                        labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianRegionRecords.LastDate.ToLongDateString
                         mnMainItem.Text = mnITARegions.Text
                         mnMainItem.Image = mnITARegions.Image
                         lstItaProvinces.Visible = False
@@ -401,7 +401,7 @@ Public Class frmMain
                 pnlWorld.Visible = True
                 mnMainItem.Text = mnWorld.Text
                 mnMainItem.Image = mnWorld.Image
-                labLastUpdateInfo.Text = "Last update:" + vbCrLf + worldRecords.LastDate.ToShortDateString
+                labLastUpdateInfo.Text = "Last update:" + vbCrLf + worldRecords.LastDate.ToLongDateString
                 If Not pnlLeft.Controls.Contains(pnlWorld) Then
                     pnlLeft.Controls.Add(pnlWorld)
                     pnlWorld.Dock = DockStyle.Fill
@@ -413,7 +413,7 @@ Public Class frmMain
                 pnlUS.Visible = True
                 mnMainItem.Text = mnUS.Text
                 mnMainItem.Image = mnUS.Image
-                labLastUpdateInfo.Text = "Last update:" + vbCrLf + USRecords.LastDate.ToShortDateString
+                labLastUpdateInfo.Text = "Last update:" + vbCrLf + USRecords.LastDate.ToLongDateString
                 If Not pnlLeft.Controls.Contains(pnlUS) Then
                     pnlLeft.Controls.Add(pnlUS)
                     pnlUS.Dock = DockStyle.Fill

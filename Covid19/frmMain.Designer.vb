@@ -116,6 +116,7 @@ Partial Class frmMain
         Me.cbChartItemITA.Font = New System.Drawing.Font("Segoe UI", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cbChartItemITA.FormattingEnabled = True
         Me.cbChartItemITA.Location = New System.Drawing.Point(2, 2)
+        Me.cbChartItemITA.Margin = New System.Windows.Forms.Padding(6, 3, 6, 3)
         Me.cbChartItemITA.Name = "cbChartItemITA"
         Me.cbChartItemITA.Size = New System.Drawing.Size(221, 28)
         Me.cbChartItemITA.TabIndex = 15
@@ -329,7 +330,9 @@ Partial Class frmMain
         Me.pnlLine.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.pnlLine.Dock = System.Windows.Forms.DockStyle.Right
         Me.pnlLine.Location = New System.Drawing.Point(224, 48)
+        Me.pnlLine.Margin = New System.Windows.Forms.Padding(6)
         Me.pnlLine.Name = "pnlLine"
+        Me.pnlLine.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.pnlLine.Size = New System.Drawing.Size(1, 549)
         Me.pnlLine.TabIndex = 42
         '
