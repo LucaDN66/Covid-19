@@ -257,6 +257,7 @@ Public Class cITARegionsRecords
                 End If
             Next
         End If
+
         Return retVal
     End Function
     Public Sub ShiftDays(ByVal valueType As cDisplayInfo.enItalianValueType, ByVal region As cCountryListboxItem, ByVal days As Integer)

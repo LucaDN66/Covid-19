@@ -272,6 +272,7 @@ Public Class cWorldRecords
                 End If
             Next
         End If
+
         Return retVal
     End Function
     Public Sub ShiftDays(ByVal valueType As cDisplayInfo.enWorldValueType, ByVal region As cCountryListboxItem, ByVal days As Integer)

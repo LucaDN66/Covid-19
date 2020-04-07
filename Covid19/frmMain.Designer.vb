@@ -646,7 +646,6 @@ Partial Class frmMain
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.BackColor = System.Drawing.SystemColors.Window
         Me.ClientSize = New System.Drawing.Size(1174, 712)
-        Me.Controls.Add(Me.labSnapshot)
         Me.Controls.Add(Me.pnlInvisible)
         Me.Controls.Add(Me.btDateShiftRight)
         Me.Controls.Add(Me.btDateShiftLeft)
@@ -654,6 +653,7 @@ Partial Class frmMain
         Me.Controls.Add(Me.Chart1)
         Me.Controls.Add(Me.pnlTop)
         Me.Controls.Add(Me.pnlLeft)
+        Me.Controls.Add(Me.labSnapshot)
         Me.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.KeyPreview = True

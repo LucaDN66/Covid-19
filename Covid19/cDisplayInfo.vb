@@ -52,6 +52,6 @@
     Public DailyIncrements As Boolean = False
     Public ShowEstimate As Boolean = False
     Public EstimatedFinalValue As Integer = 1000
-    Public EstimatedSigma = 1
-    Public EstimatedCurPos100 = 50
+    Public EstimatedSigma As Double = 1
+    Public EstimatedCurPos100 As Integer = 50
 End Class

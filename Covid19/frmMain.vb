@@ -361,7 +361,6 @@ Public Class frmMain
     Private Sub UpdateDisplayInfo(ByVal showEstimate As Boolean)
         Try
             myDisplayInfo.ShowEstimate = showEstimate
-
             If myDisplayInfo.ShowITA Then
                 pnlUS.Visible = False
                 pnlWorld.Visible = False
@@ -420,7 +419,6 @@ Public Class frmMain
                     pnlUS.BringToFront()
                 End If
             End If
-
 
             myDisplayInfo.DailyIncrements = chkDaily.Checked
             myDisplayInfo.ActiveItalianData = cbChartItemITA.SelectedIndex
@@ -766,6 +764,9 @@ Public Class frmMain
         Catch ex As Exception
             MsgBox(ex.Message)
         End Try
+    End Sub
+    Private Sub chkMovingAverage_CheckedChanged(sender As Object, e As EventArgs)
+        UpdateAndRefresh(False)
     End Sub
     Private Sub chkNormalize_CheckedChanged(sender As Object, e As EventArgs) Handles chkNormalize.CheckedChanged
         UpdateAndRefresh(False)
