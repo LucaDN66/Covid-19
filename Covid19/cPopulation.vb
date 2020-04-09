@@ -98,9 +98,15 @@
                 End If
             Next
 
+<<<<<<< HEAD
+
+            'Windows-1252 to get special characters for european languages
+
+=======
+>>>>>>> e22b13fdccc7ab87b5f3670b6d547bec46a5ab5e
             'ITA regions
             popLines.Clear()
-            popLines.AddRange(System.IO.File.ReadAllLines(ITAPopulationCSV))
+            popLines.AddRange(System.IO.File.ReadAllLines(ITAPopulationCSV, System.Text.Encoding.GetEncoding("Windows-1252")))
             For lCounter As Integer = 0 To popLines.Count - 1
                 Dim thisLineParts() As String = popLines(lCounter).Split(",")
                 Dim thisLineData As New Tuple(Of String, Double)(thisLineParts(0), CInt(thisLineParts(1)))
@@ -109,7 +115,7 @@
 
             'ITA provinces
             popLines.Clear()
-            popLines.AddRange(System.IO.File.ReadAllLines(ITAProvincesPopulationCSV))
+            popLines.AddRange(System.IO.File.ReadAllLines(ITAProvincesPopulationCSV, System.Text.Encoding.GetEncoding("Windows-1252")))
             For lCounter As Integer = 0 To popLines.Count - 1
                 Dim thisLineParts() As String = popLines(lCounter).Split(",")
                 Dim thisLineData As New Tuple(Of String, Double)(thisLineParts(0), CInt(thisLineParts(1)))
@@ -118,7 +124,11 @@
 
             'Loads european countries
             myEuropeanCountries.Clear()
+<<<<<<< HEAD
+            myEuropeanCountries.AddRange(System.IO.File.ReadAllLines(EuropeanCountriesCSV, System.Text.Encoding.GetEncoding("Windows-1252")))
+=======
             myEuropeanCountries.AddRange(System.IO.File.ReadAllLines(EuropeanCountriesCSV))
+>>>>>>> e22b13fdccc7ab87b5f3670b6d547bec46a5ab5e
 
 
         Catch ex As Exception

@@ -1,0 +1,15 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Covid19/obj
+/.vs/Covid19/v16
+Covid19/bin/Release/Covid19.exe.config
+Covid19/bin/Release/Covid19.pdb
+Covid19/bin/Release/Covid19.xml
+*.exe
+Covid19/bin/Release/Covid19/tmp.csv
+Covid19/Covid-19.pfx
+Covid19/bin/Release/Covid19/Covid19.ini
+Covid19/bin/Release/Covid19/tmp.csv~e22b13fdccc7ab87b5f3670b6d547bec46a5ab5e
+Covid19/bin/Release/Covid19/Covid19.ini~e22b13fdccc7ab87b5f3670b6d547bec46a5ab5e

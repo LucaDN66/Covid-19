@@ -22,18 +22,20 @@ Genova (Liguria),850071,GE
 Lecce (Puglia),802082,LE
 Cosenza (Calabria),711739,CS
 Modena (Emilia-Romagna),700862,MO
-Perugia (Umbria),66069,PG
+Perugia (Umbria),660690,PG
 Messina (Sicilia),636653,ME
 Foggia (Puglia),628556,FG
-Como (Lombardia),60019,CO
+Como (Lombardia),600190,CO
 Cuneo (Piemonte),589108,CN
 Taranto (Puglia),583479,TA
 Latina (Lazio),574891,LT
 Cagliari (Sardegna),560373,CA
 Reggio Calabria (Calabria),553861,RC
+Reggio di Calabria (Calabria),553861,RC
 Pavia (Lombardia),547251,PV
 Trento (Trentino-Alto Adige),538604,TN
 Reggio Emilia (Emilia-Romagna),532483,RE
+Reggio nell'Emilia (Emilia-Romagna),532483,RE
 Udine (Friuli-Venezia Giulia),531466,UD
 Bolzano (Trentino-Alto Adige),524256,BZ
 Frosinone (Lazio),493067,FR
@@ -44,7 +46,7 @@ Trapani (Sicilia),434476,TP
 Alessandria (Piemonte),426658,AL
 Avellino (Campania),423506,AV
 Pisa (Toscana),421851,PI
-Mantova (Lombardia),41261,MN
+Mantova (Lombardia),412610,MN
 Siracusa (Sicilia),402822,SR
 Brindisi (Puglia),397083,BR
 Forlì-Cesena (Emilia-Romagna),394067,FC
@@ -52,7 +54,7 @@ Barletta-Andria-Trani (Puglia),392546,BT
 Ravenna (Emilia-Romagna),391414,RA
 Lucca (Toscana),390042,LU
 Chieti (Abruzzo),389169,CH
-Potenza (Basilicata),37068,PZ
+Potenza (Basilicata),370680,PZ
 Novara (Piemonte),370143,NO
 Catanzaro (Calabria),362343,CZ
 Pesaro e Urbino (Marche),360711,PU
@@ -69,12 +71,12 @@ Viterbo (Lazio),319008,VT
 Macerata (Marche),318921,MC
 Pordenone (Friuli-Venezia Giulia),312051,PN
 Teramo (Abruzzo),309859,TE
-L'Aquila (Abruzzo),30191,AQ
+L'Aquila (Abruzzo),301910,AQ
 Pistoia (Toscana),291839,PT
 Piacenza (Emilia-Romagna),286758,PC
 Benevento (Campania),279675,BN
 Savona (Liguria),279408,SV
-Caltanissetta (Sicilia),26971,CL
+Caltanissetta (Sicilia),269710,CL
 Siena (Toscana),268341,SI
 Prato (Toscana),254608,PO
 Rovigo (Veneto),238588,RO
@@ -85,11 +87,11 @@ Campobasso (Molise),224644,CB
 Grosseto (Toscana),223045,GR
 La Spezia (Liguria),220698,SP
 Asti (Piemonte),216677,AT
-Imperia (Liguria),21513,IM
-Ascoli Piceno (Marche),20945,AP
+Imperia (Liguria),215130,IM
+Ascoli Piceno (Marche),209450,AP
 Belluno (Veneto),205781,BL
 Matera (Basilicata),199685,MT
-Massa-Carrara (Toscana),19658,MS
+Massa-Carrara (Toscana),196580,MS
 Sondrio (Lombardia),181437,SO
 Biella (Piemonte),178551,BI
 Crotone (Calabria),175566,KR
@@ -100,7 +102,7 @@ Vibo Valentia (Calabria),161619,VV
 Oristano (Sardegna),160746,OR
 Olbia-Tempio (Sardegna),160672,OT
 Verbano-Cusio-Ossola (Piemonte),159664,VB
-Rieti (Lazio),15742,RI
+Rieti (Lazio),157420,RI
 Nuoro (Sardegna),156096,NU
 Gorizia (Friuli-Venezia Giulia),139673,GO
 Aosta (Valle d'Aosta),126883,AO
@@ -108,3 +110,4 @@ Carbonia-Iglesias (Sardegna),126324,CI
 Medio Campidano (Sardegna),98623,VS
 Isernia (Molise),85805,IS
 Ogliastra (Sardegna),57185,OG
+Sud Sardegna (Sardegna),350725,OG
