@@ -98,12 +98,9 @@
                 End If
             Next
 
-<<<<<<< HEAD
 
             'Windows-1252 to get special characters for european languages
 
-=======
->>>>>>> e22b13fdccc7ab87b5f3670b6d547bec46a5ab5e
             'ITA regions
             popLines.Clear()
             popLines.AddRange(System.IO.File.ReadAllLines(ITAPopulationCSV, System.Text.Encoding.GetEncoding("Windows-1252")))
@@ -124,11 +121,7 @@
 
             'Loads european countries
             myEuropeanCountries.Clear()
-<<<<<<< HEAD
             myEuropeanCountries.AddRange(System.IO.File.ReadAllLines(EuropeanCountriesCSV, System.Text.Encoding.GetEncoding("Windows-1252")))
-=======
-            myEuropeanCountries.AddRange(System.IO.File.ReadAllLines(EuropeanCountriesCSV))
->>>>>>> e22b13fdccc7ab87b5f3670b6d547bec46a5ab5e
 
 
         Catch ex As Exception
