@@ -1,5 +1,4 @@
 ﻿Public Class cDisplayInfo
-
     Public Enum enActiveArea As Integer
         ITA = 0
         ITA_Regions = 1
@@ -7,6 +6,7 @@
         World = 3
         US = 4
         UK = 5
+        Europe = 6
     End Enum
     Public ActiveArea As enActiveArea = enActiveArea.World
     Public ReadOnly Property ShowITA As Boolean
@@ -17,6 +17,11 @@
     Public ReadOnly Property ShowUS As Boolean
         Get
             Return ActiveArea = enActiveArea.US
+        End Get
+    End Property
+    Public ReadOnly Property ShowEurope As Boolean
+        Get
+            Return ActiveArea = enActiveArea.Europe
         End Get
     End Property
     Public ReadOnly Property ShowWorld As Boolean
@@ -44,8 +49,10 @@
     End Enum
     Public ActiveItalianData As enItalianValueType = enItalianValueType.Deaths
     Public ActiveWorldData As enWorldValueType = enWorldValueType.Deaths
+    Public ActiveEUData As enWorldValueType = enWorldValueType.Deaths
     Public ActiveUSData As enWorldValueType = enWorldValueType.Deaths
     Public ActiveWorldRegions As New List(Of cCountryListboxItem)
+    Public ActiveEURegions As New List(Of cCountryListboxItem)
     Public ActiveUSRegions As New List(Of cCountryListboxItem)
     Public ActiveITARegions As New List(Of cCountryListboxItem)
     Public ActiveITAProvinces As New List(Of cCountryListboxItem)

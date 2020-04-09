@@ -87,6 +87,37 @@ Public Class cWorldRecords
     Public Deaths As New List(Of cCountryValues)
     Public Confirmed As New List(Of cCountryValues)
     Public Recovered As New List(Of cCountryValues)
+
+    Public Function Clone() As cWorldRecords
+        Dim retVal As New cWorldRecords
+        For iCounter As Integer = 0 To Deaths.Count - 1
+            retVal.Deaths.Add(Me.Deaths(iCounter).Clone)
+        Next
+        For iCounter As Integer = 0 To Confirmed.Count - 1
+            retVal.Confirmed.Add(Me.Confirmed(iCounter).Clone)
+        Next
+        For iCounter As Integer = 0 To Recovered.Count - 1
+            retVal.Recovered.Add(Me.Recovered(iCounter).Clone)
+        Next
+        Return retVal
+    End Function
+    Private Sub RemoveNonEUEntriesFromList(ByVal aList As List(Of cCountryValues))
+        For iCounter As Integer = aList.Count - 1 To 0 Step -1
+            If aList(iCounter).Province_State.Length > 0 Then
+                'We remove every item that is not a Country, but just a province/state of the main country
+                aList.RemoveAt(iCounter)
+            Else
+                If Not Population.myEuropeanCountries.Contains(aList(iCounter).Country_Region) Then
+                    aList.RemoveAt(iCounter)
+                End If
+            End If
+        Next
+    End Sub
+    Public Sub RemoveNonEuropeanEntries()
+        RemoveNonEUEntriesFromList(Deaths)
+        RemoveNonEUEntriesFromList(Confirmed)
+        RemoveNonEUEntriesFromList(Recovered)
+    End Sub
     Public Sub SetDeaths(ByVal csvLines() As String)
         Deaths.Clear()
         AddValues(csvLines, Deaths)
@@ -236,7 +267,7 @@ Public Class cWorldRecords
             MsgBox(ex.Message)
         End Try
     End Sub
-    Public Function GetDailyValues(ByVal valueType As cDisplayInfo.enWorldValueType, ByVal region As cCountryListboxItem) As List(Of cDailyValue)
+    Public Function GetDailyValues(ByVal valueType As cDisplayInfo.enWorldValueType, ByVal region As cCountryListboxItem, ByVal isUSCity As Boolean) As List(Of cDailyValue)
         Dim retVal As New List(Of cDailyValue)
         Dim targetList As List(Of cCountryValues) = Nothing
         Select Case valueType
@@ -250,13 +281,18 @@ Public Class cWorldRecords
 
         Dim pop As Double = 1
         If NormalizeToPopulation Then
-            pop = Population.GetWorldCountryPopulation(region.Country_Region) / 10000.0
+            If isUSCity Then
+                pop = Population.GetUSCityPopulation(region.Province_State + "-" + region.Country_Region) / 10000.0
+            Else
+                pop = Population.GetWorldCountryPopulation(region.Country_Region) / 10000.0
+            End If
+
             If pop = 0 Then
                 pop = 1
             End If
         End If
 
-        If targetList IsNot Nothing Then
+            If targetList IsNot Nothing Then
             For iCounter As Integer = 0 To targetList.Count - 1
                 If targetList(iCounter).IsRegionLike(region) Then
                     Dim collectionStarted As Boolean = False

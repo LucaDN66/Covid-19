@@ -3,15 +3,26 @@
     Public Shared ITAPopulationCSV As String = RootFolder() + "ITAPopulation.csv"
     Public Shared ITAProvincesPopulationCSV As String = RootFolder() + "ITAProvincesPopulation.csv"
     Public Shared USPopulationCSV As String = RootFolder() + "USPopulation.csv"
+    Public Shared USCitiesPopulationCSV As String = RootFolder() + "USCitiesPopulation.csv"
+    Public Shared EuropeanCountriesCSV As String = RootFolder() + "EuropeanCountries.csv"
+
     Private myITAPopulation As New List(Of Tuple(Of String, Double))
     Private myITAProvincesPopulation As New List(Of Tuple(Of String, Double))
     Private myGlobalPopulation As New List(Of Tuple(Of String, Double))
     Private myUSPopulation As New List(Of Tuple(Of String, Double))
+    Private myUSCitiesPopulation As New List(Of Tuple(Of String, Double))
     Public Const ITATotalPopulation As Double = 60317000
+    Public myEuropeanCountries As New List(Of String)
     Public Sub New()
         Try
             If System.IO.File.Exists(USPopulationCSV) Then
                 System.IO.File.Delete(USPopulationCSV)
+            End If
+            If System.IO.File.Exists(USCitiesPopulationCSV) Then
+                System.IO.File.Delete(USCitiesPopulationCSV)
+            End If
+            If System.IO.File.Exists(EuropeanCountriesCSV) Then
+                System.IO.File.Delete(EuropeanCountriesCSV)
             End If
             If System.IO.File.Exists(PopulationCSV) Then
                 System.IO.File.Delete(PopulationCSV)
@@ -27,7 +38,7 @@
             Dim thisAssembly As System.Reflection.Assembly = System.Reflection.Assembly.GetExecutingAssembly()
             Static resourcesNames As String() = thisAssembly.GetManifestResourceNames()
             For Each name As String In resourcesNames
-                If (name.EndsWith("ITAPopulation.csv")) OrElse (name.EndsWith("USPopulation.csv")) OrElse (name.EndsWith("CountryPopulation.csv")) OrElse (name.EndsWith("ITAProvincesPopulation.csv")) Then
+                If (name.EndsWith("ITAPopulation.csv")) OrElse (name.EndsWith("USPopulation.csv")) OrElse (name.EndsWith("EuropeanCountries.csv")) OrElse (name.EndsWith("USCitiesPopulation.csv")) OrElse (name.EndsWith("CountryPopulation.csv")) OrElse (name.EndsWith("ITAProvincesPopulation.csv")) Then
                     Dim resStream As System.IO.Stream = thisAssembly.GetManifestResourceStream(name)
                     Dim resBytes(resStream.Length - 1) As Byte
                     resStream.Read(resBytes, 0, resStream.Length)
@@ -38,6 +49,10 @@
                         fileStream = New System.IO.FileStream(PopulationCSV, IO.FileMode.Create, IO.FileAccess.Write)
                     ElseIf (name.EndsWith("USPopulation.csv")) Then
                         fileStream = New System.IO.FileStream(USPopulationCSV, IO.FileMode.Create, IO.FileAccess.Write)
+                    ElseIf (name.EndsWith("USCitiesPopulation.csv")) Then
+                        fileStream = New System.IO.FileStream(USCitiesPopulationCSV, IO.FileMode.Create, IO.FileAccess.Write)
+                    ElseIf (name.EndsWith("EuropeanCountries.csv")) Then
+                        fileStream = New System.IO.FileStream(EuropeanCountriesCSV, IO.FileMode.Create, IO.FileAccess.Write)
                     ElseIf (name.EndsWith("ITAProvincesPopulation.csv")) Then
                         fileStream = New System.IO.FileStream(ITAProvincesPopulationCSV, IO.FileMode.Create, IO.FileAccess.Write)
                     End If
@@ -69,6 +84,20 @@
                 myUSPopulation.Add(thisLineData)
             Next
 
+            'US Cities
+            popLines.Clear()
+            popLines.AddRange(System.IO.File.ReadAllLines(USCitiesPopulationCSV))
+            For lCounter As Integer = 0 To popLines.Count - 1
+                Dim thisLineParts() As String = popLines(lCounter).Split(",")
+                If thisLineParts(0).Length > 0 Then
+                    Dim thisLineData As New Tuple(Of String, Double)(thisLineParts(0) + "-" + thisLineParts(1), CInt(thisLineParts(2)))
+                    myUSCitiesPopulation.Add(thisLineData)
+                Else
+                    Dim thisLineData As New Tuple(Of String, Double)(thisLineParts(1), CInt(thisLineParts(2)))
+                    myUSCitiesPopulation.Add(thisLineData)
+                End If
+            Next
+
             'ITA regions
             popLines.Clear()
             popLines.AddRange(System.IO.File.ReadAllLines(ITAPopulationCSV))
@@ -86,12 +115,30 @@
                 Dim thisLineData As New Tuple(Of String, Double)(thisLineParts(0), CInt(thisLineParts(1)))
                 myITAProvincesPopulation.Add(thisLineData)
             Next
+
+            'Loads european countries
+            myEuropeanCountries.Clear()
+            myEuropeanCountries.AddRange(System.IO.File.ReadAllLines(EuropeanCountriesCSV))
+
+
         Catch ex As Exception
             MsgBox(ex.Message)
         End Try
     End Sub
+    Public ReadOnly Property GetUSCityPopulation(ByVal City_State As String) As Double
+        Get
+            Dim nameCopy As String = City_State.Replace(" ", "-").ToUpper.Trim
+            For pCounter As Integer = 0 To myUSCitiesPopulation.Count - 1
+                Dim itemCopy As String = myUSCitiesPopulation(pCounter).Item1.Replace(" ", "-").ToUpper.Trim
+                If itemCopy.StartsWith(nameCopy) Then
+                    Return myUSCitiesPopulation(pCounter).Item2
+                End If
+            Next
+            Return 0
+        End Get
+    End Property
 
-    Public ReadOnly Property GetUSPopulation(ByVal state As String) As Double
+    Public ReadOnly Property GetUSStatePopulation(ByVal state As String) As Double
         Get
             Dim stateCopy As String = state.Replace(" ", "-").ToUpper.Trim
             For pCounter As Integer = 0 To myUSPopulation.Count - 1

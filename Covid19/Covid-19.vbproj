@@ -135,6 +135,8 @@
     <EmbeddedResource Include="Map\ITAPopulation.csv" />
     <EmbeddedResource Include="Map\ITAProvincesPopulation.csv" />
     <EmbeddedResource Include="Map\USPopulation.csv" />
+    <EmbeddedResource Include="Map\USCitiesPopulation.csv" />
+    <EmbeddedResource Include="Map\EuropeanCountries.csv" />
     <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>

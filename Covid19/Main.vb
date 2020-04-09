@@ -118,13 +118,31 @@
         End If
         Return retVal
     End Function
+    Public Function GetPlotPointsEURegionFirst(ByVal EURecords As cWorldRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
+        Dim retVal As New List(Of Tuple(Of Date, Double))
+        If displayInfo.ActiveEURegions.Count > 0 Then
+            Dim dailyValsList As New List(Of List(Of cDailyValue))
+            Dim prevValue As Integer = 0
+            Dim curValue As Integer = 0
+            Dim dailyVals As List(Of cDailyValue) = EURecords.GetDailyValues(displayInfo.ActiveEUData, displayInfo.ActiveEURegions(0), False)
+            For iCounter As Integer = 0 To dailyVals.Count - 1
+                curValue = dailyVals(iCounter).RecordValue
+                retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
+                If displayInfo.DailyIncrements Then
+                    prevValue = curValue
+                End If
+            Next
+        End If
+        Return retVal
+    End Function
+
     Public Function GetPlotPointsWorldRegionFirst(ByVal worldRecords As cWorldRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
         Dim retVal As New List(Of Tuple(Of Date, Double))
         If displayInfo.ActiveWorldRegions.Count > 0 Then
             Dim dailyValsList As New List(Of List(Of cDailyValue))
             Dim prevValue As Integer = 0
             Dim curValue As Integer = 0
-            Dim dailyVals As List(Of cDailyValue) = worldRecords.GetDailyValues(displayInfo.ActiveWorldData, displayInfo.ActiveWorldRegions(0))
+            Dim dailyVals As List(Of cDailyValue) = worldRecords.GetDailyValues(displayInfo.ActiveWorldData, displayInfo.ActiveWorldRegions(0), False)
             For iCounter As Integer = 0 To dailyVals.Count - 1
                 curValue = dailyVals(iCounter).RecordValue
                 retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
@@ -141,7 +159,7 @@
             Dim dailyValsList As New List(Of List(Of cDailyValue))
             Dim prevValue As Integer = 0
             Dim curValue As Integer = 0
-            Dim dailyVals As List(Of cDailyValue) = usRecords.GetDailyValues(displayInfo.ActiveUSData, displayInfo.ActiveUSRegions(0))
+            Dim dailyVals As List(Of cDailyValue) = usRecords.GetDailyValues(displayInfo.ActiveUSData, displayInfo.ActiveUSRegions(0), True)
             For iCounter As Integer = 0 To dailyVals.Count - 1
                 curValue = dailyVals(iCounter).RecordValue
                 retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
@@ -194,9 +212,18 @@
         Next
         Return retVal
     End Function
-    Public Sub RefreshVisualization(ByVal aChart As DataVisualization.Charting.Chart, ByVal ItaRecords As cITARecords, ByVal italianRegionRecords As cITARegionsRecords, ByVal italianProvincesRecords As cITAProvincesRecords, ByVal worldRecords As cWorldRecords, ByVal USRecords As cWorldRecords, ByVal displayInfo As cDisplayInfo)
+    Public Sub RefreshVisualization(ByVal aChart As DataVisualization.Charting.Chart, ByVal ItaRecords As cITARecords, ByVal italianRegionRecords As cITARegionsRecords, ByVal italianProvincesRecords As cITAProvincesRecords, ByVal worldRecords As cWorldRecords, ByVal USRecords As cWorldRecords, ByVal EURecords As cWorldRecords, ByVal displayInfo As cDisplayInfo)
         If Not DataLoaded Then Return
+
         Try
+            Dim FillWithExtremeValues As Boolean = True
+            Dim myChartType As DataVisualization.Charting.SeriesChartType = DataVisualization.Charting.SeriesChartType.Spline
+            If displayInfo.DailyIncrements Then
+                FillWithExtremeValues = False
+                myChartType = DataVisualization.Charting.SeriesChartType.Column
+            End If
+
+            aChart.Annotations.Clear()
             aChart.Series.Clear()
             aChart.ResetAutoValues()
 
@@ -227,15 +254,15 @@
                 If pointsITARegionsList.Count > 0 Then
                     'Align first to all others
                     For pCounter As Integer = 1 To pointsITARegionsList.Count - 1
-                        AlignSeries(pointsITARegionsList(0), pointsITARegionsList(pCounter))
+                        AlignSeries(pointsITARegionsList(0), pointsITARegionsList(pCounter), FillWithExtremeValues)
                     Next
                     'And all others to first
                     For pCounter As Integer = 1 To pointsITARegionsList.Count - 1
-                        AlignSeries(pointsITARegionsList(0), pointsITARegionsList(pCounter))
+                        AlignSeries(pointsITARegionsList(0), pointsITARegionsList(pCounter), FillWithExtremeValues)
                     Next
 
                     For pCounter As Integer = 0 To pointsITARegionsList.Count - 1
-                        AlignSeries(pointsITARegionsList(pCounter), pointsITA)
+                        AlignSeries(pointsITARegionsList(pCounter), pointsITA, FillWithExtremeValues)
                     Next
 
                 End If
@@ -263,15 +290,15 @@
                 If pointsITAProvincesList.Count > 0 Then
                     'Align first to all others
                     For pCounter As Integer = 1 To pointsITAProvincesList.Count - 1
-                        AlignSeries(pointsITAProvincesList(0), pointsITAProvincesList(pCounter))
+                        AlignSeries(pointsITAProvincesList(0), pointsITAProvincesList(pCounter), FillWithExtremeValues)
                     Next
                     'And all others to first
                     For pCounter As Integer = 1 To pointsITAProvincesList.Count - 1
-                        AlignSeries(pointsITAProvincesList(0), pointsITAProvincesList(pCounter))
+                        AlignSeries(pointsITAProvincesList(0), pointsITAProvincesList(pCounter), FillWithExtremeValues)
                     Next
 
                     For pCounter As Integer = 0 To pointsITAProvincesList.Count - 1
-                        AlignSeries(pointsITAProvincesList(pCounter), pointsITA)
+                        AlignSeries(pointsITAProvincesList(pCounter), pointsITA, FillWithExtremeValues)
                     Next
 
                 End If
@@ -284,7 +311,7 @@
                     Dim prevValue As Double = 0
                     Dim curValue As Double = 0
                     Dim pointsGlobal As New List(Of Tuple(Of Date, Double))
-                    Dim dailyVals As List(Of cDailyValue) = worldRecords.GetDailyValues(displayInfo.ActiveWorldData, displayInfo.ActiveWorldRegions(rCounter))
+                    Dim dailyVals As List(Of cDailyValue) = worldRecords.GetDailyValues(displayInfo.ActiveWorldData, displayInfo.ActiveWorldRegions(rCounter), False)
                     For iCounter As Integer = 0 To dailyVals.Count - 1
                         curValue = dailyVals(iCounter).RecordValue
                         pointsGlobal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
@@ -299,11 +326,42 @@
                 If pointsGlobalList.Count > 1 Then
                     'Align first to all others
                     For pCounter As Integer = 1 To pointsGlobalList.Count - 1
-                        AlignSeries(pointsGlobalList(0), pointsGlobalList(pCounter))
+                        AlignSeries(pointsGlobalList(0), pointsGlobalList(pCounter), FillWithExtremeValues)
                     Next
                     'And all others to first
                     For pCounter As Integer = 1 To pointsGlobalList.Count - 1
-                        AlignSeries(pointsGlobalList(0), pointsGlobalList(pCounter))
+                        AlignSeries(pointsGlobalList(0), pointsGlobalList(pCounter), FillWithExtremeValues)
+                    Next
+                End If
+            End If
+
+            Dim pointsEUList As New List(Of List(Of Tuple(Of Date, Double)))
+            If displayInfo.ShowEurope Then
+                Dim dailyValsList As New List(Of List(Of cDailyValue))
+                For rCounter As Integer = 0 To displayInfo.ActiveEURegions.Count - 1
+                    Dim prevValue As Double = 0
+                    Dim curValue As Double = 0
+                    Dim pointsEU As New List(Of Tuple(Of Date, Double))
+                    Dim dailyVals As List(Of cDailyValue) = EURecords.GetDailyValues(displayInfo.ActiveEUData, displayInfo.ActiveEURegions(rCounter), False)
+                    For iCounter As Integer = 0 To dailyVals.Count - 1
+                        curValue = dailyVals(iCounter).RecordValue
+                        pointsEU.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
+                        If displayInfo.DailyIncrements Then
+                            prevValue = curValue
+                        End If
+                    Next
+                    pointsEUList.Add(pointsEU)
+                Next
+
+                'Series need to be aligned
+                If pointsEUList.Count > 1 Then
+                    'Align first to all others
+                    For pCounter As Integer = 1 To pointsEUList.Count - 1
+                        AlignSeries(pointsEUList(0), pointsEUList(pCounter), FillWithExtremeValues)
+                    Next
+                    'And all others to first
+                    For pCounter As Integer = 1 To pointsEUList.Count - 1
+                        AlignSeries(pointsEUList(0), pointsEUList(pCounter), FillWithExtremeValues)
                     Next
                 End If
             End If
@@ -315,7 +373,7 @@
                     Dim prevValue As Double = 0
                     Dim curValue As Double = 0
                     Dim pointsUS As New List(Of Tuple(Of Date, Double))
-                    Dim dailyVals As List(Of cDailyValue) = USRecords.GetDailyValues(displayInfo.ActiveUSData, displayInfo.ActiveUSRegions(rCounter))
+                    Dim dailyVals As List(Of cDailyValue) = USRecords.GetDailyValues(displayInfo.ActiveUSData, displayInfo.ActiveUSRegions(rCounter), True)
                     For iCounter As Integer = 0 To dailyVals.Count - 1
                         curValue = dailyVals(iCounter).RecordValue
                         pointsUS.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
@@ -330,11 +388,11 @@
                 If pointsUSList.Count > 1 Then
                     'Align first to all others
                     For pCounter As Integer = 1 To pointsUSList.Count - 1
-                        AlignSeries(pointsUSList(0), pointsUSList(pCounter))
+                        AlignSeries(pointsUSList(0), pointsUSList(pCounter), FillWithExtremeValues)
                     Next
                     'And all others to first
                     For pCounter As Integer = 1 To pointsUSList.Count - 1
-                        AlignSeries(pointsUSList(0), pointsUSList(pCounter))
+                        AlignSeries(pointsUSList(0), pointsUSList(pCounter), FillWithExtremeValues)
                     Next
                 End If
             End If
@@ -355,6 +413,10 @@
                     For dCounter As Integer = 0 To pointsGlobalList(0).Count - 1
                         allDates.Add(pointsGlobalList(0).Item(dCounter).Item1)
                     Next
+                ElseIf displayInfo.ShowEurope Then
+                    For dCounter As Integer = 0 To pointsEUList(0).Count - 1
+                        allDates.Add(pointsEUList(0).Item(dCounter).Item1)
+                    Next
                 ElseIf displayInfo.ShowUS Then
                     For dCounter As Integer = 0 To pointsUSList(0).Count - 1
                         allDates.Add(pointsUSList(0).Item(dCounter).Item1)
@@ -365,23 +427,44 @@
 
             If displayInfo.ActiveArea = cDisplayInfo.enActiveArea.ITA Then
                 Dim dataSeriesITA As New System.Windows.Forms.DataVisualization.Charting.Series
-                dataSeriesITA.Color = Color.DarkRed
                 dataSeriesITA.IsVisibleInLegend = True
                 dataSeriesITA.IsXValueIndexed = True
-                dataSeriesITA.ChartType = DataVisualization.Charting.SeriesChartType.Column
+                dataSeriesITA.ChartType = myChartType
+                dataSeriesITA.BorderWidth = 4
                 aChart.Series.Add(dataSeriesITA)
                 Dim max As Integer = 0
                 If pointsITA.Count > 0 Then
                     ChartStartingDate = pointsITA(0).Item1
                 End If
-                For iCounter As Integer = 0 To pointsITA.Count - 1
+                Dim restrictionStartDate As New Date(2020, 3, 11)
+                Dim ts As New TimeSpan(18, 0, 0)
+                restrictionStartDate = restrictionStartDate.Date + ts
 
+
+                Dim isolationStartIndex As Integer = -1
+                For iCounter As Integer = 0 To pointsITA.Count - 1
                     If pointsITA(iCounter).Item2 > max Then
                         max = pointsITA(iCounter).Item2
                     End If
                     dataSeriesITA.Points.AddXY(pointsITA(iCounter).Item1, pointsITA(iCounter).Item2)
+                    If pointsITA(iCounter).Item1 = restrictionStartDate Then
+                        isolationStartIndex = iCounter
+                    End If
                 Next
                 dataSeriesITA.Name = CStr(max) + " " + displayInfo.ActiveItalianData.ToString + vbCrLf + "(Italia-Protezione Civile)"
+
+                If isolationStartIndex <> -1 Then
+                    Dim la As New DataVisualization.Charting.VerticalLineAnnotation
+                    la.LineColor = Color.Red
+                    la.LineWidth = 2
+                    la.LineDashStyle = DataVisualization.Charting.ChartDashStyle.Dash
+                    la.IsInfinitive = True
+                    la.AnchorDataPoint = dataSeriesITA.Points(isolationStartIndex)
+                    la.SmartLabelStyle.AllowOutsidePlotArea = False
+                    la.ToolTip = "11 March 2020, social distancing introduced"
+                    aChart.Annotations.Add(la)
+                End If
+
             End If
 
             If displayInfo.ShowWorld Then
@@ -391,9 +474,9 @@
                     dataSeriesGlobal.Name = displayInfo.ActiveWorldData.ToString + vbCrLf + " (" + displayInfo.ActiveWorldRegions(pCounter).ToString + ")"
                     '                    dataSeriesGlobal.Color = Color.Green
                     dataSeriesGlobal.IsVisibleInLegend = True
-                    dataSeriesGlobal.BorderWidth = 3
+                    dataSeriesGlobal.BorderWidth = 4
                     dataSeriesGlobal.IsXValueIndexed = True
-                    dataSeriesGlobal.ChartType = DataVisualization.Charting.SeriesChartType.Column
+                    dataSeriesGlobal.ChartType = myChartType
                     aChart.Series.Add(dataSeriesGlobal)
                     For iCounter As Integer = 0 To pointsGlobalList(pCounter).Count - 1
                         If Not StartDateInitialized Then
@@ -409,6 +492,30 @@
                 Next
             End If
 
+            If displayInfo.ShowEurope Then
+                Dim StartDateInitialized As Boolean = False
+                For pCounter As Integer = 0 To pointsEUList.Count - 1
+                    Dim dataSeriesEU As New System.Windows.Forms.DataVisualization.Charting.Series
+                    dataSeriesEU.Name = displayInfo.ActiveEUData.ToString + vbCrLf + " (" + displayInfo.ActiveEURegions(pCounter).ToString + ")"
+                    dataSeriesEU.IsVisibleInLegend = True
+                    dataSeriesEU.BorderWidth = 4
+                    dataSeriesEU.IsXValueIndexed = True
+                    dataSeriesEU.ChartType = myChartType
+                    aChart.Series.Add(dataSeriesEU)
+                    For iCounter As Integer = 0 To pointsEUList(pCounter).Count - 1
+                        If Not StartDateInitialized Then
+                            StartDateInitialized = True
+                            ChartStartingDate = pointsEUList(pCounter).Item(0).Item1
+                        Else
+                            If pointsEUList(pCounter).Item(iCounter).Item1 < ChartStartingDate Then
+                                ChartStartingDate = pointsEUList(pCounter).Item(iCounter).Item1
+                            End If
+                        End If
+                        dataSeriesEU.Points.AddXY(pointsEUList(pCounter).Item(iCounter).Item1, pointsEUList(pCounter).Item(iCounter).Item2)
+                    Next
+                Next
+            End If
+
             If displayInfo.ShowUS Then
                 Dim StartDateInitialized As Boolean = False
                 For pCounter As Integer = 0 To pointsUSList.Count - 1
@@ -416,9 +523,9 @@
                     dataSeriesUS.Name = displayInfo.ActiveUSData.ToString + vbCrLf + " (" + displayInfo.ActiveUSRegions(pCounter).ToString + ")"
                     '                    dataSeriesGlobal.Color = Color.Green
                     dataSeriesUS.IsVisibleInLegend = True
-                    dataSeriesUS.BorderWidth = 3
+                    dataSeriesUS.BorderWidth = 4
                     dataSeriesUS.IsXValueIndexed = True
-                    dataSeriesUS.ChartType = DataVisualization.Charting.SeriesChartType.Column
+                    dataSeriesUS.ChartType = myChartType
                     aChart.Series.Add(dataSeriesUS)
                     For iCounter As Integer = 0 To pointsUSList(pCounter).Count - 1
                         If Not StartDateInitialized Then
@@ -434,16 +541,15 @@
                 Next
             End If
 
-
             If displayInfo.ActiveArea = cDisplayInfo.enActiveArea.ITA_Regions Then
                 Dim StartDateInitialized As Boolean = False
                 For pCounter As Integer = 0 To pointsITARegionsList.Count - 1
                     Dim dataSeriesItaRegions As New System.Windows.Forms.DataVisualization.Charting.Series
                     dataSeriesItaRegions.Name = displayInfo.ActiveItalianData.ToString + vbCrLf + displayInfo.ActiveITARegions(pCounter).ToString
                     dataSeriesItaRegions.IsVisibleInLegend = True
-                    dataSeriesItaRegions.BorderWidth = 3
+                    dataSeriesItaRegions.BorderWidth = 4
                     dataSeriesItaRegions.IsXValueIndexed = True
-                    dataSeriesItaRegions.ChartType = DataVisualization.Charting.SeriesChartType.Column
+                    dataSeriesItaRegions.ChartType = myChartType
                     aChart.Series.Add(dataSeriesItaRegions)
                     For iCounter As Integer = 0 To pointsITARegionsList(pCounter).Count - 1
                         If Not StartDateInitialized Then
@@ -465,9 +571,9 @@
                     Dim dataSeriesItaProvinces As New System.Windows.Forms.DataVisualization.Charting.Series
                     dataSeriesItaProvinces.Name = cDisplayInfo.enItalianValueType.Total_Cases.ToString + vbCrLf + displayInfo.ActiveITAProvinces(pCounter).ToString
                     dataSeriesItaProvinces.IsVisibleInLegend = True
-                    dataSeriesItaProvinces.BorderWidth = 3
+                    dataSeriesItaProvinces.BorderWidth = 4
                     dataSeriesItaProvinces.IsXValueIndexed = True
-                    dataSeriesItaProvinces.ChartType = DataVisualization.Charting.SeriesChartType.Column
+                    dataSeriesItaProvinces.ChartType = myChartType
                     aChart.Series.Add(dataSeriesItaProvinces)
                     For iCounter As Integer = 0 To pointsITAProvincesList(pCounter).Count - 1
                         If Not StartDateInitialized Then
@@ -482,7 +588,6 @@
                     Next
                 Next
             End If
-
 
             If displayInfo.ShowEstimate Then
                 Dim dataSeriesNorm As New System.Windows.Forms.DataVisualization.Charting.Series
@@ -503,11 +608,32 @@
             MsgBox(ex.Message)
         End Try
     End Sub
-    Private Sub AlignSeries(ByRef series1 As List(Of Tuple(Of Date, Double)), ByRef series2 As List(Of Tuple(Of Date, Double)))
+
+    Private Function GetSeriesFirstValue(ByRef aSeries As List(Of Tuple(Of Date, Double))) As Double
+        If aSeries.Count > 0 Then
+            Return aSeries(0).Item2
+        Else
+            Return 0
+        End If
+    End Function
+
+    Private Function GetSeriesLastValue(ByRef aSeries As List(Of Tuple(Of Date, Double))) As Double
+        If aSeries.Count > 0 Then
+            Return aSeries(aSeries.Count - 1).Item2
+        Else
+            Return 0
+        End If
+    End Function
+    Private Sub AlignSeries(ByRef series1 As List(Of Tuple(Of Date, Double)), ByRef series2 As List(Of Tuple(Of Date, Double)),byval FillWithExtremeValues As Boolean )
+
         If series1.Count = 0 Then
             'Just copy the second one into the first
             For iCounter As Integer = 0 To series2.Count - 1
-                series1.Add(New Tuple(Of Date, Double)(series2(iCounter).Item1, 0))
+                If FillWithExtremeValues Then
+                    series1.Add(New Tuple(Of Date, Double)(series2(iCounter).Item1, series2(iCounter).Item2))
+                Else
+                    series1.Add(New Tuple(Of Date, Double)(series2(iCounter).Item1, 0))
+                End If
             Next
             Return
         End If
@@ -515,10 +641,20 @@
         If series2.Count = 0 Then
             'Just copy the first one into the second
             For iCounter As Integer = 0 To series1.Count - 1
-                series2.Add(New Tuple(Of Date, Double)(series1(iCounter).Item1, 0))
+                If FillWithExtremeValues Then
+                    series2.Add(New Tuple(Of Date, Double)(series1(iCounter).Item1, series1(iCounter).Item2))
+                Else
+                    series2.Add(New Tuple(Of Date, Double)(series1(iCounter).Item1, 0))
+                End If
             Next
             Return
         End If
+
+        Dim first1 As Double = GetSeriesFirstValue(series1)
+        Dim last1 As Double = GetSeriesLastValue(series1)
+        Dim first2 As Double = GetSeriesFirstValue(series2)
+        Dim last2 As Double = GetSeriesLastValue(series2)
+
 
         Dim mergedDates As New List(Of Date)
         For iCounter As Integer = 0 To series1.Count - 1
@@ -532,6 +668,10 @@
             End If
         Next
 
+        mergedDates.Sort()
+
+        Dim UseLastValue1 As Boolean = False 'Will turn to true after something has been found
+        Dim UseLastValue2 As Boolean = False 'Will turn to true after something has been found
         For dCounter As Integer = 0 To mergedDates.Count - 1
             Dim thisDate As Date = mergedDates(dCounter)
             Dim dateFound As Boolean = False
@@ -541,8 +681,15 @@
                     Exit For
                 End If
             Next
+
             If Not dateFound Then
-                series1.Add(New Tuple(Of Date, Double)(thisDate, 0))
+                If UseLastValue1 Then
+                    series1.Add(New Tuple(Of Date, Double)(thisDate, last1))
+                Else
+                    series1.Add(New Tuple(Of Date, Double)(thisDate, first1))
+                End If
+            Else
+                UseLastValue1 = True
             End If
 
             dateFound = False
@@ -553,7 +700,13 @@
                 End If
             Next
             If Not dateFound Then
-                series2.Add(New Tuple(Of Date, Double)(thisDate, 0))
+                If UseLastValue2 Then
+                    series2.Add(New Tuple(Of Date, Double)(thisDate, last2))
+                Else
+                    series2.Add(New Tuple(Of Date, Double)(thisDate, first2))
+                End If
+            Else
+                UseLastValue2 = True
             End If
         Next
 
@@ -662,7 +815,7 @@
         End Try
     End Sub
 
-    Public Sub BuildHeatMap(ByVal WorldRecords As cWorldRecords, ByVal USRecords As cWorldRecords, ByVal itaRegionsRecords As cITARegionsRecords, ByVal displayInfo As cDisplayInfo)
+    Public Sub BuildHeatMap(ByVal WorldRecords As cWorldRecords, ByVal USRecords As cWorldRecords, ByVal itaRegionsRecords As cITARegionsRecords, ByVal EURecords As cWorldRecords, ByVal displayInfo As cDisplayInfo)
 
         'Delete old files
         If System.IO.File.Exists(MapHtml) Then
@@ -704,6 +857,9 @@
                 If displayInfo.ShowWorld Then
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Country")
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#Value", displayInfo.ActiveWorldData.ToString)
+                ElseIf displayInfo.ShowEurope Then
+                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Country")
+                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#Value", displayInfo.ActiveEUData.ToString)
                 ElseIf displayInfo.ShowUS Then
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Country")
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#Value", displayInfo.ActiveUSData.ToString)
@@ -715,6 +871,8 @@
             ElseIf HtmlLines(lCounter).Contains("#HeaderParagraphTitle#") Then
                 If displayInfo.ShowWorld Then
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveWorldData.ToString + every10KText)
+                ElseIf displayInfo.ShowEurope Then
+                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveEUData.ToString + every10KText)
                 ElseIf displayInfo.ShowUS Then
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveUSData.ToString + every10KText)
                 Else
@@ -722,6 +880,8 @@
                 End If
             ElseIf HtmlLines(lCounter).Contains("#HeaderParagraphText#") Then
                 If displayInfo.ShowWorld Then
+                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphText#", "Countries with less than 100,000 people are not displayed")
+                ElseIf displayInfo.ShowEurope Then
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphText#", "Countries with less than 100,000 people are not displayed")
                 ElseIf displayInfo.ShowUS Then
                     HtmlLines.RemoveAt(lCounter)
@@ -735,6 +895,8 @@
                 ElseIf displayInfo.ShowUS Then
                     HtmlLines.Insert(lCounter + 1, "		options['region'] = 'US'")
                     HtmlLines.Insert(lCounter + 1, "		options['resolution'] = 'provinces'")
+                ElseIf displayInfo.ShowEurope Then
+                    HtmlLines.Insert(lCounter + 1, "		options['region'] = 150")
                 End If
             End If
         Next
@@ -751,6 +913,15 @@
                     Case cDisplayInfo.enWorldValueType.Recovered
                         targetList = WorldRecords.Recovered
                 End Select
+            ElseIf displayInfo.ShowEurope Then
+                Select Case displayInfo.ActiveEUData
+                    Case cDisplayInfo.enWorldValueType.Confirmed
+                        targetList = EURecords.Confirmed
+                    Case cDisplayInfo.enWorldValueType.Deaths
+                        targetList = EURecords.Deaths
+                    Case cDisplayInfo.enWorldValueType.Recovered
+                        targetList = EURecords.Recovered
+                End Select
             ElseIf displayInfo.ShowUS Then
                 Select Case displayInfo.ActiveUSData
                     Case cDisplayInfo.enWorldValueType.Confirmed
@@ -764,7 +935,6 @@
                 targetList = itaRegionsRecords.GetCountryValuesFromType(displayInfo.ActiveItalianData)
             End If
 
-            Dim SumTrentoBolzano As Double = -1
             For cCounter As Integer = 0 To targetList.Count - 1
                 Dim regionName As String = targetList(cCounter).Country_Region
                 If displayInfo.ShowITA Then
@@ -804,12 +974,14 @@
                         totalPopulation = Population.GetITARegionPopulation(regionName)
                     End If
                 ElseIf displayInfo.ShowUS Then
-                    totalPopulation = Population.GetUSPopulation(regionName)
+                    totalPopulation = Population.GetUSStatePopulation(regionName)
                 ElseIf displayInfo.ShowWorld Then
+                    totalPopulation = Population.GetWorldCountryPopulation(regionName)
+                ElseIf displayInfo.ShowEurope Then
                     totalPopulation = Population.GetWorldCountryPopulation(regionName)
                 End If
 
-                If (displayInfo.ShowWorld AndAlso (totalPopulation < 100000)) Then
+                If ((displayInfo.ShowWorld Or displayInfo.ShowEurope) AndAlso (totalPopulation < 100000)) Then
                     'Skip this one
                 Else
                     If totalPopulation = 0 Then
@@ -846,8 +1018,10 @@
                         totalPopulation = Population.GetITARegionPopulation(thisCountry)
                     End If
                 ElseIf displayInfo.ShowUS Then
-                    totalPopulation = Population.GetUSPopulation(thisCountry)
+                    totalPopulation = Population.GetUSStatePopulation(thisCountry)
                 ElseIf displayInfo.ShowWorld Then
+                    totalPopulation = Population.GetWorldCountryPopulation(thisCountry)
+                ElseIf displayInfo.ShowEurope Then
                     totalPopulation = Population.GetWorldCountryPopulation(thisCountry)
                 End If
 
@@ -863,6 +1037,13 @@
                 countryLines.Add(thisCountryLine)
             Next
 
+            'Workaround for GeoChart not displaying Czechia
+            For iCounter As Integer = 0 To countryLines.Count - 1
+                If countryLines(iCounter).Contains("Czechia") Then
+                    countryLines(iCounter) = countryLines(iCounter).Replace("Czechia", "Czech Republic")
+                    Exit For
+                End If
+            Next
 
             HtmlLines.InsertRange(insertPos, countryLines)
             System.IO.File.Delete(MapHtml)

@@ -4,6 +4,7 @@ Imports System.Net
 Public Class frmMain
     Private italianRecords As New cITARecords
     Private worldRecords As New cWorldRecords
+    Private europeanRecords As New cWorldRecords 'Identical to world records, with records of non european countries removed
     Private USRecords As New cWorldRecords
     Private myDisplayInfo As New cDisplayInfo
     Private italianRegionRecords As New cITARegionsRecords
@@ -223,6 +224,10 @@ Public Class frmMain
                 worldRecords.SetRecovered(infoLines)
             End If
 
+
+            europeanRecords = worldRecords.Clone
+            europeanRecords.RemoveNonEuropeanEntries()
+
             If System.IO.File.Exists(Csv_US_Confirmed_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_US_Confirmed_Filename)
                 ReplaceCommasInQuotations(infoLines)
@@ -256,6 +261,17 @@ Public Class frmMain
             lstRegions.ResumeLayout(True)
             If lstRegions.Items.Count > 0 Then
                 lstRegions.SelectedIndex = 0
+            End If
+
+            lstRegionsEurope.SuspendLayout()
+            lstRegionsEurope.Items.Clear()
+            Dim allEUNames As System.Collections.Generic.List(Of cCountryListboxItem) = europeanRecords.GetRegionNames(myDisplayInfo.ActiveEUData)
+            For iCounter As Integer = 0 To allEUNames.Count - 1
+                lstRegionsEurope.Items.Add(allEUNames(iCounter))
+            Next
+            lstRegionsEurope.ResumeLayout(True)
+            If lstRegionsEurope.Items.Count > 0 Then
+                lstRegionsEurope.SelectedIndex = 0
             End If
 
             lstItaRegions.SuspendLayout()
@@ -292,6 +308,7 @@ Public Class frmMain
             udSigma.Maximum = cNormalDist.SigmaMax
 
             If cbChartItemITA.Items.Count > 0 Then Return
+
             cbChartItemITA.Items.Clear()
             Dim myITATypes() As cDisplayInfo.enItalianValueType = System.Enum.GetValues(GetType(cDisplayInfo.enItalianValueType))
             For iCounter As Integer = 0 To myITATypes.Length - 1
@@ -302,7 +319,7 @@ Public Class frmMain
             Catch ex2 As Exception
             End Try
 
-            If cbChartItemWorld.Items.Count > 0 Then Return
+
             cbChartItemWorld.Items.Clear()
             Dim myWorldTypes() As cDisplayInfo.enWorldValueType = System.Enum.GetValues(GetType(cDisplayInfo.enWorldValueType))
             For iCounter As Integer = 0 To myWorldTypes.Length - 1
@@ -313,7 +330,17 @@ Public Class frmMain
             Catch ex2 As Exception
             End Try
 
-            If cbChartItemUS.Items.Count > 0 Then Return
+            cbChartItemEurope.Items.Clear()
+            Dim myEUTypes() As cDisplayInfo.enWorldValueType = System.Enum.GetValues(GetType(cDisplayInfo.enWorldValueType))
+            For iCounter As Integer = 0 To myEUTypes.Length - 1
+                cbChartItemEurope.Items.Add(myEUTypes(iCounter).ToString)
+            Next
+            Try
+                cbChartItemEurope.SelectedIndex = cDisplayInfo.enWorldValueType.Deaths
+            Catch ex2 As Exception
+            End Try
+
+
             cbChartItemUS.Items.Clear()
             Dim myUSTypes() As cDisplayInfo.enWorldValueType = System.Enum.GetValues(GetType(cDisplayInfo.enWorldValueType))
             For iCounter As Integer = 0 To myUSTypes.Length - 1
@@ -364,6 +391,7 @@ Public Class frmMain
             If myDisplayInfo.ShowITA Then
                 pnlUS.Visible = False
                 pnlWorld.Visible = False
+                pnlEurope.Visible = False
                 pnlIta.Visible = True
                 If Not pnlLeft.Controls.Contains(pnlIta) Then
                     pnlLeft.Controls.Add(pnlIta)
@@ -397,6 +425,7 @@ Public Class frmMain
             ElseIf myDisplayInfo.ShowWorld Then
                 pnlIta.Visible = False
                 pnlUS.Visible = False
+                pnlEurope.Visible = False
                 pnlWorld.Visible = True
                 mnMainItem.Text = mnWorld.Text
                 mnMainItem.Image = mnWorld.Image
@@ -406,9 +435,23 @@ Public Class frmMain
                     pnlWorld.Dock = DockStyle.Fill
                     pnlWorld.BringToFront()
                 End If
+            ElseIf myDisplayInfo.ShowEurope Then
+                pnlIta.Visible = False
+                pnlUS.Visible = False
+                pnlWorld.Visible = False
+                pnlEurope.Visible = True
+                mnMainItem.Text = mnEurope.Text
+                mnMainItem.Image = mnEurope.Image
+                labLastUpdateInfo.Text = "Last update:" + vbCrLf + europeanRecords.LastDate.ToLongDateString
+                If Not pnlLeft.Controls.Contains(pnlEurope) Then
+                    pnlLeft.Controls.Add(pnlEurope)
+                    pnlEurope.Dock = DockStyle.Fill
+                    pnlEurope.BringToFront()
+                End If
             ElseIf myDisplayInfo.ShowUS Then
                 pnlIta.Visible = False
                 pnlWorld.Visible = False
+                pnlEurope.Visible = False
                 pnlUS.Visible = True
                 mnMainItem.Text = mnUS.Text
                 mnMainItem.Image = mnUS.Image
@@ -428,6 +471,13 @@ Public Class frmMain
             If lstRegions.SelectedItems.Count > 0 Then
                 For iCounter As Integer = 0 To lstRegions.SelectedItems.Count - 1
                     myDisplayInfo.ActiveWorldRegions.Add(lstRegions.SelectedItems(iCounter))
+                Next
+            End If
+
+            myDisplayInfo.ActiveEURegions.Clear()
+            If lstRegionsEurope.SelectedItems.Count > 0 Then
+                For iCounter As Integer = 0 To lstRegionsEurope.SelectedItems.Count - 1
+                    myDisplayInfo.ActiveEURegions.Add(lstRegionsEurope.SelectedItems(iCounter))
                 Next
             End If
 
@@ -455,6 +505,15 @@ Public Class frmMain
             If myDisplayInfo.ShowWorld Then
                 btShowMap.Enabled = True
                 If myDisplayInfo.ActiveWorldRegions.Count = 1 Then
+                    btDateShiftLeft.Visible = False
+                    btDateShiftRight.Visible = False
+                Else
+                    btDateShiftLeft.Visible = True
+                    btDateShiftRight.Visible = True
+                End If
+            ElseIf myDisplayInfo.ShowEurope Then
+                btShowMap.Enabled = True
+                If myDisplayInfo.ActiveEURegions.Count = 1 Then
                     btDateShiftLeft.Visible = False
                     btDateShiftRight.Visible = False
                 Else
@@ -498,7 +557,7 @@ Public Class frmMain
                     cbChartItemITA.Enabled = True
             End Select
 
-            If myDisplayInfo.ShowWorld Then
+            If myDisplayInfo.ShowWorld Or myDisplayInfo.ShowEurope Then
                 chkNormalize.Enabled = True
                 NormalizeToPopulation = chkNormalize.Checked
             ElseIf myDisplayInfo.ShowUS Then
@@ -520,6 +579,12 @@ Public Class frmMain
 
             If myDisplayInfo.ShowWorld Then
                 If myDisplayInfo.ActiveWorldRegions.Count = 1 Then
+                    EnableEstimateSection((Not myDisplayInfo.DailyIncrements) AndAlso (Not NormalizeToPopulation))
+                Else
+                    EnableEstimateSection(False)
+                End If
+            ElseIf myDisplayInfo.ShowEurope Then
+                If myDisplayInfo.ActiveEURegions.Count = 1 Then
                     EnableEstimateSection((Not myDisplayInfo.DailyIncrements) AndAlso (Not NormalizeToPopulation))
                 Else
                     EnableEstimateSection(False)
@@ -546,7 +611,7 @@ Public Class frmMain
     Private Sub UpdateAndRefresh(ByVal showEstimate As Boolean)
         Try
             UpdateDisplayInfo(showEstimate)
-            RefreshVisualization(Chart1, italianRecords, italianRegionRecords, italianProvincesRecords, worldRecords, USRecords, myDisplayInfo)
+            RefreshVisualization(Chart1, italianRecords, italianRegionRecords, italianProvincesRecords, worldRecords, USRecords, europeanRecords, myDisplayInfo)
 
             Dim distErr As Double = 0
             Dim NormalDistribution As New cNormalDist
@@ -566,6 +631,8 @@ Public Class frmMain
                     End Select
                 ElseIf myDisplayInfo.ShowWorld Then
                     distErr = NormalDistribution.EstimateDiffFromValues(GetPlotPointsWorldRegionFirst(worldRecords, myDisplayInfo))
+                ElseIf myDisplayInfo.ShowEurope Then
+                    distErr = NormalDistribution.EstimateDiffFromValues(GetPlotPointsEURegionFirst(europeanRecords, myDisplayInfo))
                 ElseIf myDisplayInfo.ShowUS Then
                     distErr = NormalDistribution.EstimateDiffFromValues(GetPlotPointsUSRegionFirst(USRecords, myDisplayInfo))
                 End If
@@ -577,11 +644,13 @@ Public Class frmMain
             MsgBox(ex.Message)
         End Try
     End Sub
-    Private Sub cbChartItem_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbChartItemITA.SelectedIndexChanged, cbChartItemWorld.SelectedIndexChanged, cbChartItemUS.SelectedIndexChanged
+    Private Sub cbChartItem_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbChartItemITA.SelectedIndexChanged, cbChartItemWorld.SelectedIndexChanged, cbChartItemUS.SelectedIndexChanged, cbChartItemEurope.SelectedIndexChanged
         If sender Is cbChartItemWorld Then
             myDisplayInfo.ActiveWorldData = cbChartItemWorld.SelectedIndex
         ElseIf sender Is cbChartItemUS Then
             myDisplayInfo.ActiveUSData = cbChartItemUS.SelectedIndex
+        ElseIf sender Is cbChartItemEurope Then
+            myDisplayInfo.ActiveEUData = cbChartItemEurope.SelectedIndex
         ElseIf sender Is cbChartItemITA Then
             myDisplayInfo.ActiveItalianData = cbChartItemITA.SelectedIndex
         End If
@@ -662,6 +731,8 @@ Public Class frmMain
             Application.DoEvents()
             If myDisplayInfo.ShowWorld Then
                 NormalDistribution.FindBestEstimate(GetPlotPointsWorldRegionFirst(worldRecords, myDisplayInfo), AddressOf AddInfoText)
+            ElseIf myDisplayInfo.ShowEurope Then
+                NormalDistribution.FindBestEstimate(GetPlotPointsEURegionFirst(europeanRecords, myDisplayInfo), AddressOf AddInfoText)
             ElseIf myDisplayInfo.ShowITA Then
                 Select Case myDisplayInfo.ActiveArea
                     Case cDisplayInfo.enActiveArea.ITA
@@ -702,7 +773,18 @@ Public Class frmMain
                         UpdateAndRefresh(False)
                     End If
                 End If
-            ElseIf myDisplayInfo.Showus Then
+            ElseIf myDisplayInfo.ShowEurope Then
+                If lstRegionsEurope.SelectedIndices.Count > 1 Then
+                    If daysShift <> 0 Then
+                        'First one will not be affected
+                        For lCounter As Integer = 1 To lstRegionsEurope.SelectedIndices.Count - 1
+                            europeanRecords.ShiftDays(myDisplayInfo.ActiveEUData, lstRegionsEurope.Items(lstRegionsEurope.SelectedIndices(lCounter)), daysShift)
+                        Next
+                        UpdateAndRefresh(False)
+                    End If
+                End If
+
+            ElseIf myDisplayInfo.ShowUS Then
                 If lstRegionsUS.SelectedIndices.Count > 1 Then
                     If daysShift <> 0 Then
                         'First one will not be affected
@@ -745,7 +827,7 @@ Public Class frmMain
     End Sub
     Private Sub picMap_Click(sender As Object, e As EventArgs) Handles btShowMap.Click
         Try
-            BuildHeatMap(worldRecords, USRecords, italianRegionRecords, myDisplayInfo)
+            BuildHeatMap(worldRecords, USRecords, italianRegionRecords, europeanRecords, myDisplayInfo)
         Catch ex As Exception
             MsgBox(ex.Message)
         End Try
@@ -774,6 +856,10 @@ Public Class frmMain
     Private Sub cbITAResolution_SelectedIndexChanged(sender As Object, e As EventArgs)
         UpdateAndRefresh(False)
     End Sub
+    Private Sub mnEurope_Click(sender As Object, e As EventArgs) Handles mnEurope.Click
+        myDisplayInfo.ActiveArea = cDisplayInfo.enActiveArea.Europe
+        UpdateAndRefresh(False)
+    End Sub
     Private Sub mnITAFull_Click(sender As Object, e As EventArgs) Handles mnITAFull.Click
         myDisplayInfo.ActiveArea = cDisplayInfo.enActiveArea.ITA
         UpdateAndRefresh(False)
@@ -795,6 +881,13 @@ Public Class frmMain
         UpdateAndRefresh(False)
     End Sub
     Private Sub lstRegionsUS_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstRegionsUS.SelectedIndexChanged
+        UpdateAndRefresh(False)
+    End Sub
+
+    Private Sub cbChartType_SelectedIndexChanged(sender As Object, e As EventArgs)
+        UpdateAndRefresh(False)
+    End Sub
+    Private Sub lstRegionsEurope_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstRegionsEurope.SelectedIndexChanged
         UpdateAndRefresh(False)
     End Sub
 End Class

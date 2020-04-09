@@ -23,9 +23,9 @@ Partial Class frmMain
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea3 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend3 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series3 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.cbChartItemITA = New System.Windows.Forms.ComboBox()
@@ -47,6 +47,7 @@ Partial Class frmMain
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.btEstimate = New System.Windows.Forms.Button()
         Me.pnlLeft = New System.Windows.Forms.Panel()
+        Me.pnlLineSpacer = New System.Windows.Forms.Panel()
         Me.pnlLine = New System.Windows.Forms.Panel()
         Me.pnlIta = New System.Windows.Forms.Panel()
         Me.labSelectionHintITA = New System.Windows.Forms.Label()
@@ -55,13 +56,15 @@ Partial Class frmMain
         Me.mnMain = New System.Windows.Forms.MenuStrip()
         Me.mnMainItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnWorld = New System.Windows.Forms.ToolStripMenuItem()
+        Me.mnEurope = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
+        Me.mnUS = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
+        Me.mnUK = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripMenuItem3 = New System.Windows.Forms.ToolStripSeparator()
         Me.mnITAFull = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnITARegions = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnITAProvinces = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
-        Me.mnUS = New System.Windows.Forms.ToolStripMenuItem()
-        Me.mnUK = New System.Windows.Forms.ToolStripMenuItem()
         Me.btShowMap = New System.Windows.Forms.Button()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.chkNormalize = New System.Windows.Forms.CheckBox()
@@ -69,6 +72,10 @@ Partial Class frmMain
         Me.btDateShiftLeft = New System.Windows.Forms.Button()
         Me.btDateShiftRight = New System.Windows.Forms.Button()
         Me.pnlInvisible = New System.Windows.Forms.Panel()
+        Me.pnlEurope = New System.Windows.Forms.Panel()
+        Me.lstRegionsEurope = New System.Windows.Forms.ListBox()
+        Me.cbChartItemEurope = New System.Windows.Forms.ComboBox()
+        Me.labSelectionHintEurope = New System.Windows.Forms.Label()
         Me.pnlUS = New System.Windows.Forms.Panel()
         Me.lstRegionsUS = New System.Windows.Forms.ListBox()
         Me.cbChartItemUS = New System.Windows.Forms.ComboBox()
@@ -87,25 +94,26 @@ Partial Class frmMain
         Me.Panel1.SuspendLayout()
         Me.pnlTop.SuspendLayout()
         Me.pnlInvisible.SuspendLayout()
+        Me.pnlEurope.SuspendLayout()
         Me.pnlUS.SuspendLayout()
         Me.pnlWorld.SuspendLayout()
         Me.SuspendLayout()
         '
         'Chart1
         '
-        ChartArea1.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea1)
+        ChartArea3.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea3)
         Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
-        Legend1.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend1)
-        Me.Chart1.Location = New System.Drawing.Point(225, 54)
+        Legend3.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend3)
+        Me.Chart1.Location = New System.Drawing.Point(225, 48)
         Me.Chart1.Margin = New System.Windows.Forms.Padding(0)
         Me.Chart1.Name = "Chart1"
-        Series1.ChartArea = "ChartArea1"
-        Series1.Legend = "Legend1"
-        Series1.Name = "Series1"
-        Me.Chart1.Series.Add(Series1)
-        Me.Chart1.Size = New System.Drawing.Size(949, 658)
+        Series3.ChartArea = "ChartArea1"
+        Series3.Legend = "Legend1"
+        Series3.Name = "Series1"
+        Me.Chart1.Series.Add(Series3)
+        Me.Chart1.Size = New System.Drawing.Size(910, 651)
         Me.Chart1.TabIndex = 9
         Me.Chart1.Text = "Chart1"
         '
@@ -130,7 +138,7 @@ Partial Class frmMain
         Me.lstItaRegions.Location = New System.Drawing.Point(2, 30)
         Me.lstItaRegions.Name = "lstItaRegions"
         Me.lstItaRegions.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-        Me.lstItaRegions.Size = New System.Drawing.Size(221, 477)
+        Me.lstItaRegions.Size = New System.Drawing.Size(221, 464)
         Me.lstItaRegions.TabIndex = 30
         Me.lstItaRegions.Visible = False
         '
@@ -143,7 +151,7 @@ Partial Class frmMain
         Me.lstItaProvinces.Location = New System.Drawing.Point(2, 30)
         Me.lstItaProvinces.Name = "lstItaProvinces"
         Me.lstItaProvinces.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-        Me.lstItaProvinces.Size = New System.Drawing.Size(221, 477)
+        Me.lstItaProvinces.Size = New System.Drawing.Size(221, 464)
         Me.lstItaProvinces.TabIndex = 34
         Me.lstItaProvinces.Visible = False
         '
@@ -194,7 +202,7 @@ Partial Class frmMain
         '
         Me.chkDaily.BackColor = System.Drawing.Color.Transparent
         Me.chkDaily.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.chkDaily.Location = New System.Drawing.Point(61, 4)
+        Me.chkDaily.Location = New System.Drawing.Point(61, 3)
         Me.chkDaily.Margin = New System.Windows.Forms.Padding(0)
         Me.chkDaily.Name = "chkDaily"
         Me.chkDaily.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
@@ -314,6 +322,7 @@ Partial Class frmMain
         'pnlLeft
         '
         Me.pnlLeft.BackColor = System.Drawing.SystemColors.Window
+        Me.pnlLeft.Controls.Add(Me.pnlLineSpacer)
         Me.pnlLeft.Controls.Add(Me.pnlLine)
         Me.pnlLeft.Controls.Add(Me.pnlIta)
         Me.pnlLeft.Controls.Add(Me.pnlUpdate)
@@ -322,18 +331,29 @@ Partial Class frmMain
         Me.pnlLeft.Location = New System.Drawing.Point(0, 0)
         Me.pnlLeft.Margin = New System.Windows.Forms.Padding(0)
         Me.pnlLeft.Name = "pnlLeft"
-        Me.pnlLeft.Size = New System.Drawing.Size(225, 712)
+        Me.pnlLeft.Size = New System.Drawing.Size(225, 699)
         Me.pnlLeft.TabIndex = 33
+        '
+        'pnlLineSpacer
+        '
+        Me.pnlLineSpacer.Dock = System.Windows.Forms.DockStyle.Right
+        Me.pnlLineSpacer.Location = New System.Drawing.Point(220, 48)
+        Me.pnlLineSpacer.Margin = New System.Windows.Forms.Padding(6)
+        Me.pnlLineSpacer.Name = "pnlLineSpacer"
+        Me.pnlLineSpacer.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.pnlLineSpacer.Size = New System.Drawing.Size(4, 536)
+        Me.pnlLineSpacer.TabIndex = 43
         '
         'pnlLine
         '
         Me.pnlLine.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.pnlLine.Dock = System.Windows.Forms.DockStyle.Right
+        Me.pnlLine.ForeColor = System.Drawing.SystemColors.Window
         Me.pnlLine.Location = New System.Drawing.Point(224, 48)
         Me.pnlLine.Margin = New System.Windows.Forms.Padding(6)
         Me.pnlLine.Name = "pnlLine"
         Me.pnlLine.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.pnlLine.Size = New System.Drawing.Size(1, 549)
+        Me.pnlLine.Size = New System.Drawing.Size(1, 536)
         Me.pnlLine.TabIndex = 42
         '
         'pnlIta
@@ -346,14 +366,14 @@ Partial Class frmMain
         Me.pnlIta.Location = New System.Drawing.Point(0, 48)
         Me.pnlIta.Name = "pnlIta"
         Me.pnlIta.Padding = New System.Windows.Forms.Padding(2)
-        Me.pnlIta.Size = New System.Drawing.Size(225, 549)
+        Me.pnlIta.Size = New System.Drawing.Size(225, 536)
         Me.pnlIta.TabIndex = 12
         '
         'labSelectionHintITA
         '
         Me.labSelectionHintITA.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.labSelectionHintITA.ForeColor = System.Drawing.SystemColors.Highlight
-        Me.labSelectionHintITA.Location = New System.Drawing.Point(2, 507)
+        Me.labSelectionHintITA.Location = New System.Drawing.Point(2, 494)
         Me.labSelectionHintITA.Name = "labSelectionHintITA"
         Me.labSelectionHintITA.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.labSelectionHintITA.Size = New System.Drawing.Size(221, 40)
@@ -366,7 +386,7 @@ Partial Class frmMain
         Me.pnlUpdate.Controls.Add(Me.btCheck4Updates)
         Me.pnlUpdate.Controls.Add(Me.labLastUpdateInfo)
         Me.pnlUpdate.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlUpdate.Location = New System.Drawing.Point(0, 597)
+        Me.pnlUpdate.Location = New System.Drawing.Point(0, 584)
         Me.pnlUpdate.Name = "pnlUpdate"
         Me.pnlUpdate.Size = New System.Drawing.Size(225, 115)
         Me.pnlUpdate.TabIndex = 40
@@ -384,6 +404,7 @@ Partial Class frmMain
         '
         'mnMain
         '
+        Me.mnMain.BackgroundImage = CType(resources.GetObject("mnMain.BackgroundImage"), System.Drawing.Image)
         Me.mnMain.Font = New System.Drawing.Font("Segoe UI", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.mnMain.ImageScalingSize = New System.Drawing.Size(34, 34)
         Me.mnMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnMainItem})
@@ -397,7 +418,7 @@ Partial Class frmMain
         '
         'mnMainItem
         '
-        Me.mnMainItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnWorld, Me.ToolStripMenuItem1, Me.mnITAFull, Me.mnITARegions, Me.mnITAProvinces, Me.ToolStripMenuItem2, Me.mnUS, Me.mnUK})
+        Me.mnMainItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnWorld, Me.mnEurope, Me.ToolStripMenuItem1, Me.mnUS, Me.ToolStripMenuItem2, Me.mnUK, Me.ToolStripMenuItem3, Me.mnITAFull, Me.mnITARegions, Me.mnITAProvinces})
         Me.mnMainItem.Image = CType(resources.GetObject("mnMainItem.Image"), System.Drawing.Image)
         Me.mnMainItem.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.mnMainItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
@@ -413,10 +434,45 @@ Partial Class frmMain
         Me.mnWorld.Size = New System.Drawing.Size(256, 38)
         Me.mnWorld.Text = "World"
         '
+        'mnEurope
+        '
+        Me.mnEurope.Image = CType(resources.GetObject("mnEurope.Image"), System.Drawing.Image)
+        Me.mnEurope.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.mnEurope.Name = "mnEurope"
+        Me.mnEurope.Size = New System.Drawing.Size(256, 38)
+        Me.mnEurope.Text = "Europe"
+        '
         'ToolStripMenuItem1
         '
         Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
         Me.ToolStripMenuItem1.Size = New System.Drawing.Size(253, 6)
+        '
+        'mnUS
+        '
+        Me.mnUS.Image = CType(resources.GetObject("mnUS.Image"), System.Drawing.Image)
+        Me.mnUS.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.mnUS.Name = "mnUS"
+        Me.mnUS.Size = New System.Drawing.Size(256, 38)
+        Me.mnUS.Text = "US"
+        '
+        'ToolStripMenuItem2
+        '
+        Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
+        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(253, 6)
+        '
+        'mnUK
+        '
+        Me.mnUK.Enabled = False
+        Me.mnUK.Image = CType(resources.GetObject("mnUK.Image"), System.Drawing.Image)
+        Me.mnUK.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.mnUK.Name = "mnUK"
+        Me.mnUK.Size = New System.Drawing.Size(256, 38)
+        Me.mnUK.Text = "UK"
+        '
+        'ToolStripMenuItem3
+        '
+        Me.ToolStripMenuItem3.Name = "ToolStripMenuItem3"
+        Me.ToolStripMenuItem3.Size = New System.Drawing.Size(253, 6)
         '
         'mnITAFull
         '
@@ -442,34 +498,11 @@ Partial Class frmMain
         Me.mnITAProvinces.Size = New System.Drawing.Size(256, 38)
         Me.mnITAProvinces.Text = "Italy - Provinces"
         '
-        'ToolStripMenuItem2
-        '
-        Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
-        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(253, 6)
-        '
-        'mnUS
-        '
-        Me.mnUS.Image = CType(resources.GetObject("mnUS.Image"), System.Drawing.Image)
-        Me.mnUS.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
-        Me.mnUS.Name = "mnUS"
-        Me.mnUS.Size = New System.Drawing.Size(256, 38)
-        Me.mnUS.Text = "US"
-        '
-        'mnUK
-        '
-        Me.mnUK.Enabled = False
-        Me.mnUK.Image = CType(resources.GetObject("mnUK.Image"), System.Drawing.Image)
-        Me.mnUK.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
-        Me.mnUK.Name = "mnUK"
-        Me.mnUK.Size = New System.Drawing.Size(256, 38)
-        Me.mnUK.Text = "UK"
-        Me.mnUK.Visible = False
-        '
         'btShowMap
         '
         Me.btShowMap.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btShowMap.Image = CType(resources.GetObject("btShowMap.Image"), System.Drawing.Image)
-        Me.btShowMap.Location = New System.Drawing.Point(1071, 631)
+        Me.btShowMap.Location = New System.Drawing.Point(1032, 618)
         Me.btShowMap.Name = "btShowMap"
         Me.btShowMap.Size = New System.Drawing.Size(98, 77)
         Me.btShowMap.TabIndex = 38
@@ -489,9 +522,9 @@ Partial Class frmMain
         Me.Panel1.Controls.Add(Me.Label2)
         Me.Panel1.Controls.Add(Me.Label1)
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Right
-        Me.Panel1.Location = New System.Drawing.Point(616, 0)
+        Me.Panel1.Location = New System.Drawing.Point(577, 0)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(333, 54)
+        Me.Panel1.Size = New System.Drawing.Size(333, 48)
         Me.Panel1.TabIndex = 37
         Me.Panel1.Visible = False
         '
@@ -499,11 +532,11 @@ Partial Class frmMain
         '
         Me.chkNormalize.BackColor = System.Drawing.Color.Transparent
         Me.chkNormalize.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.chkNormalize.Location = New System.Drawing.Point(61, 27)
+        Me.chkNormalize.Location = New System.Drawing.Point(61, 24)
         Me.chkNormalize.Margin = New System.Windows.Forms.Padding(0)
         Me.chkNormalize.Name = "chkNormalize"
         Me.chkNormalize.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.chkNormalize.Size = New System.Drawing.Size(203, 26)
+        Me.chkNormalize.Size = New System.Drawing.Size(203, 23)
         Me.chkNormalize.TabIndex = 40
         Me.chkNormalize.Text = "Values per 10 000 people"
         Me.chkNormalize.UseVisualStyleBackColor = False
@@ -517,14 +550,14 @@ Partial Class frmMain
         Me.pnlTop.Location = New System.Drawing.Point(225, 0)
         Me.pnlTop.Margin = New System.Windows.Forms.Padding(0)
         Me.pnlTop.Name = "pnlTop"
-        Me.pnlTop.Size = New System.Drawing.Size(949, 54)
+        Me.pnlTop.Size = New System.Drawing.Size(910, 48)
         Me.pnlTop.TabIndex = 36
         '
         'btDateShiftLeft
         '
         Me.btDateShiftLeft.Anchor = System.Windows.Forms.AnchorStyles.Bottom
         Me.btDateShiftLeft.Image = CType(resources.GetObject("btDateShiftLeft.Image"), System.Drawing.Image)
-        Me.btDateShiftLeft.Location = New System.Drawing.Point(580, 683)
+        Me.btDateShiftLeft.Location = New System.Drawing.Point(560, 670)
         Me.btDateShiftLeft.Name = "btDateShiftLeft"
         Me.btDateShiftLeft.Size = New System.Drawing.Size(103, 25)
         Me.btDateShiftLeft.TabIndex = 41
@@ -537,7 +570,7 @@ Partial Class frmMain
         '
         Me.btDateShiftRight.Anchor = System.Windows.Forms.AnchorStyles.Bottom
         Me.btDateShiftRight.Image = CType(resources.GetObject("btDateShiftRight.Image"), System.Drawing.Image)
-        Me.btDateShiftRight.Location = New System.Drawing.Point(689, 683)
+        Me.btDateShiftRight.Location = New System.Drawing.Point(669, 670)
         Me.btDateShiftRight.Name = "btDateShiftRight"
         Me.btDateShiftRight.Size = New System.Drawing.Size(103, 25)
         Me.btDateShiftRight.TabIndex = 42
@@ -550,20 +583,68 @@ Partial Class frmMain
         '
         Me.pnlInvisible.BackColor = System.Drawing.Color.WhiteSmoke
         Me.pnlInvisible.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.pnlInvisible.Controls.Add(Me.pnlEurope)
         Me.pnlInvisible.Controls.Add(Me.pnlUS)
         Me.pnlInvisible.Controls.Add(Me.pnlWorld)
-        Me.pnlInvisible.Location = New System.Drawing.Point(319, 110)
+        Me.pnlInvisible.Location = New System.Drawing.Point(324, 96)
         Me.pnlInvisible.Name = "pnlInvisible"
-        Me.pnlInvisible.Size = New System.Drawing.Size(685, 534)
+        Me.pnlInvisible.Size = New System.Drawing.Size(763, 501)
         Me.pnlInvisible.TabIndex = 43
         Me.pnlInvisible.Visible = False
+        '
+        'pnlEurope
+        '
+        Me.pnlEurope.Controls.Add(Me.lstRegionsEurope)
+        Me.pnlEurope.Controls.Add(Me.cbChartItemEurope)
+        Me.pnlEurope.Controls.Add(Me.labSelectionHintEurope)
+        Me.pnlEurope.Location = New System.Drawing.Point(482, 12)
+        Me.pnlEurope.Name = "pnlEurope"
+        Me.pnlEurope.Padding = New System.Windows.Forms.Padding(2)
+        Me.pnlEurope.Size = New System.Drawing.Size(227, 475)
+        Me.pnlEurope.TabIndex = 15
+        '
+        'lstRegionsEurope
+        '
+        Me.lstRegionsEurope.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstRegionsEurope.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lstRegionsEurope.ForeColor = System.Drawing.SystemColors.WindowText
+        Me.lstRegionsEurope.FormattingEnabled = True
+        Me.lstRegionsEurope.ItemHeight = 17
+        Me.lstRegionsEurope.Location = New System.Drawing.Point(2, 30)
+        Me.lstRegionsEurope.Name = "lstRegionsEurope"
+        Me.lstRegionsEurope.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
+        Me.lstRegionsEurope.Size = New System.Drawing.Size(223, 403)
+        Me.lstRegionsEurope.TabIndex = 20
+        '
+        'cbChartItemEurope
+        '
+        Me.cbChartItemEurope.Dock = System.Windows.Forms.DockStyle.Top
+        Me.cbChartItemEurope.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cbChartItemEurope.Font = New System.Drawing.Font("Segoe UI", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cbChartItemEurope.FormattingEnabled = True
+        Me.cbChartItemEurope.Location = New System.Drawing.Point(2, 2)
+        Me.cbChartItemEurope.Name = "cbChartItemEurope"
+        Me.cbChartItemEurope.Size = New System.Drawing.Size(223, 28)
+        Me.cbChartItemEurope.TabIndex = 19
+        '
+        'labSelectionHintEurope
+        '
+        Me.labSelectionHintEurope.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.labSelectionHintEurope.ForeColor = System.Drawing.SystemColors.Highlight
+        Me.labSelectionHintEurope.Location = New System.Drawing.Point(2, 433)
+        Me.labSelectionHintEurope.Name = "labSelectionHintEurope"
+        Me.labSelectionHintEurope.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.labSelectionHintEurope.Size = New System.Drawing.Size(223, 40)
+        Me.labSelectionHintEurope.TabIndex = 36
+        Me.labSelectionHintEurope.Text = "Hold <Ctrl> or <Shift> for multiple selection"
+        Me.labSelectionHintEurope.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'pnlUS
         '
         Me.pnlUS.Controls.Add(Me.lstRegionsUS)
         Me.pnlUS.Controls.Add(Me.cbChartItemUS)
         Me.pnlUS.Controls.Add(Me.labSelectionHintUS)
-        Me.pnlUS.Location = New System.Drawing.Point(482, 14)
+        Me.pnlUS.Location = New System.Drawing.Point(247, 13)
         Me.pnlUS.Name = "pnlUS"
         Me.pnlUS.Padding = New System.Windows.Forms.Padding(2)
         Me.pnlUS.Size = New System.Drawing.Size(227, 475)
@@ -636,7 +717,7 @@ Partial Class frmMain
         Me.labSnapshot.Font = New System.Drawing.Font("Segoe UI", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.labSnapshot.Location = New System.Drawing.Point(0, 0)
         Me.labSnapshot.Name = "labSnapshot"
-        Me.labSnapshot.Size = New System.Drawing.Size(1174, 712)
+        Me.labSnapshot.Size = New System.Drawing.Size(1135, 699)
         Me.labSnapshot.TabIndex = 44
         Me.labSnapshot.Text = "Application starting, please wait ..."
         Me.labSnapshot.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -645,7 +726,8 @@ Partial Class frmMain
         '
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.BackColor = System.Drawing.SystemColors.Window
-        Me.ClientSize = New System.Drawing.Size(1174, 712)
+        Me.ClientSize = New System.Drawing.Size(1135, 699)
+        Me.Controls.Add(Me.labSnapshot)
         Me.Controls.Add(Me.pnlInvisible)
         Me.Controls.Add(Me.btDateShiftRight)
         Me.Controls.Add(Me.btDateShiftLeft)
@@ -653,7 +735,6 @@ Partial Class frmMain
         Me.Controls.Add(Me.Chart1)
         Me.Controls.Add(Me.pnlTop)
         Me.Controls.Add(Me.pnlLeft)
-        Me.Controls.Add(Me.labSnapshot)
         Me.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.KeyPreview = True
@@ -674,6 +755,7 @@ Partial Class frmMain
         Me.Panel1.ResumeLayout(False)
         Me.pnlTop.ResumeLayout(False)
         Me.pnlInvisible.ResumeLayout(False)
+        Me.pnlEurope.ResumeLayout(False)
         Me.pnlUS.ResumeLayout(False)
         Me.pnlWorld.ResumeLayout(False)
         Me.ResumeLayout(False)
@@ -728,4 +810,11 @@ Partial Class frmMain
     Friend WithEvents cbChartItemUS As ComboBox
     Friend WithEvents labSelectionHintUS As Label
     Friend WithEvents labSnapshot As Label
+    Friend WithEvents pnlLineSpacer As Panel
+    Friend WithEvents mnEurope As ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem3 As ToolStripSeparator
+    Friend WithEvents pnlEurope As Panel
+    Friend WithEvents lstRegionsEurope As ListBox
+    Friend WithEvents cbChartItemEurope As ComboBox
+    Friend WithEvents labSelectionHintEurope As Label
 End Class
