@@ -159,14 +159,6 @@ Public Class cITAProvincesRecords
         Dim retVal As New List(Of cDailyValue)
         Dim targetList As List(Of cCountryValues) = GetCountryValuesFromType(valueType)
 
-        Dim pop As Double = 1
-        If NormalizeToPopulation Then
-            pop = Population.GetITAProvincePopulation(region.Province_State) / 10000.0
-            If pop = 0 Then
-                pop = 1
-            End If
-        End If
-
         If targetList IsNot Nothing Then
             For iCounter As Integer = 0 To targetList.Count - 1
                 If targetList(iCounter).IsRegionLike(region) Then
@@ -175,7 +167,7 @@ Public Class cITAProvincesRecords
                         If (targetList(iCounter).DailyValues(dCounter).RecordValue > 0) Or collectionStarted Then
                             collectionStarted = True
                             Dim tmpVal As New cDailyValue(targetList(iCounter).DailyValues(dCounter))
-                            tmpVal.RecordValue = tmpVal.RecordValue / pop
+                            tmpVal.RecordValue = tmpVal.RecordValue
                             retVal.Add(tmpVal)
                         End If
                     Next
@@ -202,6 +194,23 @@ Public Class cITAProvincesRecords
         Catch ex As Exception
             MsgBox(ex.Message)
         End Try
+    End Sub
+    Public Sub SetValuesAsPopulationPercentage()
+        'If population is not available, the record is removed
+        For iCounter As Integer = totale_casi.Count - 1 To 0 Step -1
+            Dim pop As Double = 1
+            pop = Population.GetITAProvincePopulation(totale_casi(iCounter).Province_State) / 10000.0
+            If pop = 0 Then
+                Me.totale_casi.RemoveAt(iCounter)
+            Else
+                For dCounter As Integer = 0 To Me.totale_casi(iCounter).DailyValues.Count - 1
+                    Me.totale_casi(iCounter).DailyValues(dCounter).RecordValue = Me.totale_casi(iCounter).DailyValues(dCounter).RecordValue / pop
+                Next
+            End If
+        Next
+        'Reorder according to the last recorded value of each series
+        totale_casi = totale_casi.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
+        totale_casi.Reverse()
     End Sub
 
 End Class

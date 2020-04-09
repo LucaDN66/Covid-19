@@ -395,8 +395,8 @@
             Dim nullError As Double = 10
             Dim MaxStep As Double = 10
 
-            Dim expectedAbsoluteMin As Integer = dataSeries(dataSeries.Count - 1).Item2 'Already achieved
-            Dim expectedAbsoluteMax As Integer = dataSeries(dataSeries.Count - 1).Item2 * 20
+            Dim expectedAbsoluteMin As Double = dataSeries(dataSeries.Count - 1).Item2 'Already achieved
+            Dim expectedAbsoluteMax As Double = dataSeries(dataSeries.Count - 1).Item2 * 20
 
             Dim ErrPlus As Double = 0
             Dim ErrMinus As Double = 0

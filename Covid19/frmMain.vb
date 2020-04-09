@@ -191,6 +191,9 @@ Public Class frmMain
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_Ita_Filename)
                 ReplaceCommasInQuotations(infoLines)
                 italianRecords = New cITARecords(infoLines)
+                If NormalizeToPopulation Then
+                    italianRecords.SetValuesAsPopulationPercentage
+                End If
                 labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianRecords.LastDate.ToLongDateString
             End If
 
@@ -198,48 +201,56 @@ Public Class frmMain
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_ItaRegions_Filename)
                 ReplaceCommasInQuotations(infoLines)
                 italianRegionRecords = New cITARegionsRecords(infoLines)
+                If NormalizeToPopulation Then
+                    italianRegionRecords.SetValuesAsPopulationPercentage()
+                End If
             End If
 
             If System.IO.File.Exists(Csv_ItaProvinces_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_ItaProvinces_Filename)
                 ReplaceCommasInQuotations(infoLines)
                 italianProvincesRecords = New cITAProvincesRecords(infoLines)
+                If NormalizeToPopulation Then
+                    italianProvincesRecords.SetValuesAsPopulationPercentage()
+                End If
             End If
 
             If System.IO.File.Exists(Csv_World_Confirmed_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_World_Confirmed_Filename)
                 ReplaceCommasInQuotations(infoLines)
-                worldRecords.SetConfirmed(infoLines)
+                worldRecords.SetConfirmed(infoLines, cWorldRecords.enRecordsVariant.World)
             End If
-
             If System.IO.File.Exists(Csv_World_Deaths_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_World_Deaths_Filename)
                 ReplaceCommasInQuotations(infoLines)
-                worldRecords.SetDeaths(infoLines)
+                worldRecords.SetDeaths(infoLines, cWorldRecords.enRecordsVariant.World)
             End If
-
             If System.IO.File.Exists(Csv_World_Recovered_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_World_Recovered_Filename)
                 ReplaceCommasInQuotations(infoLines)
-                worldRecords.SetRecovered(infoLines)
+                worldRecords.SetRecovered(infoLines, cWorldRecords.enRecordsVariant.World)
             End If
-
+            If NormalizeToPopulation Then
+                worldRecords.SetValuesAsPopulationPercentage()
+            End If
 
             europeanRecords = worldRecords.Clone
             europeanRecords.RemoveNonEuropeanEntries()
+            'Already normalized if needed, as they've been cloned after the normalization
 
             If System.IO.File.Exists(Csv_US_Confirmed_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_US_Confirmed_Filename)
                 ReplaceCommasInQuotations(infoLines)
-                USRecords.SetConfirmed(infoLines)
+                USRecords.SetConfirmed(infoLines, cWorldRecords.enRecordsVariant.USCities)
             End If
-
             If System.IO.File.Exists(Csv_US_Deaths_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_US_Deaths_Filename)
                 ReplaceCommasInQuotations(infoLines)
-                USRecords.SetDeaths(infoLines)
+                USRecords.SetDeaths(infoLines, cWorldRecords.enRecordsVariant.USCities)
             End If
-
+            If NormalizeToPopulation Then
+                USRecords.SetValuesAsPopulationPercentage()
+            End If
 
             lstRegionsUS.SuspendLayout()
             lstRegionsUS.Items.Clear()
@@ -369,6 +380,7 @@ Public Class frmMain
             Application.DoEvents()
             Me.Refresh()
             GetLatestInfo()
+            SkipDataRefresh = False
             UpdateAndRefresh(False)
         End If
     End Sub
@@ -377,6 +389,14 @@ Public Class frmMain
         UpdateAndRefresh(False)
     End Sub
     Private Sub chkDaily_CheckedChanged(sender As Object, e As EventArgs) Handles chkDaily.CheckedChanged
+        If SkipDataRefresh Then Return
+        If chkDaily.Checked Then
+            'Force absolute values
+            SkipDataRefresh = True
+            chkNormalize.Checked = False
+            NormalizeToPopulation = False
+            SkipDataRefresh = False
+        End If
         UpdateAndRefresh(False)
     End Sub
     Private Sub EnableEstimateSection(ByVal newState As Boolean)
@@ -388,6 +408,8 @@ Public Class frmMain
     Private Sub UpdateDisplayInfo(ByVal showEstimate As Boolean)
         Try
             myDisplayInfo.ShowEstimate = showEstimate
+            NormalizeToPopulation = chkNormalize.Checked
+
             If myDisplayInfo.ShowITA Then
                 pnlUS.Visible = False
                 pnlWorld.Visible = False
@@ -557,25 +579,6 @@ Public Class frmMain
                     cbChartItemITA.Enabled = True
             End Select
 
-            If myDisplayInfo.ShowWorld Or myDisplayInfo.ShowEurope Then
-                chkNormalize.Enabled = True
-                NormalizeToPopulation = chkNormalize.Checked
-            ElseIf myDisplayInfo.ShowUS Then
-                chkNormalize.Enabled = True
-                NormalizeToPopulation = chkNormalize.Checked
-            ElseIf myDisplayInfo.ShowITA Then
-                Select Case myDisplayInfo.ActiveArea
-                    Case cDisplayInfo.enActiveArea.ITA
-                        chkNormalize.Enabled = True
-                        NormalizeToPopulation = chkNormalize.Checked
-                    Case cDisplayInfo.enActiveArea.ITA_Provinces
-                        chkNormalize.Enabled = True
-                        NormalizeToPopulation = chkNormalize.Checked
-                    Case cDisplayInfo.enActiveArea.ITA_Regions
-                        chkNormalize.Enabled = True
-                        NormalizeToPopulation = chkNormalize.Checked
-                End Select
-            End If
 
             If myDisplayInfo.ShowWorld Then
                 If myDisplayInfo.ActiveWorldRegions.Count = 1 Then
@@ -608,9 +611,11 @@ Public Class frmMain
             MsgBox(ex.Message)
         End Try
     End Sub
+    Private SkipDataRefresh As Boolean = True
     Private Sub UpdateAndRefresh(ByVal showEstimate As Boolean)
         Try
             UpdateDisplayInfo(showEstimate)
+            If SkipDataRefresh Then Return
             RefreshVisualization(Chart1, italianRecords, italianRegionRecords, italianProvincesRecords, worldRecords, USRecords, europeanRecords, myDisplayInfo)
 
             Dim distErr As Double = 0
@@ -676,9 +681,7 @@ Public Class frmMain
             MsgBox(ex.Message)
         End Try
     End Sub
-    Private Sub TabControl1_SelectedIndexChanged(sender As Object, e As EventArgs)
-        UpdateAndRefresh(False)
-    End Sub
+
     Private Sub udEstimatedMax_ValueChanged(sender As Object, e As EventArgs) Handles udEstimatedMax.ValueChanged
         UpdateAndRefresh(True)
     End Sub
@@ -847,11 +850,21 @@ Public Class frmMain
             MsgBox(ex.Message)
         End Try
     End Sub
-    Private Sub chkMovingAverage_CheckedChanged(sender As Object, e As EventArgs)
-        UpdateAndRefresh(False)
-    End Sub
     Private Sub chkNormalize_CheckedChanged(sender As Object, e As EventArgs) Handles chkNormalize.CheckedChanged
+        If SkipDataRefresh Then Return
+
+        Dim reloadNeeded As Boolean = (chkNormalize.Checked <> NormalizeToPopulation)
+        If chkNormalize.Checked Then
+            SkipDataRefresh = True
+            chkDaily.Checked = False
+            SkipDataRefresh = False
+        End If
+        NormalizeToPopulation = chkNormalize.Checked
+        If reloadNeeded Then
+            LoadInfoFromLocalFiles()
+        End If
         UpdateAndRefresh(False)
+
     End Sub
     Private Sub cbITAResolution_SelectedIndexChanged(sender As Object, e As EventArgs)
         UpdateAndRefresh(False)

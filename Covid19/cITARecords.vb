@@ -1,17 +1,17 @@
 ﻿Public Class cITARecord
     Public data As New Date(2000, 1, 1)
     Public stato As String = "ITA"
-    Public ricoverati_con_sintomi As Integer = 0
-    Public terapia_intensiva As Integer = 0
-    Public totale_ospedalizzati As Integer = 0
-    Public isolamento_domiciliare As Integer = 0
-    Public totale_positivi As Integer = 0
-    Public variazione_totale_positivi As Integer = 0
-    Public nuovi_positivi As Integer = 0
-    Public dimessi_guariti As Integer = 0
-    Public deceduti As Integer = 0
-    Public totale_casi As Integer = 0
-    Public tamponi As Integer = 0
+    Public ricoverati_con_sintomi As Double = 0
+    Public terapia_intensiva As Double = 0
+    Public totale_ospedalizzati As Double = 0
+    Public isolamento_domiciliare As Double = 0
+    Public totale_positivi As Double = 0
+    Public variazione_totale_positivi As Double = 0
+    Public nuovi_positivi As Double = 0
+    Public dimessi_guariti As Double = 0
+    Public deceduti As Double = 0
+    Public totale_casi As Double = 0
+    Public tamponi As Double = 0
     Public Sub New(ByVal csvLine As String)
         If csvLine.Length > 0 Then
             Dim lineParts() As String = csvLine.Split(",")
@@ -37,6 +37,7 @@
         End If
     End Sub
 End Class
+
 Public Class cITARecords
     Inherits Generic.List(Of cITARecord)
     Public Sub New(ByVal csvLines() As String)
@@ -69,5 +70,23 @@ Public Class cITARecords
             End If
         End Get
     End Property
+    Public Sub SetValuesAsPopulationPercentage()
+
+        Dim divider As Double = cPopulation.ITATotalPopulation / 10000.0
+
+        For iCounter As Integer = 0 To Me.Count - 1
+            Me(iCounter).ricoverati_con_sintomi = Me(iCounter).ricoverati_con_sintomi / divider
+            Me(iCounter).terapia_intensiva = Me(iCounter).terapia_intensiva / divider
+            Me(iCounter).totale_ospedalizzati = Me(iCounter).totale_ospedalizzati / divider
+            Me(iCounter).isolamento_domiciliare = Me(iCounter).isolamento_domiciliare / divider
+            Me(iCounter).totale_positivi = Me(iCounter).totale_positivi / divider
+            Me(iCounter).variazione_totale_positivi = Me(iCounter).variazione_totale_positivi / divider
+            Me(iCounter).nuovi_positivi = Me(iCounter).nuovi_positivi / divider
+            Me(iCounter).dimessi_guariti = Me(iCounter).dimessi_guariti / divider
+            Me(iCounter).deceduti = Me(iCounter).deceduti / divider
+            Me(iCounter).totale_casi = Me(iCounter).totale_casi / divider
+            Me(iCounter).tamponi = Me(iCounter).tamponi / divider
+        Next
+    End Sub
 End Class
 

@@ -176,7 +176,7 @@ Public Class cITARegionsRecords
         tamponi.Reverse()
 
     End Sub
-    Private Sub AddEntriesToTargetList(targetList As List(Of cCountryValues), ByVal region As String, ByVal entryDate As Date, ByVal entry As Integer)
+    Private Sub AddEntriesToTargetList(targetList As List(Of cCountryValues), ByVal region As String, ByVal entryDate As Date, ByVal entry As Double)
         For iCounter As Integer = 0 To targetList.Count - 1
             If targetList(iCounter).Province_State = region Then
                 targetList(iCounter).DailyValues.Add(New cDailyValue(entryDate, entry))
@@ -229,17 +229,41 @@ Public Class cITARegionsRecords
             MsgBox(ex.Message)
         End Try
     End Sub
+
+
+    Private Sub DivideValuesByPopulation(ByRef targetList As List(Of cCountryValues))
+        For iCounter As Integer = targetList.Count - 1 To 0 Step -1
+            Dim pop As Double = 1
+            pop = Population.GetITARegionPopulation(targetList(iCounter).Province_State) / 10000.0
+            If pop = 0 Then
+                targetList.RemoveAt(iCounter)
+            Else
+                For dCounter As Integer = 0 To targetList(iCounter).DailyValues.Count - 1
+                    targetList(iCounter).DailyValues(dCounter).RecordValue = targetList(iCounter).DailyValues(dCounter).RecordValue / pop
+                Next
+            End If
+        Next
+        'Reorder according to the last recorded value of each series
+        targetList = targetList.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
+        targetList.Reverse()
+    End Sub
+    Public Sub SetValuesAsPopulationPercentage()
+        DivideValuesByPopulation(ricoverati_con_sintomi)
+        DivideValuesByPopulation(terapia_intensiva)
+        DivideValuesByPopulation(totale_ospedalizzati)
+        DivideValuesByPopulation(isolamento_domiciliare)
+        DivideValuesByPopulation(totale_positivi)
+        DivideValuesByPopulation(variazione_totale_positivi)
+        DivideValuesByPopulation(nuovi_positivi)
+        DivideValuesByPopulation(dimessi_guariti)
+        DivideValuesByPopulation(deceduti)
+        DivideValuesByPopulation(totale_casi)
+        DivideValuesByPopulation(tamponi)
+    End Sub
+
     Public Function GetDailyValues(ByVal valueType As cDisplayInfo.enItalianValueType, ByVal region As cCountryListboxItem) As List(Of cDailyValue)
         Dim retVal As New List(Of cDailyValue)
         Dim targetList As List(Of cCountryValues) = GetCountryValuesFromType(valueType)
-
-        Dim pop As Double = 1
-        If NormalizeToPopulation Then
-            pop = Population.GetITARegionPopulation(region.Province_State) / 10000.0
-            If pop = 0 Then
-                pop = 1
-            End If
-        End If
 
         If targetList IsNot Nothing Then
             For iCounter As Integer = 0 To targetList.Count - 1
@@ -249,7 +273,7 @@ Public Class cITARegionsRecords
                         If (targetList(iCounter).DailyValues(dCounter).RecordValue > 0) Or collectionStarted Then
                             collectionStarted = True
                             Dim tmpVal As New cDailyValue(targetList(iCounter).DailyValues(dCounter))
-                            tmpVal.RecordValue = tmpVal.RecordValue / pop
+                            tmpVal.RecordValue = tmpVal.RecordValue
                             retVal.Add(tmpVal)
                         End If
                     Next

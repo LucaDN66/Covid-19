@@ -1,7 +1,7 @@
 ﻿<DebuggerDisplay("Date:{RecordDate.ToShortDateString}, Value={RecordValue}")> Public Class cDailyValue
     Public RecordDate As New Date(2000, 1, 1)
     Public RecordValue As Double = 0
-    Public Sub New(ByVal aDate As Date, ByVal aValue As Integer)
+    Public Sub New(ByVal aDate As Date, ByVal aValue As Double)
         Me.RecordDate = aDate
         Me.RecordValue = aValue
     End Sub
@@ -17,19 +17,24 @@ End Class
 <DebuggerDisplay("State:{Province_State}, Country:{Country_Region}, Cases={TotalCases}")> Public Class cCountryListboxItem
     Public Province_State As String = ""
     Public Country_Region As String = ""
-    Public TotalCases As Integer = 0
+    Public TotalCases As Double = 0
+    Private ReadOnly Property TotalCasesReadable As String
+        Get
+            Return CStr(Math.Round(TotalCases * 100) / 100)
+        End Get
+    End Property
     Public Overrides Function ToString() As String
         If Province_State.Length > 0 Then
             If Province_State <> Country_Region Then
-                Return Province_State + ", " + Country_Region + " (" + CStr(TotalCases) + ")"
+                Return Province_State + ", " + Country_Region + " (" + TotalCasesReadable + ")"
             Else
-                Return Country_Region + " (" + CStr(TotalCases) + ")"
+                Return Country_Region + " (" + TotalCasesReadable + ")"
             End If
         Else
-            Return Country_Region + " (" + CStr(TotalCases) + ")"
+            Return Country_Region + " (" + TotalCasesReadable + ")"
         End If
     End Function
-    Public Sub New(ByVal Province As String, ByVal Country As String, ByVal Cases As Integer)
+    Public Sub New(ByVal Province As String, ByVal Country As String, ByVal Cases As Double)
         Province_State = Province
         Country_Region = Country
         TotalCases = Cases
@@ -84,6 +89,12 @@ End Class
 End Class
 
 Public Class cWorldRecords
+    Public Enum enRecordsVariant As Integer
+        World = 0
+        USCities = 1
+    End Enum
+    Private myRecordsVariant As enRecordsVariant = enRecordsVariant.World
+
     Public Deaths As New List(Of cCountryValues)
     Public Confirmed As New List(Of cCountryValues)
     Public Recovered As New List(Of cCountryValues)
@@ -118,21 +129,21 @@ Public Class cWorldRecords
         RemoveNonEUEntriesFromList(Confirmed)
         RemoveNonEUEntriesFromList(Recovered)
     End Sub
-    Public Sub SetDeaths(ByVal csvLines() As String)
+    Public Sub SetDeaths(ByVal csvLines() As String, ByVal recVariant As enRecordsVariant)
         Deaths.Clear()
-        AddValues(csvLines, Deaths)
+        AddValues(csvLines, Deaths, recVariant)
         Deaths = Deaths.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
         Deaths.Reverse()
     End Sub
-    Public Sub SetConfirmed(ByVal csvLines() As String)
+    Public Sub SetConfirmed(ByVal csvLines() As String, ByVal recVariant As enRecordsVariant)
         Confirmed.Clear()
-        AddValues(csvLines, Confirmed)
+        AddValues(csvLines, Confirmed, recVariant)
         Confirmed = Confirmed.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
         Confirmed.Reverse()
     End Sub
-    Public Sub SetRecovered(ByVal csvLines() As String)
+    Public Sub SetRecovered(ByVal csvLines() As String, ByVal recVariant As enRecordsVariant)
         Recovered.Clear()
-        AddValues(csvLines, Recovered)
+        AddValues(csvLines, Recovered, recVariant)
         Recovered = Recovered.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
         Recovered.Reverse()
     End Sub
@@ -170,7 +181,7 @@ Public Class cWorldRecords
             End Select
             If targetList.Count > 0 Then
                 For dCounter As Integer = 0 To targetList.Count - 1
-                    Dim maxValue As Integer = 0
+                    Dim maxValue As Double = 0
                     If targetList(dCounter).DailyValues.Count > 0 Then
                         maxValue = targetList(dCounter).DailyValues(targetList(dCounter).DailyValues.Count - 1).RecordValue
                     End If
@@ -181,9 +192,10 @@ Public Class cWorldRecords
         End If
         Return retVal
     End Function
-    Public Sub AddValues(ByVal csvLines() As String, ByVal Countries As List(Of cCountryValues))
+    Public Sub AddValues(ByVal csvLines() As String, ByVal Countries As List(Of cCountryValues), ByVal RecVariant As enRecordsVariant)
         Try
             If (csvLines IsNot Nothing) AndAlso (csvLines.Count > 0) Then
+                myRecordsVariant = RecVariant
                 'First line is the header, which also contains all the dates covered
                 'Every following line is a country/region, with the data for all the dates defined above
 
@@ -279,20 +291,7 @@ Public Class cWorldRecords
                 targetList = Recovered
         End Select
 
-        Dim pop As Double = 1
-        If NormalizeToPopulation Then
-            If isUSCity Then
-                pop = Population.GetUSCityPopulation(region.Province_State + "-" + region.Country_Region) / 10000.0
-            Else
-                pop = Population.GetWorldCountryPopulation(region.Country_Region) / 10000.0
-            End If
-
-            If pop = 0 Then
-                pop = 1
-            End If
-        End If
-
-            If targetList IsNot Nothing Then
+        If targetList IsNot Nothing Then
             For iCounter As Integer = 0 To targetList.Count - 1
                 If targetList(iCounter).IsRegionLike(region) Then
                     Dim collectionStarted As Boolean = False
@@ -300,7 +299,7 @@ Public Class cWorldRecords
                         If (targetList(iCounter).DailyValues(dCounter).RecordValue > 0) Or collectionStarted Then
                             collectionStarted = True
                             Dim tmpVal As New cDailyValue(targetList(iCounter).DailyValues(dCounter))
-                            tmpVal.RecordValue = tmpVal.RecordValue / pop
+                            tmpVal.RecordValue = tmpVal.RecordValue
                             retVal.Add(tmpVal)
                         End If
                     Next
@@ -339,5 +338,38 @@ Public Class cWorldRecords
             MsgBox(ex.Message)
         End Try
     End Sub
+
+    Private Sub DivideValuesByPopulation(ByRef targetList As List(Of cCountryValues))
+        For iCounter As Integer = targetList.Count - 1 To 0 Step -1
+            Dim pop As Double = 1
+            If myRecordsVariant = enRecordsVariant.World Then
+                pop = Population.GetWorldCountryPopulation(targetList(iCounter).Country_Region)
+            ElseIf myRecordsVariant = enRecordsVariant.USCities Then
+                pop = Population.GetUSCityPopulation(targetList(iCounter).Province_State)
+            End If
+            If pop = 0 Then
+                targetList.RemoveAt(iCounter)
+            ElseIf (pop < 100000) AndAlso (myRecordsVariant = enRecordsVariant.World) Then
+                targetList.RemoveAt(iCounter)
+            Else
+                pop = pop / 10000.0
+                For dCounter As Integer = 0 To targetList(iCounter).DailyValues.Count - 1
+                    targetList(iCounter).DailyValues(dCounter).RecordValue = targetList(iCounter).DailyValues(dCounter).RecordValue / pop
+                Next
+            End If
+        Next
+        'Reorder according to the last recorded value of each series
+        targetList = targetList.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
+        targetList.Reverse()
+    End Sub
+    Public Sub SetValuesAsPopulationPercentage()
+        DivideValuesByPopulation(Deaths)
+        DivideValuesByPopulation(Confirmed)
+        DivideValuesByPopulation(Recovered)
+    End Sub
+
+
+
+
 End Class
 
