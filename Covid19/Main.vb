@@ -87,12 +87,16 @@
     Public Function GetPlotPointsItaProvinceFirst(ByVal ItaProvincesRecords As cITAProvincesRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
         Dim retVal As New List(Of Tuple(Of Date, Double))
         If displayInfo.ActiveITAProvinces.Count > 0 Then
-            Dim dailyValsList As New List(Of List(Of cDailyValue))
+            Dim dailyValsList As New List(Of cDailyValues)
             Dim prevValue As Double = 0
             Dim curValue As Double = 0
-            Dim dailyVals As List(Of cDailyValue) = ItaProvincesRecords.GetDailyValues(cDisplayInfo.enItalianValueType.Total_Cases, displayInfo.ActiveITAProvinces(0))
+            Dim dailyVals As cDailyValues = ItaProvincesRecords.GetDailyValues(cDisplayInfo.enItalianValueType.Total_Cases, displayInfo.ActiveITAProvinces(0))
             For iCounter As Integer = 0 To dailyVals.Count - 1
-                curValue = dailyVals(iCounter).RecordValue
+                If NormalizeToPopulation Then
+                    curValue = dailyVals(iCounter).RecordPercentValue
+                Else
+                    curValue = dailyVals(iCounter).RecordAbsoluteValue
+                End If
                 retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
                 If displayInfo.DailyIncrements Then
                     prevValue = curValue
@@ -104,12 +108,16 @@
     Public Function GetPlotPointsItaRegionFirst(ByVal ItaRegionRecords As cITARegionsRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
         Dim retVal As New List(Of Tuple(Of Date, Double))
         If displayInfo.ActiveITARegions.Count > 0 Then
-            Dim dailyValsList As New List(Of List(Of cDailyValue))
+            Dim dailyValsList As New List(Of cDailyValues)
             Dim prevValue As Double = 0
             Dim curValue As Double = 0
-            Dim dailyVals As List(Of cDailyValue) = ItaRegionRecords.GetDailyValues(displayInfo.ActiveItalianData, displayInfo.ActiveITARegions(0))
+            Dim dailyVals As cDailyValues = ItaRegionRecords.GetDailyValues(displayInfo.ActiveItalianData, displayInfo.ActiveITARegions(0))
             For iCounter As Integer = 0 To dailyVals.Count - 1
-                curValue = dailyVals(iCounter).RecordValue
+                If NormalizeToPopulation Then
+                    curValue = dailyVals(iCounter).RecordPercentValue
+                Else
+                    curValue = dailyVals(iCounter).RecordAbsoluteValue
+                End If
                 retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
                 If displayInfo.DailyIncrements Then
                     prevValue = curValue
@@ -121,12 +129,16 @@
     Public Function GetPlotPointsEURegionFirst(ByVal EURecords As cWorldRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
         Dim retVal As New List(Of Tuple(Of Date, Double))
         If displayInfo.ActiveEURegions.Count > 0 Then
-            Dim dailyValsList As New List(Of List(Of cDailyValue))
+            Dim dailyValsList As New List(Of cDailyValues)
             Dim prevValue As Double = 0
             Dim curValue As Double = 0
-            Dim dailyVals As List(Of cDailyValue) = EURecords.GetDailyValues(displayInfo.ActiveEUData, displayInfo.ActiveEURegions(0), False)
+            Dim dailyVals As cDailyValues = EURecords.GetDailyValues(displayInfo.ActiveEUData, displayInfo.ActiveEURegions(0), False)
             For iCounter As Integer = 0 To dailyVals.Count - 1
-                curValue = dailyVals(iCounter).RecordValue
+                If NormalizeToPopulation Then
+                    curValue = dailyVals(iCounter).RecordPercentValue
+                Else
+                    curValue = dailyVals(iCounter).RecordAbsoluteValue
+                End If
                 retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
                 If displayInfo.DailyIncrements Then
                     prevValue = curValue
@@ -138,12 +150,16 @@
     Public Function GetPlotPointsWorldRegionFirst(ByVal worldRecords As cWorldRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
         Dim retVal As New List(Of Tuple(Of Date, Double))
         If displayInfo.ActiveWorldRegions.Count > 0 Then
-            Dim dailyValsList As New List(Of List(Of cDailyValue))
+            Dim dailyValsList As New List(Of cDailyValues)
             Dim prevValue As Double = 0
             Dim curValue As Double = 0
-            Dim dailyVals As List(Of cDailyValue) = worldRecords.GetDailyValues(displayInfo.ActiveWorldData, displayInfo.ActiveWorldRegions(0), False)
+            Dim dailyVals As cDailyValues = worldRecords.GetDailyValues(displayInfo.ActiveWorldData, displayInfo.ActiveWorldRegions(0), False)
             For iCounter As Integer = 0 To dailyVals.Count - 1
-                curValue = dailyVals(iCounter).RecordValue
+                If NormalizeToPopulation Then
+                    curValue = dailyVals(iCounter).RecordPercentValue
+                Else
+                    curValue = dailyVals(iCounter).RecordAbsoluteValue
+                End If
                 retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
                 If displayInfo.DailyIncrements Then
                     prevValue = curValue
@@ -155,12 +171,16 @@
     Public Function GetPlotPointsUSRegionFirst(ByVal usRecords As cWorldRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
         Dim retVal As New List(Of Tuple(Of Date, Double))
         If displayInfo.ActiveUSRegions.Count > 0 Then
-            Dim dailyValsList As New List(Of List(Of cDailyValue))
+            Dim dailyValsList As New List(Of cDailyValues)
             Dim prevValue As Double = 0
             Dim curValue As Double = 0
-            Dim dailyVals As List(Of cDailyValue) = usRecords.GetDailyValues(displayInfo.ActiveUSData, displayInfo.ActiveUSRegions(0), True)
+            Dim dailyVals As cDailyValues = usRecords.GetDailyValues(displayInfo.ActiveUSData, displayInfo.ActiveUSRegions(0), True)
             For iCounter As Integer = 0 To dailyVals.Count - 1
-                curValue = dailyVals(iCounter).RecordValue
+                If NormalizeToPopulation Then
+                    curValue = dailyVals(iCounter).RecordPercentValue
+                Else
+                    curValue = dailyVals(iCounter).RecordAbsoluteValue
+                End If
                 retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
                 If displayInfo.DailyIncrements Then
                     prevValue = curValue
@@ -174,36 +194,69 @@
         Dim curValue As Double = 0
         Dim retVal As New List(Of Tuple(Of Date, Double))
 
-        For iCounter As Integer = 0 To ItaRecords.Count - 1
-            Select Case displayInfo.ActiveItalianData
-                Case cDisplayInfo.enItalianValueType.Deaths
-                    curValue = ItaRecords(iCounter).deceduti
-                Case cDisplayInfo.enItalianValueType.Recovered
-                    curValue = ItaRecords(iCounter).dimessi_guariti
-                Case cDisplayInfo.enItalianValueType.Self_Isolating
-                    curValue = ItaRecords(iCounter).isolamento_domiciliare
-                Case cDisplayInfo.enItalianValueType.New_Positives
-                    curValue = ItaRecords(iCounter).nuovi_positivi
-                Case cDisplayInfo.enItalianValueType.Hospitalized_with_Sypmtoms
-                    curValue = ItaRecords(iCounter).ricoverati_con_sintomi
-                Case cDisplayInfo.enItalianValueType.Tests
-                    curValue = ItaRecords(iCounter).tamponi
-                Case cDisplayInfo.enItalianValueType.Intensive_Care
-                    curValue = ItaRecords(iCounter).terapia_intensiva
-                Case cDisplayInfo.enItalianValueType.Current_Positives
-                    curValue = ItaRecords(iCounter).totale_positivi
-                Case cDisplayInfo.enItalianValueType.Current_Positives_Variation
-                    curValue = ItaRecords(iCounter).variazione_totale_positivi
-                Case cDisplayInfo.enItalianValueType.Total_Cases
-                    curValue = ItaRecords(iCounter).totale_casi
-                Case cDisplayInfo.enItalianValueType.Total_Hospitalized
-                    curValue = ItaRecords(iCounter).totale_ospedalizzati
-            End Select
-            retVal.Add(New Tuple(Of Date, Double)(ItaRecords(iCounter).data, (curValue - prevValue)))
-            If displayInfo.DailyIncrements Then
-                prevValue = curValue
-            End If
-        Next
+        If NormalizeToPopulation Then
+            For iCounter As Integer = 0 To ItaRecords.Count - 1
+                Select Case displayInfo.ActiveItalianData
+                    Case cDisplayInfo.enItalianValueType.Deaths
+                        curValue = ItaRecords(iCounter).deceduti.Item2
+                    Case cDisplayInfo.enItalianValueType.Recovered
+                        curValue = ItaRecords(iCounter).dimessi_guariti.Item2
+                    Case cDisplayInfo.enItalianValueType.Self_Isolating
+                        curValue = ItaRecords(iCounter).isolamento_domiciliare.Item2
+                    Case cDisplayInfo.enItalianValueType.New_Positives
+                        curValue = ItaRecords(iCounter).nuovi_positivi.Item2
+                    Case cDisplayInfo.enItalianValueType.Hospitalized_with_Sypmtoms
+                        curValue = ItaRecords(iCounter).ricoverati_con_sintomi.Item2
+                    Case cDisplayInfo.enItalianValueType.Tests
+                        curValue = ItaRecords(iCounter).tamponi.Item2
+                    Case cDisplayInfo.enItalianValueType.Intensive_Care
+                        curValue = ItaRecords(iCounter).terapia_intensiva.Item2
+                    Case cDisplayInfo.enItalianValueType.Current_Positives
+                        curValue = ItaRecords(iCounter).totale_positivi.Item2
+                    Case cDisplayInfo.enItalianValueType.Current_Positives_Variation
+                        curValue = ItaRecords(iCounter).variazione_totale_positivi.Item2
+                    Case cDisplayInfo.enItalianValueType.Total_Cases
+                        curValue = ItaRecords(iCounter).totale_casi.Item2
+                    Case cDisplayInfo.enItalianValueType.Total_Hospitalized
+                        curValue = ItaRecords(iCounter).totale_ospedalizzati.Item2
+                End Select
+                retVal.Add(New Tuple(Of Date, Double)(ItaRecords(iCounter).data, (curValue - prevValue)))
+                If displayInfo.DailyIncrements Then
+                    prevValue = curValue
+                End If
+            Next
+        Else
+            For iCounter As Integer = 0 To ItaRecords.Count - 1
+                Select Case displayInfo.ActiveItalianData
+                    Case cDisplayInfo.enItalianValueType.Deaths
+                        curValue = ItaRecords(iCounter).deceduti.Item1
+                    Case cDisplayInfo.enItalianValueType.Recovered
+                        curValue = ItaRecords(iCounter).dimessi_guariti.Item1
+                    Case cDisplayInfo.enItalianValueType.Self_Isolating
+                        curValue = ItaRecords(iCounter).isolamento_domiciliare.Item1
+                    Case cDisplayInfo.enItalianValueType.New_Positives
+                        curValue = ItaRecords(iCounter).nuovi_positivi.Item1
+                    Case cDisplayInfo.enItalianValueType.Hospitalized_with_Sypmtoms
+                        curValue = ItaRecords(iCounter).ricoverati_con_sintomi.Item1
+                    Case cDisplayInfo.enItalianValueType.Tests
+                        curValue = ItaRecords(iCounter).tamponi.Item1
+                    Case cDisplayInfo.enItalianValueType.Intensive_Care
+                        curValue = ItaRecords(iCounter).terapia_intensiva.Item1
+                    Case cDisplayInfo.enItalianValueType.Current_Positives
+                        curValue = ItaRecords(iCounter).totale_positivi.Item1
+                    Case cDisplayInfo.enItalianValueType.Current_Positives_Variation
+                        curValue = ItaRecords(iCounter).variazione_totale_positivi.Item1
+                    Case cDisplayInfo.enItalianValueType.Total_Cases
+                        curValue = ItaRecords(iCounter).totale_casi.Item1
+                    Case cDisplayInfo.enItalianValueType.Total_Hospitalized
+                        curValue = ItaRecords(iCounter).totale_ospedalizzati.Item1
+                End Select
+                retVal.Add(New Tuple(Of Date, Double)(ItaRecords(iCounter).data, (curValue - prevValue)))
+                If displayInfo.DailyIncrements Then
+                    prevValue = curValue
+                End If
+            Next
+        End If
         Return retVal
     End Function
     Public Sub RefreshVisualization(ByVal aChart As DataVisualization.Charting.Chart, ByVal ItaRecords As cITARecords, ByVal italianRegionRecords As cITARegionsRecords, ByVal italianProvincesRecords As cITAProvincesRecords, ByVal worldRecords As cWorldRecords, ByVal USRecords As cWorldRecords, ByVal EURecords As cWorldRecords, ByVal displayInfo As cDisplayInfo)
@@ -228,14 +281,18 @@
 
             Dim pointsITARegionsList As New List(Of List(Of Tuple(Of Date, Double)))
             If displayInfo.ActiveArea = cDisplayInfo.enActiveArea.ITA_Regions Then
-                Dim dailyValsList As New List(Of List(Of cDailyValue))
+                Dim dailyValsList As New List(Of cDailyValues)
                 For rCounter As Integer = 0 To displayInfo.ActiveITARegions.Count - 1
                     Dim prevValue As Double = 0
                     Dim curValue As Double = 0
                     Dim pointsGlobal As New List(Of Tuple(Of Date, Double))
-                    Dim dailyVals As List(Of cDailyValue) = italianRegionRecords.GetDailyValues(displayInfo.ActiveItalianData, displayInfo.ActiveITARegions(rCounter))
+                    Dim dailyVals As cDailyValues = italianRegionRecords.GetDailyValues(displayInfo.ActiveItalianData, displayInfo.ActiveITARegions(rCounter))
                     For iCounter As Integer = 0 To dailyVals.Count - 1
-                        curValue = dailyVals(iCounter).RecordValue
+                        If NormalizeToPopulation Then
+                            curValue = dailyVals(iCounter).RecordPercentValue
+                        Else
+                            curValue = dailyVals(iCounter).RecordAbsoluteValue
+                        End If
                         pointsGlobal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
                         If displayInfo.DailyIncrements Then
                             prevValue = curValue
@@ -264,14 +321,18 @@
 
             Dim pointsITAProvincesList As New List(Of List(Of Tuple(Of Date, Double)))
             If displayInfo.ActiveArea = cDisplayInfo.enActiveArea.ITA_Provinces Then
-                Dim dailyValsList As New List(Of List(Of cDailyValue))
+                Dim dailyValsList As New List(Of cDailyValues)
                 For rCounter As Integer = 0 To displayInfo.ActiveITAProvinces.Count - 1
                     Dim prevValue As Double = 0
                     Dim curValue As Double = 0
                     Dim pointsGlobal As New List(Of Tuple(Of Date, Double))
-                    Dim dailyVals As List(Of cDailyValue) = italianProvincesRecords.GetDailyValues(cDisplayInfo.enItalianValueType.Total_Cases, displayInfo.ActiveITAProvinces(rCounter))
+                    Dim dailyVals As cDailyValues = italianProvincesRecords.GetDailyValues(cDisplayInfo.enItalianValueType.Total_Cases, displayInfo.ActiveITAProvinces(rCounter))
                     For iCounter As Integer = 0 To dailyVals.Count - 1
-                        curValue = dailyVals(iCounter).RecordValue
+                        If NormalizeToPopulation Then
+                            curValue = dailyVals(iCounter).RecordPercentValue
+                        Else
+                            curValue = dailyVals(iCounter).RecordAbsoluteValue
+                        End If
                         pointsGlobal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
                         If displayInfo.DailyIncrements Then
                             prevValue = curValue
@@ -300,14 +361,18 @@
 
             Dim pointsGlobalList As New List(Of List(Of Tuple(Of Date, Double)))
             If displayInfo.ShowWorld Then
-                Dim dailyValsList As New List(Of List(Of cDailyValue))
+                Dim dailyValsList As New List(Of cDailyValues)
                 For rCounter As Integer = 0 To displayInfo.ActiveWorldRegions.Count - 1
                     Dim prevValue As Double = 0
                     Dim curValue As Double = 0
                     Dim pointsGlobal As New List(Of Tuple(Of Date, Double))
-                    Dim dailyVals As List(Of cDailyValue) = worldRecords.GetDailyValues(displayInfo.ActiveWorldData, displayInfo.ActiveWorldRegions(rCounter), False)
+                    Dim dailyVals As cDailyValues = worldRecords.GetDailyValues(displayInfo.ActiveWorldData, displayInfo.ActiveWorldRegions(rCounter), False)
                     For iCounter As Integer = 0 To dailyVals.Count - 1
-                        curValue = dailyVals(iCounter).RecordValue
+                        If NormalizeToPopulation Then
+                            curValue = dailyVals(iCounter).RecordPercentValue
+                        Else
+                            curValue = dailyVals(iCounter).RecordAbsoluteValue
+                        End If
                         pointsGlobal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
                         If displayInfo.DailyIncrements Then
                             prevValue = curValue
@@ -331,14 +396,18 @@
 
             Dim pointsEUList As New List(Of List(Of Tuple(Of Date, Double)))
             If displayInfo.ShowEurope Then
-                Dim dailyValsList As New List(Of List(Of cDailyValue))
+                Dim dailyValsList As New List(Of cDailyValues)
                 For rCounter As Integer = 0 To displayInfo.ActiveEURegions.Count - 1
                     Dim prevValue As Double = 0
                     Dim curValue As Double = 0
                     Dim pointsEU As New List(Of Tuple(Of Date, Double))
-                    Dim dailyVals As List(Of cDailyValue) = EURecords.GetDailyValues(displayInfo.ActiveEUData, displayInfo.ActiveEURegions(rCounter), False)
+                    Dim dailyVals As cDailyValues = EURecords.GetDailyValues(displayInfo.ActiveEUData, displayInfo.ActiveEURegions(rCounter), False)
                     For iCounter As Integer = 0 To dailyVals.Count - 1
-                        curValue = dailyVals(iCounter).RecordValue
+                        If NormalizeToPopulation Then
+                            curValue = dailyVals(iCounter).RecordPercentValue
+                        Else
+                            curValue = dailyVals(iCounter).RecordAbsoluteValue
+                        End If
                         pointsEU.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
                         If displayInfo.DailyIncrements Then
                             prevValue = curValue
@@ -362,14 +431,18 @@
 
             Dim pointsUSList As New List(Of List(Of Tuple(Of Date, Double)))
             If displayInfo.ShowUS Then
-                Dim dailyValsList As New List(Of List(Of cDailyValue))
+                Dim dailyValsList As New List(Of cDailyValues)
                 For rCounter As Integer = 0 To displayInfo.ActiveUSRegions.Count - 1
                     Dim prevValue As Double = 0
                     Dim curValue As Double = 0
                     Dim pointsUS As New List(Of Tuple(Of Date, Double))
-                    Dim dailyVals As List(Of cDailyValue) = USRecords.GetDailyValues(displayInfo.ActiveUSData, displayInfo.ActiveUSRegions(rCounter), True)
+                    Dim dailyVals As cDailyValues = USRecords.GetDailyValues(displayInfo.ActiveUSData, displayInfo.ActiveUSRegions(rCounter), True)
                     For iCounter As Integer = 0 To dailyVals.Count - 1
-                        curValue = dailyVals(iCounter).RecordValue
+                        If NormalizeToPopulation Then
+                            curValue = dailyVals(iCounter).RecordPercentValue
+                        Else
+                            curValue = dailyVals(iCounter).RecordAbsoluteValue
+                        End If
                         pointsUS.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
                         If displayInfo.DailyIncrements Then
                             prevValue = curValue
@@ -897,7 +970,7 @@
         If insertPos > 0 Then
             Dim countryTuples As New List(Of Tuple(Of String, Double))
             Dim countryNames As New List(Of String)
-            Dim targetList As List(Of cCountryValues) = Nothing
+            Dim targetList As cObservedDataCollection = Nothing
             If displayInfo.ShowWorld Then
                 Select Case displayInfo.ActiveWorldData
                     Case cDisplayInfo.enWorldValueType.Confirmed
@@ -930,11 +1003,11 @@
             End If
 
             For cCounter As Integer = 0 To targetList.Count - 1
-                Dim regionName As String = targetList(cCounter).Country_Region
+                Dim regionName As String = targetList(cCounter).CountryOrRegion
                 If displayInfo.ShowITA Then
-                    regionName = targetList(cCounter).Province_State
+                    regionName = targetList(cCounter).ProvinceOrState
                 ElseIf displayInfo.ShowUS Then
-                    regionName = targetList(cCounter).Country_Region
+                    regionName = targetList(cCounter).CountryOrRegion
                 End If
                 If regionName.Contains("'") Then
                     regionName = regionName.Replace("'", "")
@@ -959,7 +1032,13 @@
                 End If
 
                 'Value for this region
-                Dim maxVal As Double = targetList(cCounter).DailyValues(targetList(cCounter).DailyValues.Count - 1).RecordValue
+                Dim maxVal As Double = 0
+                If NormalizeToPopulation Then
+                    maxVal = targetList(cCounter).DailyValues(targetList(cCounter).DailyValues.Count - 1).RecordPercentValue
+                Else
+                    maxVal = targetList(cCounter).DailyValues(targetList(cCounter).DailyValues.Count - 1).RecordAbsoluteValue
+                End If
+
                 Dim totalPopulation As Double = 0
                 If displayInfo.ShowITA Then
                     If displayInfo.ActiveArea = cDisplayInfo.enActiveArea.ITA_Provinces Then

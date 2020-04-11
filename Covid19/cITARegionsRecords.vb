@@ -1,17 +1,17 @@
 ﻿
 Public Class cITARegionsRecords
     'data,stato,codice_regione,denominazione_regione,lat,long
-    Public ricoverati_con_sintomi As New List(Of cCountryValues)
-    Public terapia_intensiva As New List(Of cCountryValues)
-    Public totale_ospedalizzati As New List(Of cCountryValues)
-    Public isolamento_domiciliare As New List(Of cCountryValues)
-    Public totale_positivi As New List(Of cCountryValues)
-    Public variazione_totale_positivi As New List(Of cCountryValues)
-    Public nuovi_positivi As New List(Of cCountryValues)
-    Public dimessi_guariti As New List(Of cCountryValues)
-    Public deceduti As New List(Of cCountryValues)
-    Public totale_casi As New List(Of cCountryValues)
-    Public tamponi As New List(Of cCountryValues)
+    Public ricoverati_con_sintomi As New cObservedDataCollection
+    Public terapia_intensiva As New cObservedDataCollection
+    Public totale_ospedalizzati As New cObservedDataCollection
+    Public isolamento_domiciliare As New cObservedDataCollection
+    Public totale_positivi As New cObservedDataCollection
+    Public variazione_totale_positivi As New cObservedDataCollection
+    Public nuovi_positivi As New cObservedDataCollection
+    Public dimessi_guariti As New cObservedDataCollection
+    Public deceduti As New cObservedDataCollection
+    Public totale_casi As New cObservedDataCollection
+    Public tamponi As New cObservedDataCollection
     Public ReadOnly Property StartingDate As Date
         Get
             If deceduti.Count > 0 Then
@@ -32,8 +32,8 @@ Public Class cITARegionsRecords
             Return retVal
         End Get
     End Property
-    Public Function GetCountryValuesFromType(ByVal dataType As cDisplayInfo.enItalianValueType) As List(Of cCountryValues)
-        Dim targetList As New List(Of cCountryValues)
+    Public Function GetCountryValuesFromType(ByVal dataType As cDisplayInfo.enItalianValueType) As cObservedDataCollection
+        Dim targetList As New cObservedDataCollection
         Select Case dataType
             Case cDisplayInfo.enItalianValueType.Hospitalized_with_Sypmtoms
                 targetList = ricoverati_con_sintomi
@@ -60,19 +60,26 @@ Public Class cITARegionsRecords
         End Select
         Return targetList
     End Function
-    Public Function GetRegionNames(ByVal dataType As cDisplayInfo.enItalianValueType) As Generic.List(Of cCountryListboxItem)
+    Public Function GetListBoxItems(ByVal dataType As cDisplayInfo.enItalianValueType) As Generic.List(Of cCountryListboxItem)
         Dim retVal As New Generic.List(Of cCountryListboxItem)
-        Dim targetList As List(Of cCountryValues) = GetCountryValuesFromType(dataType)
+        Dim targetList As cObservedDataCollection = GetCountryValuesFromType(dataType)
         If targetList.Count > 0 Then
             For dCounter As Integer = 0 To targetList.Count - 1
-                Dim maxValue As Integer = 0
+                Dim maxAbsValue As Double = 0
+                Dim maxPercentValue As Double = 0
                 If targetList(dCounter).DailyValues.Count > 0 Then
-                    maxValue = targetList(dCounter).DailyValues(targetList(dCounter).DailyValues.Count - 1).RecordValue
+                    maxAbsValue = targetList(dCounter).DailyValues(targetList(dCounter).DailyValues.Count - 1).RecordAbsoluteValue
+                    maxPercentValue = targetList(dCounter).DailyValues(targetList(dCounter).DailyValues.Count - 1).RecordPercentValue
                 End If
-                Dim newItem As New cCountryListboxItem(targetList(dCounter).Province_State, targetList(dCounter).Country_Region, maxValue)
+                Dim newItem As New cCountryListboxItem(targetList(dCounter).ProvinceOrState, targetList(dCounter).CountryOrRegion, maxAbsValue, maxPercentValue)
                 retVal.Add(newItem)
             Next
         End If
+        If NormalizeToPopulation Then
+            retVal = retVal.OrderBy(Function(x) x.TotalPercentCases).ToList()
+            retVal.Reverse()
+        End If
+
         Return retVal
     End Function
     Public Sub New()
@@ -102,8 +109,8 @@ Public Class cITARegionsRecords
         'Prepare the lists for all the regions
         For rCounter As Integer = 0 To AllRegionNames.Count - 1
             Dim emptyCountryValues As New cCountryValues
-            emptyCountryValues.Province_State = AllRegionNames(rCounter)
-            emptyCountryValues.Country_Region = "Italy"
+            emptyCountryValues.ProvinceOrState = AllRegionNames(rCounter)
+            emptyCountryValues.CountryOrRegion = "Italy"
             emptyCountryValues.Coordinates = AllRegionCoords(rCounter)
 
             ricoverati_con_sintomi.Add(emptyCountryValues.Clone)
@@ -124,6 +131,11 @@ Public Class cITARegionsRecords
             Dim lineParts() As String = allLines(lCounter).Split(",")
 
             Dim thisLineRegion As String = lineParts(3)
+            Dim thisLinePopulationDivider As Double = Population.GetITARegionPopulation(thisLineRegion) / 10000.0
+            If thisLinePopulationDivider = 0 Then
+                thisLinePopulationDivider = 1
+            End If
+
             Dim thisLineDate As Date
             Date.TryParse(lineParts(0), thisLineDate)
             Dim ts As New TimeSpan(18, 0, 0)
@@ -141,50 +153,40 @@ Public Class cITARegionsRecords
             Dim thisLine_totale_casi As Integer = CInt(lineParts(15))
             Dim thisLine_tamponi As Integer = CInt(lineParts(16))
 
-            AddEntriesToTargetList(ricoverati_con_sintomi, thisLineRegion, thisLineDate, thisLine_ricoverati_con_sintomi)
-            AddEntriesToTargetList(terapia_intensiva, thisLineRegion, thisLineDate, thisLine_terapia_intensiva)
-            AddEntriesToTargetList(totale_ospedalizzati, thisLineRegion, thisLineDate, thisLine_totale_ospedalizzati)
-            AddEntriesToTargetList(isolamento_domiciliare, thisLineRegion, thisLineDate, thisLine_isolamento_domiciliare)
-            AddEntriesToTargetList(totale_positivi, thisLineRegion, thisLineDate, thisLine_totale_positivi)
-            AddEntriesToTargetList(nuovi_positivi, thisLineRegion, thisLineDate, thisLine_nuovi_positivi)
-            AddEntriesToTargetList(variazione_totale_positivi, thisLineRegion, thisLineDate, thisLine_variazione_totale_positivi)
-            AddEntriesToTargetList(dimessi_guariti, thisLineRegion, thisLineDate, thisLine_dimessi_guariti)
-            AddEntriesToTargetList(deceduti, thisLineRegion, thisLineDate, thisLine_deceduti)
-            AddEntriesToTargetList(totale_casi, thisLineRegion, thisLineDate, thisLine_totale_casi)
-            AddEntriesToTargetList(tamponi, thisLineRegion, thisLineDate, thisLine_tamponi)
+            AddEntriesToTargetList(ricoverati_con_sintomi, thisLineRegion, thisLineDate, thisLine_ricoverati_con_sintomi, thisLine_ricoverati_con_sintomi / thisLinePopulationDivider)
+            AddEntriesToTargetList(terapia_intensiva, thisLineRegion, thisLineDate, thisLine_terapia_intensiva, thisLine_terapia_intensiva / thisLinePopulationDivider)
+            AddEntriesToTargetList(totale_ospedalizzati, thisLineRegion, thisLineDate, thisLine_totale_ospedalizzati, thisLine_totale_ospedalizzati / thisLinePopulationDivider)
+            AddEntriesToTargetList(isolamento_domiciliare, thisLineRegion, thisLineDate, thisLine_isolamento_domiciliare, thisLine_isolamento_domiciliare / thisLinePopulationDivider)
+            AddEntriesToTargetList(totale_positivi, thisLineRegion, thisLineDate, thisLine_totale_positivi, thisLine_totale_positivi / thisLinePopulationDivider)
+            AddEntriesToTargetList(nuovi_positivi, thisLineRegion, thisLineDate, thisLine_nuovi_positivi, thisLine_nuovi_positivi / thisLinePopulationDivider)
+            AddEntriesToTargetList(variazione_totale_positivi, thisLineRegion, thisLineDate, thisLine_variazione_totale_positivi, thisLine_variazione_totale_positivi / thisLinePopulationDivider)
+            AddEntriesToTargetList(dimessi_guariti, thisLineRegion, thisLineDate, thisLine_dimessi_guariti, thisLine_dimessi_guariti / thisLinePopulationDivider)
+            AddEntriesToTargetList(deceduti, thisLineRegion, thisLineDate, thisLine_deceduti, thisLine_deceduti / thisLinePopulationDivider)
+            AddEntriesToTargetList(totale_casi, thisLineRegion, thisLineDate, thisLine_totale_casi, thisLine_totale_casi / thisLinePopulationDivider)
+            AddEntriesToTargetList(tamponi, thisLineRegion, thisLineDate, thisLine_tamponi, thisLine_tamponi / thisLinePopulationDivider)
         Next
 
-        ricoverati_con_sintomi = ricoverati_con_sintomi.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
-        ricoverati_con_sintomi.Reverse()
-        terapia_intensiva = terapia_intensiva.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
-        terapia_intensiva.Reverse()
-        totale_ospedalizzati = totale_ospedalizzati.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
-        totale_ospedalizzati.Reverse()
-        isolamento_domiciliare = isolamento_domiciliare.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
-        isolamento_domiciliare.Reverse()
-        totale_positivi = totale_positivi.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
-        totale_positivi.Reverse()
-        nuovi_positivi = nuovi_positivi.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
-        nuovi_positivi.Reverse()
-        dimessi_guariti = dimessi_guariti.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
-        dimessi_guariti.Reverse()
-        deceduti = deceduti.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
-        deceduti.Reverse()
-        totale_casi = totale_casi.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
-        totale_casi.Reverse()
-        tamponi = tamponi.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
-        tamponi.Reverse()
+        ricoverati_con_sintomi = ricoverati_con_sintomi.OrderAscending(False)
+        terapia_intensiva = terapia_intensiva.OrderAscending(False)
+        totale_ospedalizzati = totale_ospedalizzati.OrderAscending(False)
+        isolamento_domiciliare = isolamento_domiciliare.OrderAscending(False)
+        totale_positivi = totale_positivi.OrderAscending(False)
+        nuovi_positivi = nuovi_positivi.OrderAscending(False)
+        dimessi_guariti = dimessi_guariti.OrderAscending(False)
+        deceduti = deceduti.OrderAscending(False)
+        totale_casi = totale_casi.OrderAscending(False)
+        tamponi = tamponi.OrderAscending(False)
 
     End Sub
-    Private Sub AddEntriesToTargetList(targetList As List(Of cCountryValues), ByVal region As String, ByVal entryDate As Date, ByVal entry As Double)
+    Private Sub AddEntriesToTargetList(targetList As cObservedDataCollection, ByVal region As String, ByVal entryDate As Date, ByVal entry As Double, ByVal percentEntry As Double)
         For iCounter As Integer = 0 To targetList.Count - 1
-            If targetList(iCounter).Province_State = region Then
-                targetList(iCounter).DailyValues.Add(New cDailyValue(entryDate, entry))
+            If targetList(iCounter).ProvinceOrState = region Then
+                targetList(iCounter).DailyValues.Add(New cDailyValue(entryDate, entry, percentEntry))
                 Exit For
             End If
         Next
     End Sub
-    Private Sub AddValues(ByVal csvLines() As String, ByVal Countries As List(Of cCountryValues))
+    Private Sub AddValues(ByVal csvLines() As String, ByVal Countries As cObservedDataCollection)
         Try
             If (csvLines IsNot Nothing) AndAlso (csvLines.Count > 0) Then
                 'First line is the header, which also contains all the dates covered
@@ -206,8 +208,8 @@ Public Class cITARegionsRecords
                 For lineCounter As Integer = 1 To csvLines.Count - 1
                     Dim lineParts() As String = csvLines(lineCounter).Split(",")
                     Dim thisCountryVals As New cCountryValues
-                    thisCountryVals.Province_State = lineParts(0)
-                    thisCountryVals.Country_Region = lineParts(1)
+                    thisCountryVals.ProvinceOrState = lineParts(0)
+                    thisCountryVals.CountryOrRegion = lineParts(1)
                     thisCountryVals.Coordinates = New Tuple(Of Double, Double)(CDbl(lineParts(2)), CDbl(lineParts(3)))
                     Dim AllValues As New System.Collections.Generic.List(Of Integer)
                     For partCounter As Integer = 4 To lineParts.Count - 1
@@ -218,8 +220,12 @@ Public Class cITARegionsRecords
                         End If
                     Next
 
+                    Dim thisPopDivider As Double = Population.GetITARegionPopulation(thisCountryVals.ProvinceOrState) / 10000.0
+                    If thisPopDivider = 0 Then
+                        thisPopDivider = 1
+                    End If
                     For vCounter As Integer = 0 To AllValues.Count - 1
-                        Dim thisDailyValue As New cDailyValue(AllDates(vCounter), AllValues(vCounter))
+                        Dim thisDailyValue As New cDailyValue(AllDates(vCounter), AllValues(vCounter), AllValues(vCounter) / thisPopDivider)
                         thisCountryVals.DailyValues.Add(thisDailyValue)
                     Next
                     Countries.Add(thisCountryVals)
@@ -229,51 +235,19 @@ Public Class cITARegionsRecords
             MsgBox(ex.Message)
         End Try
     End Sub
-
-
-    Private Sub DivideValuesByPopulation(ByRef targetList As List(Of cCountryValues))
-        For iCounter As Integer = targetList.Count - 1 To 0 Step -1
-            Dim pop As Double = 1
-            pop = Population.GetITARegionPopulation(targetList(iCounter).Province_State) / 10000.0
-            If pop = 0 Then
-                targetList.RemoveAt(iCounter)
-            Else
-                For dCounter As Integer = 0 To targetList(iCounter).DailyValues.Count - 1
-                    targetList(iCounter).DailyValues(dCounter).RecordValue = targetList(iCounter).DailyValues(dCounter).RecordValue / pop
-                Next
-            End If
-        Next
-        'Reorder according to the last recorded value of each series
-        targetList = targetList.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordValue).ToList()
-        targetList.Reverse()
-    End Sub
-    Public Sub SetValuesAsPopulationPercentage()
-        DivideValuesByPopulation(ricoverati_con_sintomi)
-        DivideValuesByPopulation(terapia_intensiva)
-        DivideValuesByPopulation(totale_ospedalizzati)
-        DivideValuesByPopulation(isolamento_domiciliare)
-        DivideValuesByPopulation(totale_positivi)
-        DivideValuesByPopulation(variazione_totale_positivi)
-        DivideValuesByPopulation(nuovi_positivi)
-        DivideValuesByPopulation(dimessi_guariti)
-        DivideValuesByPopulation(deceduti)
-        DivideValuesByPopulation(totale_casi)
-        DivideValuesByPopulation(tamponi)
-    End Sub
-
-    Public Function GetDailyValues(ByVal valueType As cDisplayInfo.enItalianValueType, ByVal region As cCountryListboxItem) As List(Of cDailyValue)
-        Dim retVal As New List(Of cDailyValue)
-        Dim targetList As List(Of cCountryValues) = GetCountryValuesFromType(valueType)
+    Public Function GetDailyValues(ByVal valueType As cDisplayInfo.enItalianValueType, ByVal region As cCountryListboxItem) As cDailyValues
+        Dim retVal As New cDailyValues
+        Dim targetList As cObservedDataCollection = GetCountryValuesFromType(valueType)
 
         If targetList IsNot Nothing Then
             For iCounter As Integer = 0 To targetList.Count - 1
-                If targetList(iCounter).IsRegionLike(region) Then
+                If targetList(iCounter).IsAreaNameLike(region) Then
                     Dim collectionStarted As Boolean = False 'Ingnore initial zero values
                     For dCounter As Integer = 0 To targetList(iCounter).DailyValues.Count - 1
-                        If (targetList(iCounter).DailyValues(dCounter).RecordValue > 0) Or collectionStarted Then
+                        If (targetList(iCounter).DailyValues(dCounter).RecordAbsoluteValue > 0) Or collectionStarted Then
                             collectionStarted = True
                             Dim tmpVal As New cDailyValue(targetList(iCounter).DailyValues(dCounter))
-                            tmpVal.RecordValue = tmpVal.RecordValue
+                            tmpVal.RecordAbsoluteValue = tmpVal.RecordAbsoluteValue
                             retVal.Add(tmpVal)
                         End If
                     Next
@@ -286,10 +260,10 @@ Public Class cITARegionsRecords
     End Function
     Public Sub ShiftDays(ByVal valueType As cDisplayInfo.enItalianValueType, ByVal region As cCountryListboxItem, ByVal days As Integer)
         Try
-            Dim targetList As List(Of cCountryValues) = GetCountryValuesFromType(valueType)
+            Dim targetList As cObservedDataCollection = GetCountryValuesFromType(valueType)
             If targetList IsNot Nothing Then
                 For iCounter As Integer = 0 To targetList.Count - 1
-                    If targetList(iCounter).IsRegionLike(region) Then
+                    If targetList(iCounter).IsAreaNameLike(region) Then
                         Dim collectionStarted As Boolean = False
                         For dCounter As Integer = 0 To targetList(iCounter).DailyValues.Count - 1
                             targetList(iCounter).DailyValues(dCounter).RecordDate = targetList(iCounter).DailyValues(dCounter).RecordDate.AddDays(days)

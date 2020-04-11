@@ -16,15 +16,7 @@ Public Class frmMain
     End Sub
     Private Function GetLatestInfo() As Boolean
         Try
-            labSnapshot.Text = ""
-            labSnapshot.Visible = False
-            Me.Refresh()
-            Application.DoEvents()
-            labSnapshot.Image = GetWindowImageGrayed(Me)
-            labSnapshot.Visible = True
-            labSnapshot.BringToFront()
-            Me.Refresh()
-            Application.DoEvents()
+            EnableControls(False)
 
             Dim globalDeathsUrl As String = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
             globalDeathsUrl = globalDeathsUrl.Replace("/open?id=", "/uc?export=download&id=")
@@ -180,20 +172,49 @@ Public Class frmMain
             Call MsgBox(ex.Message)
             Return False
         Finally
+            EnableControls(True)
+        End Try
+    End Function
+    Private ReadOnly Property AreControlsEnabled As Boolean
+        Get
+            Return Not labSnapshot.Visible
+        End Get
+    End Property
+    Private Sub EnableControls(ByVal enable As Boolean)
+        Dim disable As Boolean = Not enable
+        If disable Then
+            If AreControlsEnabled Then
+                labSnapshot.Text = "" 'Clear text on startup
+            End If
             labSnapshot.Visible = False
             Me.Refresh()
             Application.DoEvents()
-        End Try
-    End Function
+            labSnapshot.Image = GetWindowImageGrayed(Me)
+            labSnapshot.Visible = True
+            labSnapshot.BringToFront()
+            Me.Refresh()
+            Application.DoEvents()
+        Else
+            labSnapshot.Visible = False
+            Me.Refresh()
+            Application.DoEvents()
+        End If
+    End Sub
     Private Function LoadInfoFromLocalFiles() As Boolean
+        If SkipDataRefresh Then Return False
+        Dim reEnableWhenDone As Boolean = False
         Try
+
+            If AreControlsEnabled Then
+                reEnableWhenDone = True
+                EnableControls(False)
+            End If
+            AddInfoText("Loading data")
+
             If System.IO.File.Exists(Csv_Ita_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_Ita_Filename)
                 ReplaceCommasInQuotations(infoLines)
                 italianRecords = New cITARecords(infoLines)
-                If NormalizeToPopulation Then
-                    italianRecords.SetValuesAsPopulationPercentage
-                End If
                 labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianRecords.LastDate.ToLongDateString
             End If
 
@@ -201,18 +222,12 @@ Public Class frmMain
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_ItaRegions_Filename)
                 ReplaceCommasInQuotations(infoLines)
                 italianRegionRecords = New cITARegionsRecords(infoLines)
-                If NormalizeToPopulation Then
-                    italianRegionRecords.SetValuesAsPopulationPercentage()
-                End If
             End If
 
             If System.IO.File.Exists(Csv_ItaProvinces_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_ItaProvinces_Filename)
                 ReplaceCommasInQuotations(infoLines)
                 italianProvincesRecords = New cITAProvincesRecords(infoLines)
-                If NormalizeToPopulation Then
-                    italianProvincesRecords.SetValuesAsPopulationPercentage()
-                End If
             End If
 
             If System.IO.File.Exists(Csv_World_Confirmed_Filename) Then
@@ -231,10 +246,10 @@ Public Class frmMain
                 worldRecords.SetRecovered(infoLines, cWorldRecords.enRecordsVariant.World)
             End If
             If NormalizeToPopulation Then
-                worldRecords.SetValuesAsPopulationPercentage()
+                worldRecords.Confirmed.OrderAscending(True)
             End If
 
-            europeanRecords = worldRecords.Clone
+            europeanRecords = New cWorldRecords(worldRecords)
             europeanRecords.RemoveNonEuropeanEntries()
             'Already normalized if needed, as they've been cloned after the normalization
 
@@ -248,71 +263,69 @@ Public Class frmMain
                 ReplaceCommasInQuotations(infoLines)
                 USRecords.SetDeaths(infoLines, cWorldRecords.enRecordsVariant.USCities)
             End If
-            If NormalizeToPopulation Then
-                USRecords.SetValuesAsPopulationPercentage()
-            End If
 
-            lstRegionsUS.SuspendLayout()
-            lstRegionsUS.Items.Clear()
-            Dim allUSNames As System.Collections.Generic.List(Of cCountryListboxItem) = USRecords.GetRegionNames(myDisplayInfo.ActiveUSData)
-            For iCounter As Integer = 0 To allUSNames.Count - 1
-                lstRegionsUS.Items.Add(allUSNames(iCounter))
-            Next
-            lstRegionsUS.ResumeLayout(True)
-            If lstRegionsUS.Items.Count > 0 Then
-                lstRegionsUS.SelectedIndex = 0
-            End If
+            FillListBoxes
 
-            lstRegions.SuspendLayout()
-            lstRegions.Items.Clear()
-            Dim allNames As System.Collections.Generic.List(Of cCountryListboxItem) = worldRecords.GetRegionNames(myDisplayInfo.ActiveWorldData)
-            For iCounter As Integer = 0 To allNames.Count - 1
-                lstRegions.Items.Add(allNames(iCounter))
-            Next
-            lstRegions.ResumeLayout(True)
-            If lstRegions.Items.Count > 0 Then
-                lstRegions.SelectedIndex = 0
-            End If
-
-            lstRegionsEurope.SuspendLayout()
-            lstRegionsEurope.Items.Clear()
-            Dim allEUNames As System.Collections.Generic.List(Of cCountryListboxItem) = europeanRecords.GetRegionNames(myDisplayInfo.ActiveEUData)
-            For iCounter As Integer = 0 To allEUNames.Count - 1
-                lstRegionsEurope.Items.Add(allEUNames(iCounter))
-            Next
-            lstRegionsEurope.ResumeLayout(True)
-            If lstRegionsEurope.Items.Count > 0 Then
-                lstRegionsEurope.SelectedIndex = 0
-            End If
-
-            lstItaRegions.SuspendLayout()
-            lstItaRegions.Items.Clear()
-            Dim allITARegionNames As System.Collections.Generic.List(Of cCountryListboxItem) = italianRegionRecords.GetRegionNames(myDisplayInfo.ActiveItalianData)
-            For iCounter As Integer = 0 To allITARegionNames.Count - 1
-                lstItaRegions.Items.Add(allITARegionNames(iCounter))
-            Next
-            lstItaRegions.ResumeLayout(True)
-            If lstItaRegions.Items.Count > 0 Then
-                lstItaRegions.SelectedIndex = 0
-            End If
-
-            lstItaProvinces.SuspendLayout()
-            lstItaProvinces.Items.Clear()
-            Dim allITAProvinceNames As System.Collections.Generic.List(Of cCountryListboxItem) = italianProvincesRecords.GetRegionNames(cDisplayInfo.enItalianValueType.Total_Cases)
-            For iCounter As Integer = 0 To allITAProvinceNames.Count - 1
-                lstItaProvinces.Items.Add(allITAProvinceNames(iCounter))
-            Next
-            lstItaProvinces.ResumeLayout(True)
-            If lstItaProvinces.Items.Count > 0 Then
-                lstItaProvinces.SelectedIndex = 0
-            End If
             DataLoaded = True
             Return True
         Catch ex As Exception
             MsgBox(ex.Message)
             Return False
+        Finally
+            If reEnableWhenDone Then
+                EnableControls(True)
+            End If
         End Try
     End Function
+    Private Sub FillListBoxes()
+
+        lstRegionsUS.SuspendLayout()
+        lstRegionsUS.Items.Clear()
+        Dim allUSNames As System.Collections.Generic.List(Of cCountryListboxItem) = USRecords.GetListBoxItems(myDisplayInfo.ActiveUSData, False)
+        lstRegionsUS.Items.AddRange(allUSNames.ToArray)
+        lstRegionsUS.ResumeLayout(True)
+        If lstRegionsUS.Items.Count > 0 Then
+            lstRegionsUS.SelectedIndex = 0
+        End If
+
+
+        lstRegions.SuspendLayout()
+        lstRegions.Items.Clear()
+        Dim allNames As System.Collections.Generic.List(Of cCountryListboxItem) = worldRecords.GetListBoxItems(myDisplayInfo.ActiveWorldData, True)
+        lstRegions.Items.AddRange(allNames.ToArray)
+        lstRegions.ResumeLayout(True)
+        If lstRegions.Items.Count > 0 Then
+            lstRegions.SelectedIndex = 0
+        End If
+
+        lstRegionsEurope.SuspendLayout()
+        lstRegionsEurope.Items.Clear()
+        Dim allEUNames As System.Collections.Generic.List(Of cCountryListboxItem) = europeanRecords.GetListBoxItems(myDisplayInfo.ActiveEUData, True)
+        lstRegionsEurope.Items.AddRange(allEUNames.ToArray)
+        lstRegionsEurope.ResumeLayout(True)
+        If lstRegionsEurope.Items.Count > 0 Then
+            lstRegionsEurope.SelectedIndex = 0
+        End If
+
+        lstItaRegions.SuspendLayout()
+        lstItaRegions.Items.Clear()
+        Dim allITARegionNames As System.Collections.Generic.List(Of cCountryListboxItem) = italianRegionRecords.GetListBoxItems(myDisplayInfo.ActiveItalianData)
+        lstItaRegions.Items.AddRange(allITARegionNames.ToArray)
+        lstItaRegions.ResumeLayout(True)
+        If lstItaRegions.Items.Count > 0 Then
+            lstItaRegions.SelectedIndex = 0
+        End If
+
+        lstItaProvinces.SuspendLayout()
+        lstItaProvinces.Items.Clear()
+        Dim allITAProvinceNames As System.Collections.Generic.List(Of cCountryListboxItem) = italianProvincesRecords.GetListBoxItems(cDisplayInfo.enItalianValueType.Total_Cases)
+        lstItaProvinces.Items.AddRange(allITAProvinceNames.ToArray)
+        lstItaProvinces.ResumeLayout(True)
+        If lstItaProvinces.Items.Count > 0 Then
+            lstItaProvinces.SelectedIndex = 0
+        End If
+
+    End Sub
     Private Sub FillCombos()
         Try
             udSigma.Minimum = cNormalDist.SigmaMin
@@ -379,24 +392,17 @@ Public Class frmMain
             FillCombos()
             Application.DoEvents()
             Me.Refresh()
+            labSnapshot.Text = ""
             GetLatestInfo()
             SkipDataRefresh = False
+            LoadInfoFromLocalFiles()
             UpdateAndRefresh(False)
         End If
     End Sub
-    Private Sub btUpdate_ButtonClick(sender As Object, e As EventArgs) Handles btCheck4Updates.Click
-        GetLatestInfo()
-        UpdateAndRefresh(False)
-    End Sub
     Private Sub chkDaily_CheckedChanged(sender As Object, e As EventArgs) Handles chkDaily.CheckedChanged
         If SkipDataRefresh Then Return
-        If chkDaily.Checked Then
-            'Force absolute values
-            SkipDataRefresh = True
-            chkNormalize.Checked = False
-            NormalizeToPopulation = False
-            SkipDataRefresh = False
-        End If
+        myDisplayInfo.DailyIncrements = chkDaily.Checked
+        FillListBoxes()
         UpdateAndRefresh(False)
     End Sub
     Private Sub EnableEstimateSection(ByVal newState As Boolean)
@@ -665,7 +671,7 @@ Public Class frmMain
     Private Sub lstRegions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstRegions.SelectedIndexChanged
         UpdateAndRefresh(False)
     End Sub
-    Private Sub labLastUpdateInfo_Click(sender As Object, e As EventArgs) Handles labLastUpdateInfo.Click
+    Private Sub labLastUpdateInfo_Click(sender As Object, e As EventArgs) 
         Try
             Dim startInfo As New ProcessStartInfo
             Select Case myDisplayInfo.ActiveArea
@@ -715,15 +721,7 @@ Public Class frmMain
     End Sub
     Private Sub btEstimate_Click(sender As Object, e As EventArgs) Handles btEstimate.Click
         Try
-            labSnapshot.Text = ""
-            labSnapshot.Visible = False
-            Me.Refresh()
-            Application.DoEvents()
-            labSnapshot.Image = GetWindowImageGrayed(Me)
-            labSnapshot.Visible = True
-            labSnapshot.BringToFront()
-            Me.Refresh()
-            Application.DoEvents()
+            EnableControls(False)
 
             Dim NormalDistribution As New cNormalDist
             NormalDistribution.ExpectedMax = myDisplayInfo.EstimatedFinalValue
@@ -753,10 +751,7 @@ Public Class frmMain
         Catch ex As Exception
             MsgBox(ex.Message)
         Finally
-            labSnapshot.Visible = False
-            Me.UseWaitCursor = False
-            Me.Refresh()
-            Application.DoEvents()
+            EnableControls(True)
         End Try
     End Sub
     Private Function WindowTitle() As String
@@ -852,19 +847,9 @@ Public Class frmMain
     End Sub
     Private Sub chkNormalize_CheckedChanged(sender As Object, e As EventArgs) Handles chkNormalize.CheckedChanged
         If SkipDataRefresh Then Return
-
-        Dim reloadNeeded As Boolean = (chkNormalize.Checked <> NormalizeToPopulation)
-        If chkNormalize.Checked Then
-            SkipDataRefresh = True
-            chkDaily.Checked = False
-            SkipDataRefresh = False
-        End If
         NormalizeToPopulation = chkNormalize.Checked
-        If reloadNeeded Then
-            LoadInfoFromLocalFiles()
-        End If
+        FillListBoxes()
         UpdateAndRefresh(False)
-
     End Sub
     Private Sub cbITAResolution_SelectedIndexChanged(sender As Object, e As EventArgs)
         UpdateAndRefresh(False)
@@ -901,6 +886,10 @@ Public Class frmMain
         UpdateAndRefresh(False)
     End Sub
     Private Sub lstRegionsEurope_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstRegionsEurope.SelectedIndexChanged
+        UpdateAndRefresh(False)
+    End Sub
+    Private Sub CheckForUpdatedDataToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CheckForUpdatedDataToolStripMenuItem.Click
+        GetLatestInfo()
         UpdateAndRefresh(False)
     End Sub
 End Class

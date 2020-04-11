@@ -1,17 +1,17 @@
 ﻿Public Class cITARecord
     Public data As New Date(2000, 1, 1)
     Public stato As String = "ITA"
-    Public ricoverati_con_sintomi As Double = 0
-    Public terapia_intensiva As Double = 0
-    Public totale_ospedalizzati As Double = 0
-    Public isolamento_domiciliare As Double = 0
-    Public totale_positivi As Double = 0
-    Public variazione_totale_positivi As Double = 0
-    Public nuovi_positivi As Double = 0
-    Public dimessi_guariti As Double = 0
-    Public deceduti As Double = 0
-    Public totale_casi As Double = 0
-    Public tamponi As Double = 0
+    Public ricoverati_con_sintomi As New Tuple(Of Double, Double)(0, 0)
+    Public terapia_intensiva As New Tuple(Of Double, Double)(0, 0)
+    Public totale_ospedalizzati As New Tuple(Of Double, Double)(0, 0)
+    Public isolamento_domiciliare As New Tuple(Of Double, Double)(0, 0)
+    Public totale_positivi As New Tuple(Of Double, Double)(0, 0)
+    Public variazione_totale_positivi As New Tuple(Of Double, Double)(0, 0)
+    Public nuovi_positivi As New Tuple(Of Double, Double)(0, 0)
+    Public dimessi_guariti As New Tuple(Of Double, Double)(0, 0)
+    Public deceduti As New Tuple(Of Double, Double)(0, 0)
+    Public totale_casi As New Tuple(Of Double, Double)(0, 0)
+    Public tamponi As New Tuple(Of Double, Double)(0, 0)
     Public Sub New(ByVal csvLine As String)
         If csvLine.Length > 0 Then
             Dim lineParts() As String = csvLine.Split(",")
@@ -22,17 +22,17 @@
 
             'ricoverati_con_sintomi,terapia_intensiva,totale_ospedalizzati,isolamento_domiciliare,totale_positivi,variazione_totale_positivi,nuovi_positivi,dimessi_guariti,deceduti,totale_casi,tamponi
             stato = lineParts(1)
-            ricoverati_con_sintomi = CInt(lineParts(2))
-            terapia_intensiva = CInt(lineParts(3))
-            totale_ospedalizzati = CInt(lineParts(4))
-            isolamento_domiciliare = CInt(lineParts(5))
-            totale_positivi = CInt(lineParts(6))
-            variazione_totale_positivi = CInt(lineParts(7))
-            nuovi_positivi = CInt(lineParts(8))
-            dimessi_guariti = CInt(lineParts(9))
-            deceduti = CInt(lineParts(10))
-            totale_casi = CInt(lineParts(11))
-            tamponi = CInt(lineParts(12))
+            ricoverati_con_sintomi = New Tuple(Of Double, Double)(CInt(lineParts(2)), CDbl(lineParts(2)) / cPopulation.ITATotalPopulation)
+            terapia_intensiva = New Tuple(Of Double, Double)(CInt(lineParts(3)), CDbl(lineParts(3)) / cPopulation.ITATotalPopulation)
+            totale_ospedalizzati = New Tuple(Of Double, Double)(CInt(lineParts(4)), CDbl(lineParts(4)) / cPopulation.ITATotalPopulation)
+            isolamento_domiciliare = New Tuple(Of Double, Double)(CInt(lineParts(5)), CDbl(lineParts(5)) / cPopulation.ITATotalPopulation)
+            totale_positivi = New Tuple(Of Double, Double)(CInt(lineParts(6)), CDbl(lineParts(6)) / cPopulation.ITATotalPopulation)
+            variazione_totale_positivi = New Tuple(Of Double, Double)(CInt(lineParts(7)), CDbl(lineParts(7)) / cPopulation.ITATotalPopulation)
+            nuovi_positivi = New Tuple(Of Double, Double)(CInt(lineParts(8)), CDbl(lineParts(8)) / cPopulation.ITATotalPopulation)
+            dimessi_guariti = New Tuple(Of Double, Double)(CInt(lineParts(9)), CDbl(lineParts(9)) / cPopulation.ITATotalPopulation)
+            deceduti = New Tuple(Of Double, Double)(CInt(lineParts(10)), CDbl(lineParts(10)) / cPopulation.ITATotalPopulation)
+            totale_casi = New Tuple(Of Double, Double)(CInt(lineParts(11)), CDbl(lineParts(11)) / cPopulation.ITATotalPopulation)
+            tamponi = New Tuple(Of Double, Double)(CInt(lineParts(12)), CDbl(lineParts(12)) / cPopulation.ITATotalPopulation)
 
         End If
     End Sub
@@ -70,23 +70,5 @@ Public Class cITARecords
             End If
         End Get
     End Property
-    Public Sub SetValuesAsPopulationPercentage()
-
-        Dim divider As Double = cPopulation.ITATotalPopulation / 10000.0
-
-        For iCounter As Integer = 0 To Me.Count - 1
-            Me(iCounter).ricoverati_con_sintomi = Me(iCounter).ricoverati_con_sintomi / divider
-            Me(iCounter).terapia_intensiva = Me(iCounter).terapia_intensiva / divider
-            Me(iCounter).totale_ospedalizzati = Me(iCounter).totale_ospedalizzati / divider
-            Me(iCounter).isolamento_domiciliare = Me(iCounter).isolamento_domiciliare / divider
-            Me(iCounter).totale_positivi = Me(iCounter).totale_positivi / divider
-            Me(iCounter).variazione_totale_positivi = Me(iCounter).variazione_totale_positivi / divider
-            Me(iCounter).nuovi_positivi = Me(iCounter).nuovi_positivi / divider
-            Me(iCounter).dimessi_guariti = Me(iCounter).dimessi_guariti / divider
-            Me(iCounter).deceduti = Me(iCounter).deceduti / divider
-            Me(iCounter).totale_casi = Me(iCounter).totale_casi / divider
-            Me(iCounter).tamponi = Me(iCounter).tamponi / divider
-        Next
-    End Sub
 End Class
 
