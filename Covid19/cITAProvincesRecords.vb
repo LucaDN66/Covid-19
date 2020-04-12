@@ -102,7 +102,7 @@ Public Class cITAProvincesRecords
             thisLineDate = thisLineDate.Date + ts
             Dim thisLine_totale_casi As Integer = CInt(lineParts(9))
 
-            Dim thisProvincePopulation As Double = Population.GetITAProvincePopulation(thisLineProvince) / 10000.0
+            Dim thisProvincePopulation As Double = Population.GetITAProvincePopulation(thisLineProvince) / cPopulation.PerMillionDivider
             If thisProvincePopulation = 0 Then
                 'Skip this one. Total cases can be taken from the region section, no point in having something 'not defined' here
             Else
@@ -111,7 +111,6 @@ Public Class cITAProvincesRecords
         Next
 
         totale_casi = totale_casi.OrderAscending(False)
-        totale_casi.Reverse()
 
     End Sub
     Private Sub AddEntriesToTargetList(targetList As cObservedDataCollection, ByVal region As String, ByVal entryDate As Date, ByVal entry As Double, ByVal percentEntry As Double)
@@ -155,7 +154,7 @@ Public Class cITAProvincesRecords
                             AllValues.Add(0)
                         End If
                     Next
-                    Dim thisProvincePopulationDivider As Double = Population.GetITAProvincePopulation(thisCountryVals.ProvinceOrState) / 10000.0
+                    Dim thisProvincePopulationDivider As Double = Population.GetITAProvincePopulation(thisCountryVals.ProvinceOrState) / cPopulation.PerMillionDivider
                     If thisProvincePopulationDivider = 0 Then
                         thisProvincePopulationDivider = 1
                     End If

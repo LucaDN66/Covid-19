@@ -912,9 +912,9 @@
         Dim HtmlLines As New List(Of String)
         HtmlLines.AddRange(System.IO.File.ReadAllLines(MapHtml))
 
-        Dim every10KText As String = ""
+        Dim every1MText As String = ""
         If NormalizeToPopulation Then
-            every10KText = " (Every 10,000)"
+            every1MText = " (Per 1M people)"
         End If
 
         Dim insertPos As Integer = -1
@@ -937,19 +937,19 @@
                 insertPos = lCounter + 1
             ElseIf HtmlLines(lCounter).Contains("#HeaderParagraphTitle#") Then
                 If displayInfo.ShowWorld Then
-                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveWorldData.ToString + every10KText)
+                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveWorldData.ToString + every1MText)
                 ElseIf displayInfo.ShowEurope Then
-                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveEUData.ToString + every10KText)
+                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveEUData.ToString + every1MText)
                 ElseIf displayInfo.ShowUS Then
-                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveUSData.ToString + every10KText)
+                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveUSData.ToString + every1MText)
                 Else
-                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveItalianData.ToString + every10KText)
+                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveItalianData.ToString + every1MText)
                 End If
             ElseIf HtmlLines(lCounter).Contains("#HeaderParagraphText#") Then
                 If displayInfo.ShowWorld Then
-                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphText#", "Countries with less than 100,000 people are not displayed")
+                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphText#", "Countries with less than 100K people are not displayed")
                 ElseIf displayInfo.ShowEurope Then
-                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphText#", "Countries with less than 100,000 people are not displayed")
+                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphText#", "Countries with less than 100K people are not displayed")
                 ElseIf displayInfo.ShowUS Then
                     HtmlLines.RemoveAt(lCounter)
                 Else
@@ -1054,7 +1054,7 @@
                     totalPopulation = Population.GetWorldCountryPopulation(regionName)
                 End If
 
-                If ((displayInfo.ShowWorld Or displayInfo.ShowEurope) AndAlso (totalPopulation < 100000)) Then
+                If ((displayInfo.ShowWorld Or displayInfo.ShowEurope) AndAlso (totalPopulation < cPopulation.CountryPopulationThreshold)) Then
                     'Skip this one
                 Else
                     If totalPopulation = 0 Then
@@ -1116,6 +1116,9 @@
 
             Dim startInfo As New ProcessStartInfo
             startInfo.FileName = RootFolder() + "MapLoader.html"
+            If displayInfo.ShowUS Then
+                startInfo.FileName = "https://www.google.com/covid19-map/"
+            End If
             startInfo.UseShellExecute = True
             startInfo.WindowStyle = ProcessWindowStyle.Normal
             Process.Start(startInfo)

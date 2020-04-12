@@ -245,9 +245,7 @@ Public Class frmMain
                 ReplaceCommasInQuotations(infoLines)
                 worldRecords.SetRecovered(infoLines, cWorldRecords.enRecordsVariant.World)
             End If
-            If NormalizeToPopulation Then
-                worldRecords.Confirmed.OrderAscending(True)
-            End If
+
 
             europeanRecords = New cWorldRecords(worldRecords)
             europeanRecords.RemoveNonEuropeanEntries()

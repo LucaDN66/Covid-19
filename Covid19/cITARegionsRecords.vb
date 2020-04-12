@@ -112,6 +112,7 @@ Public Class cITARegionsRecords
             emptyCountryValues.ProvinceOrState = AllRegionNames(rCounter)
             emptyCountryValues.CountryOrRegion = "Italy"
             emptyCountryValues.Coordinates = AllRegionCoords(rCounter)
+            emptyCountryValues.Population = Population.GetITARegionPopulation(emptyCountryValues.ProvinceOrState)
 
             ricoverati_con_sintomi.Add(emptyCountryValues.Clone)
             terapia_intensiva.Add(emptyCountryValues.Clone)
@@ -131,7 +132,7 @@ Public Class cITARegionsRecords
             Dim lineParts() As String = allLines(lCounter).Split(",")
 
             Dim thisLineRegion As String = lineParts(3)
-            Dim thisLinePopulationDivider As Double = Population.GetITARegionPopulation(thisLineRegion) / 10000.0
+            Dim thisLinePopulationDivider As Double = Population.GetITARegionPopulation(thisLineRegion) / cPopulation.PerMillionDivider
             If thisLinePopulationDivider = 0 Then
                 thisLinePopulationDivider = 1
             End If
@@ -220,7 +221,7 @@ Public Class cITARegionsRecords
                         End If
                     Next
 
-                    Dim thisPopDivider As Double = Population.GetITARegionPopulation(thisCountryVals.ProvinceOrState) / 10000.0
+                    Dim thisPopDivider As Double = Population.GetITARegionPopulation(thisCountryVals.ProvinceOrState) / cPopulation.PerMillionDivider
                     If thisPopDivider = 0 Then
                         thisPopDivider = 1
                     End If

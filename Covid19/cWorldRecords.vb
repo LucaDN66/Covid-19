@@ -116,7 +116,7 @@ End Class
             destIndex = DailyValues.GetIndexByDate(dailyVal.RecordDate)
             If destIndex >= 0 Then
                 DailyValues(destIndex).RecordAbsoluteValue += dailyVal.RecordAbsoluteValue
-                DailyValues(destIndex).RecordPercentValue = DailyValues(destIndex).RecordAbsoluteValue / population * 10000.0
+                DailyValues(destIndex).RecordPercentValue = DailyValues(destIndex).RecordAbsoluteValue / population * cPopulation.PerMillionDivider
             End If
         Next
     End Sub
@@ -160,6 +160,7 @@ Public Class cObservedDataCollection
         Else
             orderedList = Me.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordAbsoluteValue).ToList()
         End If
+        orderedList.Reverse()
         Dim newColl As New cObservedDataCollection
         newColl.AddRange(orderedList)
         Return newColl
@@ -204,19 +205,16 @@ Public Class cWorldRecords
         Deaths.Clear()
         AddValues(csvLines, Deaths, recVariant)
         Deaths = Deaths.OrderAscending(False)
-        Deaths.Reverse()
     End Sub
     Public Sub SetConfirmed(ByVal csvLines() As String, ByVal recVariant As enRecordsVariant)
         Confirmed.Clear()
         AddValues(csvLines, Confirmed, recVariant)
         Confirmed = Confirmed.OrderAscending(False)
-        Confirmed.Reverse()
     End Sub
     Public Sub SetRecovered(ByVal csvLines() As String, ByVal recVariant As enRecordsVariant)
         Recovered.Clear()
         AddValues(csvLines, Recovered, recVariant)
         Recovered = Recovered.OrderAscending(False)
-        Recovered.Reverse()
     End Sub
     Public ReadOnly Property LastDate As Date
         Get
@@ -355,7 +353,7 @@ Public Class cWorldRecords
                         End If
                     Next
 
-                    Dim divider As Double = thisCountryVals.Population / 10000.0
+                    Dim divider As Double = thisCountryVals.Population / cPopulation.PerMillionDivider
                     If divider = 0 Then
                         'Skip this one, no population no way of comparing it to others
                         divider = 1

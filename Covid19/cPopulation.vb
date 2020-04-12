@@ -13,6 +13,8 @@
     Private myUSCitiesPopulation As New List(Of Tuple(Of String, Double))
     Public Const ITATotalPopulation As Double = 60317000
     Public myEuropeanCountries As New List(Of String)
+    Public Const PerMillionDivider As Double = 1000000.0
+    Public Const CountryPopulationThreshold = 100000
     Public Sub New()
         Try
             If System.IO.File.Exists(USPopulationCSV) Then
