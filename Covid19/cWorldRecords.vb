@@ -37,9 +37,9 @@ End Class
     Private ReadOnly Property TotalCasesReadable As String
         Get
             If NormalizeToPopulation Then
-                Return CStr(Math.Round(TotalPercentCases * 100) / 100)
+                Return strCutDecimals(TotalPercentCases, 2)
             Else
-                Return CStr(Math.Round(TotalCases * 100) / 100)
+                Return strCutDecimals(TotalCases, 2)
             End If
         End Get
     End Property
@@ -443,3 +443,21 @@ Public Class cWorldRecords
     End Sub
 End Class
 
+Public Class cHeatMapItem
+    Public Region As String
+    Public AbsValue As Double
+    Public ReadOnly Property PercentValue(ByVal population As Double) As Double
+        Get
+            If population <> 0 Then
+                Return AbsValue / population * cPopulation.PerMillionDivider
+            Else
+                Return 0
+            End If
+        End Get
+    End Property
+    Public ItemTooltip As String = ""
+End Class
+Public Class cHeatMapItems
+    Inherits List(Of cHeatMapItem)
+
+End Class

@@ -381,6 +381,7 @@ Public Class frmMain
     Private myFirstActivationDone As Boolean = False
     Private Sub frmMain_Activated(sender As Object, e As EventArgs) Handles Me.Activated
         If Not myFirstActivationDone Then
+            chkNormalize.Text = cPopulation.PerMillionString
             Me.Text = Application.ProductName + " V" + Application.ProductVersion
             myFirstActivationDone = True
             RestoreWindowPosition(Me)

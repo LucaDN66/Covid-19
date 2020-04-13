@@ -543,7 +543,7 @@ Partial Class frmMain
         Me.chkNormalize.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.chkNormalize.Size = New System.Drawing.Size(155, 22)
         Me.chkNormalize.TabIndex = 40
-        Me.chkNormalize.Text = "Per 1M people"
+        Me.chkNormalize.Text = "Per 100K people"
         Me.chkNormalize.TextAlign = System.Drawing.ContentAlignment.BottomLeft
         Me.chkNormalize.UseVisualStyleBackColor = False
         '

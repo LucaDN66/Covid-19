@@ -264,7 +264,7 @@
 
         Try
             Dim FillWithExtremeValues As Boolean = True
-            Dim myChartType As DataVisualization.Charting.SeriesChartType = DataVisualization.Charting.SeriesChartType.Spline
+            Dim myChartType As DataVisualization.Charting.SeriesChartType = DataVisualization.Charting.SeriesChartType.Line
             If displayInfo.DailyIncrements Then
                 FillWithExtremeValues = False
                 myChartType = DataVisualization.Charting.SeriesChartType.Column
@@ -691,7 +691,7 @@
             Return 0
         End If
     End Function
-    Private Sub AlignSeries(ByRef series1 As List(Of Tuple(Of Date, Double)), ByRef series2 As List(Of Tuple(Of Date, Double)),byval FillWithExtremeValues As Boolean )
+    Private Sub AlignSeries(ByRef series1 As List(Of Tuple(Of Date, Double)), ByRef series2 As List(Of Tuple(Of Date, Double)), ByVal FillWithExtremeValues As Boolean)
 
         If series1.Count = 0 Then
             'Just copy the second one into the first
@@ -914,8 +914,9 @@
 
         Dim every1MText As String = ""
         If NormalizeToPopulation Then
-            every1MText = " (Per 1M people)"
+            every1MText = " (" + cPopulation.PerMillionString + ")"
         End If
+        Dim tooltipValueDescriptor As String = ""
 
         Dim insertPos As Integer = -1
         For lCounter As Integer = 0 To HtmlLines.Count - 1
@@ -924,15 +925,19 @@
                 If displayInfo.ShowWorld Then
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Country")
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#Value", displayInfo.ActiveWorldData.ToString)
+                    tooltipValueDescriptor = displayInfo.ActiveWorldData.ToString
                 ElseIf displayInfo.ShowEurope Then
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Country")
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#Value", displayInfo.ActiveEUData.ToString)
+                    tooltipValueDescriptor = displayInfo.ActiveEUData.ToString
                 ElseIf displayInfo.ShowUS Then
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Country")
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#Value", displayInfo.ActiveUSData.ToString)
+                    tooltipValueDescriptor = displayInfo.ActiveUSData.ToString
                 Else
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Province")
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#Value", displayInfo.ActiveItalianData.ToString)
+                    tooltipValueDescriptor = displayInfo.ActiveItalianData.ToString
                 End If
                 insertPos = lCounter + 1
             ElseIf HtmlLines(lCounter).Contains("#HeaderParagraphTitle#") Then
@@ -968,7 +973,7 @@
             End If
         Next
         If insertPos > 0 Then
-            Dim countryTuples As New List(Of Tuple(Of String, Double))
+            Dim countryItems As New cHeatMapItems
             Dim countryNames As New List(Of String)
             Dim targetList As cObservedDataCollection = Nothing
             If displayInfo.ShowWorld Then
@@ -1032,13 +1037,8 @@
                 End If
 
                 'Value for this region
-                Dim maxVal As Double = 0
-                If NormalizeToPopulation Then
-                    maxVal = targetList(cCounter).DailyValues(targetList(cCounter).DailyValues.Count - 1).RecordPercentValue
-                Else
-                    maxVal = targetList(cCounter).DailyValues(targetList(cCounter).DailyValues.Count - 1).RecordAbsoluteValue
-                End If
-
+                Dim maxAbsVal As Double = targetList(cCounter).DailyValues(targetList(cCounter).DailyValues.Count - 1).RecordAbsoluteValue
+                Dim maxPercentVal As Double = targetList(cCounter).DailyValues(targetList(cCounter).DailyValues.Count - 1).RecordPercentValue
                 Dim totalPopulation As Double = 0
                 If displayInfo.ShowITA Then
                     If displayInfo.ActiveArea = cDisplayInfo.enActiveArea.ITA_Provinces Then
@@ -1058,31 +1058,35 @@
                     'Skip this one
                 Else
                     If totalPopulation = 0 Then
-                        maxVal = 0
+                        maxAbsVal = 0
+                        maxPercentVal = 0
                     End If
                     If countryNames.Contains(regionName) Then
                         'This has already been inserted
-                        For iCounter As Integer = 0 To countryTuples.Count - 1
-                            If countryTuples(iCounter).Item1.ToUpper = (regionName.ToUpper) Then
+                        For iCounter As Integer = 0 To countryItems.Count - 1
+                            If countryItems(iCounter).Region.ToUpper = (regionName.ToUpper) Then
                                 'This is it
-                                Dim prevVal As Double = countryTuples(iCounter).Item2
-                                maxVal = maxVal + prevVal
-                                countryTuples(iCounter) = New Tuple(Of String, Double)(regionName, maxVal)
+                                Dim prevVal As Double = countryItems(iCounter).AbsValue
+                                maxAbsVal = maxAbsVal + prevVal
+                                countryItems(iCounter).AbsValue = maxAbsVal
                             End If
                         Next
                     Else
                         'Not yet inserted
                         countryNames.Add(regionName)
-                        countryTuples.Add(New Tuple(Of String, Double)(regionName, maxVal))
+                        Dim newItem As New cHeatMapItem
+                        newItem.Region = regionName
+                        newItem.AbsValue = maxAbsVal
+                        countryItems.Add(newItem)
                     End If
                 End If
             Next
 
             'Adjust the values according to the population and adds the lines
             Dim countryLines As New List(Of String)
-            For iCounter As Integer = 0 To countryTuples.Count - 1
-                Dim thisCountry As String = countryTuples(iCounter).Item1
-                Dim thisVal As Double = countryTuples(iCounter).Item2
+            For iCounter As Integer = 0 To countryItems.Count - 1
+                Dim thisCountry As String = countryItems(iCounter).Region
+                Dim thisVal As Double = countryItems(iCounter).AbsValue
                 Dim totalPopulation As Double = 0
                 If displayInfo.ShowITA Then
                     If displayInfo.ActiveArea = cDisplayInfo.enActiveArea.ITA_Provinces Then
@@ -1098,7 +1102,21 @@
                     totalPopulation = Population.GetWorldCountryPopulation(thisCountry)
                 End If
 
-                Dim thisCountryLine As String = "          ['" + thisCountry + "'," + CStr((thisVal)) + "," + CStr((totalPopulation)) + "],"
+                If NormalizeToPopulation Then
+                    thisVal = countryItems(iCounter).PercentValue(totalPopulation)
+                Else
+                    thisVal = countryItems(iCounter).AbsValue
+                End If
+
+                Dim thisTooltip As String = "'<b>Population:</b> " + ToKMB((totalPopulation)) + "<br>"
+                thisTooltip = thisTooltip + tooltipValueDescriptor + ": " + strCutDecimals(countryItems(iCounter).AbsValue, 2)
+                thisTooltip = thisTooltip + "<br>" + strCutDecimals(countryItems(iCounter).PercentValue(totalPopulation), 2) + " " + cPopulation.PerMillionString
+                thisTooltip = thisTooltip + "'"
+
+                ''Hello World<br>This is <b>Lombardia</b><br><img src="https://www.gstatic.com/onebox/sports/logos/flags/united_kingdom_icon_square.png"/>'
+
+
+                Dim thisCountryLine As String = "          ['" + thisCountry + "'," + CStr((thisVal)) + "," + thisTooltip + "],"
                 countryLines.Add(thisCountryLine)
             Next
 
@@ -1156,6 +1174,32 @@
         End Try
     End Function
 #End Region
+
+    Public Function strCutDecimals(ByVal Value As Double, ByVal DesiredDecDigits As Integer) As String
+        Try
+            If (Value = Double.NegativeInfinity OrElse Value = Double.PositiveInfinity OrElse Value = Double.MaxValue OrElse Value = Double.MinValue) Then
+                Return CStr(Value)
+            End If
+            DesiredDecDigits = Math.Abs(DesiredDecDigits)
+            If DesiredDecDigits > 8 Then
+                DesiredDecDigits = 8
+            End If
+            Return ToKMB(Math.Round(Value, DesiredDecDigits))
+        Catch ex As Exception
+            Return ToKMB(Value)
+        End Try
+    End Function
+    Public Function ToKMB(ByVal num As Double) As String
+        If (num > 999999999 OrElse num < -999999999) Then
+            Return num.ToString("0,,,.###B")
+        ElseIf (num > 999999 OrElse num < -999999) Then
+            Return num.ToString("0,,.##M")
+        ElseIf (num > 999 OrElse num < -999) Then
+            Return num.ToString("0,.#K")
+        Else
+            Return num.ToString
+        End If
+    End Function
 
 
 End Module

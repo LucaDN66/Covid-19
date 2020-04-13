@@ -1,8 +1,6 @@
 <html>
   <head>
 	<title>Covid-19 Map</title>
-	<h3>Deaths (Per 1M people)</h3>
-	<p>Countries with less than 100K people are not displayed</p>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {
@@ -13,46 +11,46 @@
 
       function drawRegionsMap() {
         var data = google.visualization.arrayToDataTable([
-          ['Country', 'Deaths','Population'],
-          ['Italy',322.761410547607,60317000],
-          ['Spain',355.172256405538,46754778],
-          ['France',212.199401990189,65273511],
-          ['United Kingdom',145.714851326292,67886011],
-          ['Belgium',288.706543776273,11589623],
-          ['Germany',32.6554222048898,83783942],
-          ['Netherlands',154.830453358508,17134872],
-          ['Switzerland',119.704823619102,8654622],
-          ['Sweden',87.8281736344179,10099265],
-          ['Portugal',46.0933032412713,10196709],
-          ['Austria',37.4178445145329,9006398],
-          ['Ireland',64.8063727346629,4937786],
-          ['Romania',15.1265554686371,19237691],
-          ['Denmark',44.8879372646189,5792202],
-          ['Poland',5.4958685732786,37846611],
-          ['Czech Republic',12.0459640371012,10708981],
-          ['Norway',21.9506935773562,5421241],
-          ['Russia',0.726353450359107,145934462],
-          ['Greece',8.92252884807082,10423054],
-          ['Hungary',8.79885213280553,9660351],
-          ['Serbia',8.46936681525827,8737371],
-          ['Ukraine',1.6691909559484,43733762],
-          ['Luxembourg',99.0450143615271,625978],
-          ['Slovenia',24.0507412919481,2078938],
-          ['Finland',8.84361599214543,5540720],
-          ['Bosnia and Herzegovina',11.2776718252363,3280819],
-          ['North Macedonia',16.3196814398183,2083374],
-          ['Moldova',7.43685551900203,4033963],
-          ['Bulgaria',4.02967858276204,6948445],
-          ['Estonia',18.0922478487187,1326535],
-          ['Lithuania',8.44877233827856,2722289],
-          ['Belarus',2.43403680877455,9449323],
-          ['Albania',7.99222460792057,2877797],
-          ['Croatia',5.11537982791375,4105267],
-          ['Iceland',23.4437043397227,341243],
-          ['Malta',6.79435524965858,441543],
-          ['Latvia',1.5905011032776,1886198],
-          ['Slovakia',0.366324385371788,5459642],
-          ['Montenegro',3.18437871179144,628066],
+          ['Country', 'Confirmed',{role: 'tooltip', p:{html:true}}],
+          ['Spain',356.821285730412,'<b>Population:</b> 46.75M<br>Confirmed: 166.8K<br>356.82 Per 100K people'],
+          ['Italy',259.235373112058,'<b>Population:</b> 60.32M<br>Confirmed: 156.4K<br>259.24 Per 100K people'],
+          ['France',204.784449238528,'<b>Population:</b> 65.27M<br>Confirmed: 133.7K<br>204.78 Per 100K people'],
+          ['Germany',152.599647316666,'<b>Population:</b> 83.78M<br>Confirmed: 127.9K<br>152.6 Per 100K people'],
+          ['United Kingdom',125.51334029628,'<b>Population:</b> 67.89M<br>Confirmed: 85.2K<br>125.51 Per 100K people'],
+          ['Belgium',255.806422693818,'<b>Population:</b> 11.59M<br>Confirmed: 29.6K<br>255.81 Per 100K people'],
+          ['Netherlands',150.254988773771,'<b>Population:</b> 17.13M<br>Confirmed: 25.7K<br>150.25 Per 100K people'],
+          ['Switzerland',293.658117015394,'<b>Population:</b> 8.65M<br>Confirmed: 25.4K<br>293.66 Per 100K people'],
+          ['Portugal',162.650517926912,'<b>Population:</b> 10.2M<br>Confirmed: 16.6K<br>162.65 Per 100K people'],
+          ['Russia',10.806220671852,'<b>Population:</b> 145.93M<br>Confirmed: 15.8K<br>10.81 Per 100K people'],
+          ['Austria',154.83437440806,'<b>Population:</b> 9.01M<br>Confirmed: 13.9K<br>154.83 Per 100K people'],
+          ['Sweden',103.799632943585,'<b>Population:</b> 10.1M<br>Confirmed: 10.5K<br>103.8 Per 100K people'],
+          ['Ireland',195.532977735366,'<b>Population:</b> 4.94M<br>Confirmed: 9.7K<br>195.53 Per 100K people'],
+          ['Poland',17.6343398356064,'<b>Population:</b> 37.85M<br>Confirmed: 6.7K<br>17.63 Per 100K people'],
+          ['Norway',120.359895455671,'<b>Population:</b> 5.42M<br>Confirmed: 6.5K<br>120.36 Per 100K people'],
+          ['Denmark',109.958181707061,'<b>Population:</b> 5.79M<br>Confirmed: 6.4K<br>109.96 Per 100K people'],
+          ['Romania',32.7482128702452,'<b>Population:</b> 19.24M<br>Confirmed: 6.3K<br>32.75 Per 100K people'],
+          ['Czech Republic',55.9436980978863,'<b>Population:</b> 10.71M<br>Confirmed: 6K<br>55.94 Per 100K people'],
+          ['Serbia',41.5456777559291,'<b>Population:</b> 8.74M<br>Confirmed: 3.6K<br>41.55 Per 100K people'],
+          ['Luxembourg',524.139826000275,'<b>Population:</b> 626K<br>Confirmed: 3.3K<br>524.14 Per 100K people'],
+          ['Finland',53.675334613552,'<b>Population:</b> 5.54M<br>Confirmed: 3K<br>53.68 Per 100K people'],
+          ['Ukraine',6.349785321464,'<b>Population:</b> 43.73M<br>Confirmed: 2.8K<br>6.35 Per 100K people'],
+          ['Belarus',27.2823777957426,'<b>Population:</b> 9.45M<br>Confirmed: 2.6K<br>27.28 Per 100K people'],
+          ['Greece',20.2819634245395,'<b>Population:</b> 10.42M<br>Confirmed: 2.1K<br>20.28 Per 100K people'],
+          ['Iceland',498.471763523354,'<b>Population:</b> 341.2K<br>Confirmed: 1.7K<br>498.47 Per 100K people'],
+          ['Moldova',41.2001795752713,'<b>Population:</b> 4.03M<br>Confirmed: 1.7K<br>41.2 Per 100K people'],
+          ['Croatia',38.9743224983905,'<b>Population:</b> 4.11M<br>Confirmed: 1.6K<br>38.97 Per 100K people'],
+          ['Hungary',14.5957429497127,'<b>Population:</b> 9.66M<br>Confirmed: 1.4K<br>14.6 Per 100K people'],
+          ['Estonia',98.678135141553,'<b>Population:</b> 1.33M<br>Confirmed: 1.3K<br>98.68 Per 100K people'],
+          ['Slovenia',57.9622865135949,'<b>Population:</b> 2.08M<br>Confirmed: 1.2K<br>57.96 Per 100K people'],
+          ['Lithuania',38.6806837922057,'<b>Population:</b> 2.72M<br>Confirmed: 1.1K<br>38.68 Per 100K people'],
+          ['Bosnia and Herzegovina',30.7545158693607,'<b>Population:</b> 3.28M<br>Confirmed: 1K<br>30.75 Per 100K people'],
+          ['North Macedonia',39.7432242122634,'<b>Population:</b> 2.08M<br>Confirmed: 828<br>39.74 Per 100K people'],
+          ['Slovakia',13.5906346972933,'<b>Population:</b> 5.46M<br>Confirmed: 742<br>13.59 Per 100K people'],
+          ['Bulgaria',9.71440372630135,'<b>Population:</b> 6.95M<br>Confirmed: 675<br>9.71 Per 100K people'],
+          ['Latvia',34.5138739411239,'<b>Population:</b> 1.89M<br>Confirmed: 651<br>34.51 Per 100K people'],
+          ['Albania',15.4979659788373,'<b>Population:</b> 2.88M<br>Confirmed: 446<br>15.5 Per 100K people'],
+          ['Malta',85.6088761456981,'<b>Population:</b> 441.5K<br>Confirmed: 378<br>85.61 Per 100K people'],
+          ['Montenegro',43.3075504803635,'<b>Population:</b> 628.1K<br>Confirmed: 272<br>43.31 Per 100K people'],
         ]);
 
         var options = {};
@@ -60,6 +58,7 @@
 		options['colorAxis'] = {colors : ['#E5E5E5','#FF0000']};
 		options['backgroundColor'] = '#FFFFFF';
 		options['datalessRegionColor'] = '#f5f5f5';
+		options['tooltip'] =  {isHtml: true};
 		//options['legend'] = 'none'
         var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
 
@@ -69,5 +68,7 @@
   </head>
   <body>
     <div id="regions_div" style="width: 1400px; height: 900px;"></div>
+	<p>Countries with less than 100K people are not displayed</p>
+	<h3>Confirmed (Per 100K people)</h3>
   </body>
 </html>

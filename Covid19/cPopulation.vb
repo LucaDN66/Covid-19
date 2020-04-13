@@ -13,7 +13,8 @@
     Private myUSCitiesPopulation As New List(Of Tuple(Of String, Double))
     Public Const ITATotalPopulation As Double = 60317000
     Public myEuropeanCountries As New List(Of String)
-    Public Const PerMillionDivider As Double = 1000000.0
+    Public Const PerMillionDivider As Double = 100000.0
+    Public Const PerMillionString As String = "Per 100K people"
     Public Const CountryPopulationThreshold = 100000
     Public Sub New()
         Try

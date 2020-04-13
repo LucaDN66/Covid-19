@@ -1,8 +1,6 @@
 <html>
   <head>
 	<title>Covid-19 Map</title>
-	<h3>#HeaderParagraphTitle#</h3>
-	<p>#HeaderParagraphText#</p>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {
@@ -13,13 +11,14 @@
 
       function drawRegionsMap() {
         var data = google.visualization.arrayToDataTable([
-          ['Country', '#Value','Population'],
+          ['Country', '#Value',{role: 'tooltip', p:{html:true}}],
         ]);
 
         var options = {};
 		options['colorAxis'] = {colors : ['#E5E5E5','#FF0000']};
 		options['backgroundColor'] = '#FFFFFF';
 		options['datalessRegionColor'] = '#f5f5f5';
+		options['tooltip'] =  {isHtml: true};
 		//options['legend'] = 'none'
         var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
 
@@ -29,5 +28,7 @@
   </head>
   <body>
     <div id="regions_div" style="width: 1400px; height: 900px;"></div>
+	<p>#HeaderParagraphText#</p>
+	<h3>#HeaderParagraphTitle#</h3>
   </body>
 </html>
