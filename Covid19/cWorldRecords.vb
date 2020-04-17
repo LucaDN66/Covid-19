@@ -155,6 +155,11 @@ Public Class cObservedDataCollection
     End Function
     Public Function OrderAscending(ByVal UsePercentValues As Boolean) As cObservedDataCollection
         Dim orderedList As New List(Of cCountryValues)
+        For iCounter As Integer = Me.Count - 1 To 0 Step -1
+            If Me(iCounter).DailyValues.Count = 0 Then
+                Me.RemoveAt(iCounter)
+            End If
+        Next
         If UsePercentValues Then
             orderedList = Me.OrderBy(Function(x) x.DailyValues(x.DailyValues.Count - 1).RecordPercentValue).ToList()
         Else

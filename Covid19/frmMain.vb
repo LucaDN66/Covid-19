@@ -440,6 +440,7 @@ Public Class frmMain
                         mnMainItem.Image = mnITAProvinces.Image
                         lstItaRegions.Visible = False
                         lstItaProvinces.Visible = True
+                        lstItaProvinces.BringToFront()
                         labSelectionHintITA.Visible = True
                     Case cDisplayInfo.enActiveArea.ITA_Regions
                         labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianRegionRecords.LastDate.ToLongDateString
@@ -447,6 +448,7 @@ Public Class frmMain
                         mnMainItem.Image = mnITARegions.Image
                         lstItaProvinces.Visible = False
                         lstItaRegions.Visible = True
+                        lstItaRegions.BringToFront()
                         labSelectionHintITA.Visible = True
                 End Select
             ElseIf myDisplayInfo.ShowWorld Then
@@ -462,6 +464,7 @@ Public Class frmMain
                     pnlWorld.Dock = DockStyle.Fill
                     pnlWorld.BringToFront()
                 End If
+                lstRegions.BringToFront()
             ElseIf myDisplayInfo.ShowEurope Then
                 pnlIta.Visible = False
                 pnlUS.Visible = False
@@ -475,6 +478,7 @@ Public Class frmMain
                     pnlEurope.Dock = DockStyle.Fill
                     pnlEurope.BringToFront()
                 End If
+                lstRegionsEurope.BringToFront()
             ElseIf myDisplayInfo.ShowUS Then
                 pnlIta.Visible = False
                 pnlWorld.Visible = False
@@ -488,6 +492,7 @@ Public Class frmMain
                     pnlUS.Dock = DockStyle.Fill
                     pnlUS.BringToFront()
                 End If
+                lstRegionsUS.BringToFront()
             End If
 
             myDisplayInfo.DailyIncrements = chkDaily.Checked
@@ -670,7 +675,7 @@ Public Class frmMain
     Private Sub lstRegions_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstRegions.SelectedIndexChanged
         UpdateAndRefresh(False)
     End Sub
-    Private Sub labLastUpdateInfo_Click(sender As Object, e As EventArgs) 
+    Private Sub labLastUpdateInfo_Click(sender As Object, e As EventArgs) Handles labLastUpdateInfo.Click
         Try
             Dim startInfo As New ProcessStartInfo
             Select Case myDisplayInfo.ActiveArea
@@ -750,6 +755,7 @@ Public Class frmMain
         Catch ex As Exception
             MsgBox(ex.Message)
         Finally
+            Me.UseWaitCursor = False
             EnableControls(True)
         End Try
     End Sub
@@ -850,9 +856,6 @@ Public Class frmMain
         FillListBoxes()
         UpdateAndRefresh(False)
     End Sub
-    Private Sub cbITAResolution_SelectedIndexChanged(sender As Object, e As EventArgs)
-        UpdateAndRefresh(False)
-    End Sub
     Private Sub mnEurope_Click(sender As Object, e As EventArgs) Handles mnEurope.Click
         myDisplayInfo.ActiveArea = cDisplayInfo.enActiveArea.Europe
         UpdateAndRefresh(False)
@@ -878,10 +881,6 @@ Public Class frmMain
         UpdateAndRefresh(False)
     End Sub
     Private Sub lstRegionsUS_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstRegionsUS.SelectedIndexChanged
-        UpdateAndRefresh(False)
-    End Sub
-
-    Private Sub cbChartType_SelectedIndexChanged(sender As Object, e As EventArgs)
         UpdateAndRefresh(False)
     End Sub
     Private Sub lstRegionsEurope_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstRegionsEurope.SelectedIndexChanged

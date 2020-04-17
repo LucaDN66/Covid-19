@@ -67,7 +67,7 @@ Partial Class frmMain
         Me.labLastUpdateInfo = New System.Windows.Forms.Label()
         Me.pnlLineSpacer = New System.Windows.Forms.Panel()
         Me.btShowMap = New System.Windows.Forms.Button()
-        Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.PanelEstimate = New System.Windows.Forms.Panel()
         Me.chkNormalize = New System.Windows.Forms.CheckBox()
         Me.btDateShiftLeft = New System.Windows.Forms.Button()
         Me.btDateShiftRight = New System.Windows.Forms.Button()
@@ -93,7 +93,7 @@ Partial Class frmMain
         Me.pnlLeft.SuspendLayout()
         Me.pnlIta.SuspendLayout()
         Me.mnMain.SuspendLayout()
-        Me.Panel1.SuspendLayout()
+        Me.PanelEstimate.SuspendLayout()
         Me.pnlInvisible.SuspendLayout()
         Me.pnlEurope.SuspendLayout()
         Me.pnlUS.SuspendLayout()
@@ -208,9 +208,9 @@ Partial Class frmMain
         Me.labErrorValue.Cursor = System.Windows.Forms.Cursors.Default
         Me.labErrorValue.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.labErrorValue.ImageAlign = System.Drawing.ContentAlignment.BottomRight
-        Me.labErrorValue.Location = New System.Drawing.Point(266, 24)
+        Me.labErrorValue.Location = New System.Drawing.Point(5, 202)
         Me.labErrorValue.Name = "labErrorValue"
-        Me.labErrorValue.Size = New System.Drawing.Size(59, 25)
+        Me.labErrorValue.Size = New System.Drawing.Size(66, 25)
         Me.labErrorValue.TabIndex = 35
         Me.labErrorValue.Text = "1000"
         Me.labErrorValue.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -220,19 +220,19 @@ Partial Class frmMain
         Me.labError.Cursor = System.Windows.Forms.Cursors.Default
         Me.labError.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.labError.ImageAlign = System.Drawing.ContentAlignment.BottomRight
-        Me.labError.Location = New System.Drawing.Point(266, 4)
+        Me.labError.Location = New System.Drawing.Point(5, 184)
         Me.labError.Name = "labError"
-        Me.labError.Size = New System.Drawing.Size(59, 19)
+        Me.labError.Size = New System.Drawing.Size(66, 19)
         Me.labError.TabIndex = 34
-        Me.labError.Text = "Error"
+        Me.labError.Text = "Err"
         Me.labError.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'udCurPosition
         '
-        Me.udCurPosition.Location = New System.Drawing.Point(212, 24)
+        Me.udCurPosition.Location = New System.Drawing.Point(5, 158)
         Me.udCurPosition.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.udCurPosition.Name = "udCurPosition"
-        Me.udCurPosition.Size = New System.Drawing.Size(48, 25)
+        Me.udCurPosition.Size = New System.Drawing.Size(66, 25)
         Me.udCurPosition.TabIndex = 28
         Me.udCurPosition.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         Me.udCurPosition.Value = New Decimal(New Integer() {48, 0, 0, 0})
@@ -241,11 +241,11 @@ Partial Class frmMain
         '
         Me.udSigma.DecimalPlaces = 2
         Me.udSigma.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
-        Me.udSigma.Location = New System.Drawing.Point(158, 24)
+        Me.udSigma.Location = New System.Drawing.Point(5, 113)
         Me.udSigma.Maximum = New Decimal(New Integer() {4, 0, 0, 0})
         Me.udSigma.Minimum = New Decimal(New Integer() {1, 0, 0, 65536})
         Me.udSigma.Name = "udSigma"
-        Me.udSigma.Size = New System.Drawing.Size(48, 25)
+        Me.udSigma.Size = New System.Drawing.Size(66, 25)
         Me.udSigma.TabIndex = 26
         Me.udSigma.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         Me.udSigma.Value = New Decimal(New Integer() {15, 0, 0, 65536})
@@ -253,11 +253,11 @@ Partial Class frmMain
         'udEstimatedMax
         '
         Me.udEstimatedMax.Increment = New Decimal(New Integer() {50, 0, 0, 0})
-        Me.udEstimatedMax.Location = New System.Drawing.Point(76, 24)
+        Me.udEstimatedMax.Location = New System.Drawing.Point(5, 70)
         Me.udEstimatedMax.Maximum = New Decimal(New Integer() {100000000, 0, 0, 0})
         Me.udEstimatedMax.Minimum = New Decimal(New Integer() {100, 0, 0, 0})
         Me.udEstimatedMax.Name = "udEstimatedMax"
-        Me.udEstimatedMax.Size = New System.Drawing.Size(76, 25)
+        Me.udEstimatedMax.Size = New System.Drawing.Size(66, 25)
         Me.udEstimatedMax.TabIndex = 24
         Me.udEstimatedMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         Me.udEstimatedMax.Value = New Decimal(New Integer() {10000, 0, 0, 0})
@@ -267,9 +267,9 @@ Partial Class frmMain
         Me.Label2.Cursor = System.Windows.Forms.Cursors.Default
         Me.Label2.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label2.ImageAlign = System.Drawing.ContentAlignment.BottomRight
-        Me.Label2.Location = New System.Drawing.Point(212, 3)
+        Me.Label2.Location = New System.Drawing.Point(5, 139)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(48, 20)
+        Me.Label2.Size = New System.Drawing.Size(66, 20)
         Me.Label2.TabIndex = 29
         Me.Label2.Text = "%"
         Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -279,9 +279,9 @@ Partial Class frmMain
         Me.Label1.Cursor = System.Windows.Forms.Cursors.Default
         Me.Label1.Font = New System.Drawing.Font("Segoe UI", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label1.ImageAlign = System.Drawing.ContentAlignment.BottomRight
-        Me.Label1.Location = New System.Drawing.Point(158, 0)
+        Me.Label1.Location = New System.Drawing.Point(5, 91)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(48, 20)
+        Me.Label1.Size = New System.Drawing.Size(66, 20)
         Me.Label1.TabIndex = 27
         Me.Label1.Text = "σ"
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -291,11 +291,11 @@ Partial Class frmMain
         Me.labMaxEstDeaths.Cursor = System.Windows.Forms.Cursors.Default
         Me.labMaxEstDeaths.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.labMaxEstDeaths.ImageAlign = System.Drawing.ContentAlignment.BottomRight
-        Me.labMaxEstDeaths.Location = New System.Drawing.Point(76, 3)
+        Me.labMaxEstDeaths.Location = New System.Drawing.Point(5, 51)
         Me.labMaxEstDeaths.Name = "labMaxEstDeaths"
-        Me.labMaxEstDeaths.Size = New System.Drawing.Size(76, 20)
+        Me.labMaxEstDeaths.Size = New System.Drawing.Size(66, 20)
         Me.labMaxEstDeaths.TabIndex = 25
-        Me.labMaxEstDeaths.Text = "Final value"
+        Me.labMaxEstDeaths.Text = "Final"
         Me.labMaxEstDeaths.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'btEstimate
@@ -515,22 +515,23 @@ Partial Class frmMain
         Me.btShowMap.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText
         Me.btShowMap.UseVisualStyleBackColor = True
         '
-        'Panel1
+        'PanelEstimate
         '
-        Me.Panel1.Controls.Add(Me.btEstimate)
-        Me.Panel1.Controls.Add(Me.udEstimatedMax)
-        Me.Panel1.Controls.Add(Me.labErrorValue)
-        Me.Panel1.Controls.Add(Me.udCurPosition)
-        Me.Panel1.Controls.Add(Me.udSigma)
-        Me.Panel1.Controls.Add(Me.labError)
-        Me.Panel1.Controls.Add(Me.labMaxEstDeaths)
-        Me.Panel1.Controls.Add(Me.Label2)
-        Me.Panel1.Controls.Add(Me.Label1)
-        Me.Panel1.Location = New System.Drawing.Point(539, 68)
-        Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(333, 54)
-        Me.Panel1.TabIndex = 37
-        Me.Panel1.Visible = False
+        Me.PanelEstimate.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.PanelEstimate.Controls.Add(Me.btEstimate)
+        Me.PanelEstimate.Controls.Add(Me.udEstimatedMax)
+        Me.PanelEstimate.Controls.Add(Me.labErrorValue)
+        Me.PanelEstimate.Controls.Add(Me.udCurPosition)
+        Me.PanelEstimate.Controls.Add(Me.udSigma)
+        Me.PanelEstimate.Controls.Add(Me.labMaxEstDeaths)
+        Me.PanelEstimate.Controls.Add(Me.Label1)
+        Me.PanelEstimate.Controls.Add(Me.Label2)
+        Me.PanelEstimate.Controls.Add(Me.labError)
+        Me.PanelEstimate.Location = New System.Drawing.Point(1046, 415)
+        Me.PanelEstimate.Name = "PanelEstimate"
+        Me.PanelEstimate.Size = New System.Drawing.Size(76, 231)
+        Me.PanelEstimate.TabIndex = 37
+        Me.PanelEstimate.Visible = False
         '
         'chkNormalize
         '
@@ -748,16 +749,16 @@ Partial Class frmMain
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.BackColor = System.Drawing.SystemColors.Window
         Me.ClientSize = New System.Drawing.Size(1139, 710)
-        Me.Controls.Add(Me.labSnapshot)
+        Me.Controls.Add(Me.pnlInvisible)
+        Me.Controls.Add(Me.PanelEstimate)
         Me.Controls.Add(Me.btDateShiftLeft)
         Me.Controls.Add(Me.btShowMap)
         Me.Controls.Add(Me.chkDaily)
         Me.Controls.Add(Me.chkNormalize)
         Me.Controls.Add(Me.btDateShiftRight)
-        Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.Chart1)
         Me.Controls.Add(Me.pnlLeft)
-        Me.Controls.Add(Me.pnlInvisible)
+        Me.Controls.Add(Me.labSnapshot)
         Me.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.KeyPreview = True
@@ -774,7 +775,7 @@ Partial Class frmMain
         Me.pnlIta.ResumeLayout(False)
         Me.mnMain.ResumeLayout(False)
         Me.mnMain.PerformLayout()
-        Me.Panel1.ResumeLayout(False)
+        Me.PanelEstimate.ResumeLayout(False)
         Me.pnlInvisible.ResumeLayout(False)
         Me.pnlEurope.ResumeLayout(False)
         Me.pnlUS.ResumeLayout(False)
@@ -801,7 +802,7 @@ Partial Class frmMain
     Friend WithEvents pnlLeft As Panel
     Friend WithEvents btEstimate As Button
     Friend WithEvents btShowMap As Button
-    Friend WithEvents Panel1 As Panel
+    Friend WithEvents PanelEstimate As Panel
     Friend WithEvents chkNormalize As CheckBox
     Friend WithEvents btDateShiftLeft As Button
     Friend WithEvents btDateShiftRight As Button

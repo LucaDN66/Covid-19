@@ -883,10 +883,19 @@
     End Sub
 
     Public Sub BuildHeatMap(ByVal WorldRecords As cWorldRecords, ByVal USRecords As cWorldRecords, ByVal itaRegionsRecords As cITARegionsRecords, ByVal EURecords As cWorldRecords, ByVal displayInfo As cDisplayInfo)
-
         'Delete old files
         If System.IO.File.Exists(MapHtml) Then
             System.IO.File.Delete(MapHtml)
+        End If
+
+        If displayInfo.ShowUS Then
+            'We only have deceased and positives from US, and these data are already available on google, so why bother?
+            Dim startInfo As New ProcessStartInfo
+            startInfo.FileName = "https://www.google.com/covid19-map/"
+            startInfo.UseShellExecute = True
+            startInfo.WindowStyle = ProcessWindowStyle.Normal
+            Process.Start(startInfo)
+            Return
         End If
 
         'Create new ones from template
@@ -1134,9 +1143,6 @@
 
             Dim startInfo As New ProcessStartInfo
             startInfo.FileName = RootFolder() + "MapLoader.html"
-            If displayInfo.ShowUS Then
-                startInfo.FileName = "https://www.google.com/covid19-map/"
-            End If
             startInfo.UseShellExecute = True
             startInfo.WindowStyle = ProcessWindowStyle.Normal
             Process.Start(startInfo)
