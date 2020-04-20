@@ -46,6 +46,7 @@
         Deaths = 0
         Confirmed = 1
         Recovered = 2
+        FatalityRates = 3
     End Enum
     Public ActiveItalianData As enItalianValueType = enItalianValueType.Deaths
     Public ActiveWorldData As enWorldValueType = enWorldValueType.Deaths

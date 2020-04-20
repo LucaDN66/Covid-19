@@ -245,7 +245,7 @@ Public Class frmMain
                 ReplaceCommasInQuotations(infoLines)
                 worldRecords.SetRecovered(infoLines, cWorldRecords.enRecordsVariant.World)
             End If
-
+            worldRecords.SetFatalityRates()
 
             europeanRecords = New cWorldRecords(worldRecords)
             europeanRecords.RemoveNonEuropeanEntries()

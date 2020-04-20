@@ -145,6 +145,16 @@ Public Class cObservedDataCollection
     Public Sub New()
 
     End Sub
+    Public Function FindValue(ByVal aRegion As String, ByVal aDate As Date) As Double
+        Dim countryIndex As Integer = IndexOfCountry(aRegion)
+        If countryIndex <> -1 Then
+            Dim valIndex As Integer = Me(countryIndex).DailyValues.GetIndexByDate(aDate)
+            If valIndex <> -1 Then
+                Return Me(countryIndex).DailyValues(valIndex).RecordAbsoluteValue
+            End If
+        End If
+        Return 0
+    End Function
     Public Function IndexOfCountry(ByVal aCountryOrRegion As String) As Integer
         For iCounter As Integer = 0 To Me.Count - 1
             If Me(iCounter).CountryOrRegion = aCountryOrRegion Then
@@ -181,6 +191,7 @@ Public Class cWorldRecords
     Public Deaths As New cObservedDataCollection
     Public Confirmed As New cObservedDataCollection
     Public Recovered As New cObservedDataCollection
+    Public FatalityRates As New cObservedDataCollection
     Public Sub New()
 
     End Sub
@@ -188,6 +199,7 @@ Public Class cWorldRecords
         Deaths = New cObservedDataCollection(anotherCollection.Deaths)
         Confirmed = New cObservedDataCollection(anotherCollection.Confirmed)
         Recovered = New cObservedDataCollection(anotherCollection.Recovered)
+        FatalityRates = New cObservedDataCollection(anotherCollection.FatalityRates)
     End Sub
     Private Sub RemoveNonEUEntriesFromList(ByVal aList As cObservedDataCollection)
         For iCounter As Integer = aList.Count - 1 To 0 Step -1
@@ -205,6 +217,7 @@ Public Class cWorldRecords
         RemoveNonEUEntriesFromList(Deaths)
         RemoveNonEUEntriesFromList(Confirmed)
         RemoveNonEUEntriesFromList(Recovered)
+        RemoveNonEUEntriesFromList(FatalityRates)
     End Sub
     Public Sub SetDeaths(ByVal csvLines() As String, ByVal recVariant As enRecordsVariant)
         Deaths.Clear()
@@ -220,6 +233,32 @@ Public Class cWorldRecords
         Recovered.Clear()
         AddValues(csvLines, Recovered, recVariant)
         Recovered = Recovered.OrderAscending(False)
+    End Sub
+    Public Sub SetFatalityRates()
+        FatalityRates = New cObservedDataCollection(Deaths)
+        For dCounter As Integer = 0 To FatalityRates.Count - 1
+            For vCounter As Integer = 0 To FatalityRates(dCounter).DailyValues.Count - 1
+                Dim correspondingConfirmed As Double = Confirmed.FindValue(FatalityRates(dCounter).CountryOrRegion, FatalityRates(dCounter).DailyValues(vCounter).RecordDate)
+                If correspondingConfirmed > 1000 Then
+                    FatalityRates(dCounter).DailyValues(vCounter).RecordAbsoluteValue = FatalityRates(dCounter).DailyValues(vCounter).RecordAbsoluteValue / correspondingConfirmed * 100
+                Else
+                    FatalityRates(dCounter).DailyValues(vCounter).RecordAbsoluteValue = 0
+                End If
+                FatalityRates(dCounter).DailyValues(vCounter).RecordPercentValue = FatalityRates(dCounter).DailyValues(vCounter).RecordAbsoluteValue
+            Next
+        Next
+
+        For iCounter As Integer = FatalityRates.Count - 1 To 0 Step -1
+            If FatalityRates(iCounter).DailyValues.Count > 0 Then
+                If FatalityRates(iCounter).DailyValues(FatalityRates(iCounter).DailyValues.Count - 1).RecordAbsoluteValue = 0 Then
+                    FatalityRates.RemoveAt(iCounter)
+                End If
+            End If
+        Next
+
+
+
+        FatalityRates = FatalityRates.OrderAscending(False)
     End Sub
     Public ReadOnly Property LastDate As Date
         Get
@@ -252,6 +291,8 @@ Public Class cWorldRecords
                     targetList = Deaths
                 Case cDisplayInfo.enWorldValueType.Recovered
                     targetList = Recovered
+                Case cDisplayInfo.enWorldValueType.FatalityRates
+                    targetList = FatalityRates
             End Select
             If targetList.Count > 0 Then
                 For dCounter As Integer = 0 To targetList.Count - 1
@@ -398,6 +439,8 @@ Public Class cWorldRecords
                 targetList = Deaths
             Case cDisplayInfo.enWorldValueType.Recovered
                 targetList = Recovered
+            Case cDisplayInfo.enWorldValueType.FatalityRates
+                targetList = FatalityRates
         End Select
 
         If targetList IsNot Nothing Then
@@ -428,6 +471,8 @@ Public Class cWorldRecords
                     targetList = Deaths
                 Case cDisplayInfo.enWorldValueType.Recovered
                     targetList = Recovered
+                Case cDisplayInfo.enWorldValueType.FatalityRates
+                    targetList = FatalityRates
             End Select
 
             If targetList IsNot Nothing Then

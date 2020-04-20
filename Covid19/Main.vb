@@ -993,6 +993,8 @@
                         targetList = WorldRecords.Deaths
                     Case cDisplayInfo.enWorldValueType.Recovered
                         targetList = WorldRecords.Recovered
+                    Case cDisplayInfo.enWorldValueType.FatalityRates
+                        targetList = WorldRecords.FatalityRates
                 End Select
             ElseIf displayInfo.ShowEurope Then
                 Select Case displayInfo.ActiveEUData
@@ -1002,6 +1004,8 @@
                         targetList = EURecords.Deaths
                     Case cDisplayInfo.enWorldValueType.Recovered
                         targetList = EURecords.Recovered
+                    Case cDisplayInfo.enWorldValueType.FatalityRates
+                        targetList = EURecords.FatalityRates
                 End Select
             ElseIf displayInfo.ShowUS Then
                 Select Case displayInfo.ActiveUSData
