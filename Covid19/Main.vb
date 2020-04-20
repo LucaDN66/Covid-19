@@ -264,11 +264,7 @@
 
         Try
             Dim FillWithExtremeValues As Boolean = True
-            Dim myChartType As DataVisualization.Charting.SeriesChartType = DataVisualization.Charting.SeriesChartType.Line
-            If displayInfo.DailyIncrements Then
-                FillWithExtremeValues = False
-                myChartType = DataVisualization.Charting.SeriesChartType.Column
-            End If
+            Dim myChartType As DataVisualization.Charting.SeriesChartType = DataVisualization.Charting.SeriesChartType.Column
 
             aChart.Annotations.Clear()
             aChart.Series.Clear()
@@ -535,6 +531,9 @@
             End If
 
             If displayInfo.ShowWorld Then
+                If pointsGlobalList.Count > 1 Then
+                    myChartType = DataVisualization.Charting.SeriesChartType.Line
+                End If
                 Dim StartDateInitialized As Boolean = False
                 For pCounter As Integer = 0 To pointsGlobalList.Count - 1
                     Dim dataSeriesGlobal As New System.Windows.Forms.DataVisualization.Charting.Series
@@ -560,6 +559,9 @@
             End If
 
             If displayInfo.ShowEurope Then
+                If pointsEUList.Count > 1 Then
+                    myChartType = DataVisualization.Charting.SeriesChartType.Line
+                End If
                 Dim StartDateInitialized As Boolean = False
                 For pCounter As Integer = 0 To pointsEUList.Count - 1
                     Dim dataSeriesEU As New System.Windows.Forms.DataVisualization.Charting.Series
@@ -585,6 +587,9 @@
 
             If displayInfo.ShowUS Then
                 Dim StartDateInitialized As Boolean = False
+                If pointsUSList.Count > 1 Then
+                    myChartType = DataVisualization.Charting.SeriesChartType.Line
+                End If
                 For pCounter As Integer = 0 To pointsUSList.Count - 1
                     Dim dataSeriesUS As New System.Windows.Forms.DataVisualization.Charting.Series
                     dataSeriesUS.Name = displayInfo.ActiveUSData.ToString + vbCrLf + " (" + displayInfo.ActiveUSRegions(pCounter).ToString + ")"
@@ -610,6 +615,9 @@
 
             If displayInfo.ActiveArea = cDisplayInfo.enActiveArea.ITA_Regions Then
                 Dim StartDateInitialized As Boolean = False
+                If pointsITARegionsList.Count > 1 Then
+                    myChartType = DataVisualization.Charting.SeriesChartType.Line
+                End If
                 For pCounter As Integer = 0 To pointsITARegionsList.Count - 1
                     Dim dataSeriesItaRegions As New System.Windows.Forms.DataVisualization.Charting.Series
                     dataSeriesItaRegions.Name = displayInfo.ActiveItalianData.ToString + vbCrLf + displayInfo.ActiveITARegions(pCounter).ToString
@@ -634,6 +642,9 @@
 
             If displayInfo.ActiveArea = cDisplayInfo.enActiveArea.ITA_Provinces Then
                 Dim StartDateInitialized As Boolean = False
+                If pointsITAProvincesList.Count > 1 Then
+                    myChartType = DataVisualization.Charting.SeriesChartType.Line
+                End If
                 For pCounter As Integer = 0 To pointsITAProvincesList.Count - 1
                     Dim dataSeriesItaProvinces As New System.Windows.Forms.DataVisualization.Charting.Series
                     dataSeriesItaProvinces.Name = cDisplayInfo.enItalianValueType.Total_Cases.ToString + vbCrLf + displayInfo.ActiveITAProvinces(pCounter).ToString
@@ -657,6 +668,7 @@
             End If
 
             If displayInfo.ShowEstimate Then
+                myChartType = DataVisualization.Charting.SeriesChartType.Line
                 Dim dataSeriesNorm As New System.Windows.Forms.DataVisualization.Charting.Series
                 dataSeriesNorm.Name = "Cumulative Normal"
                 dataSeriesNorm.Color = Color.Red
