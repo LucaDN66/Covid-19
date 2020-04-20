@@ -263,7 +263,7 @@
         If Not DataLoaded Then Return
 
         Try
-            Dim FillWithExtremeValues As Boolean = True
+            Dim FillWithExtremeValues As Boolean = Not displayInfo.DailyIncrements
             Dim myChartType As DataVisualization.Charting.SeriesChartType = DataVisualization.Charting.SeriesChartType.Column
 
             aChart.Annotations.Clear()
@@ -734,6 +734,12 @@
         Dim first2 As Double = GetSeriesFirstValue(series2)
         Dim last2 As Double = GetSeriesLastValue(series2)
 
+        If Not FillWithExtremeValues Then
+            first1 = 0
+            last1 = 0
+            first2 = 0
+            last2 = 0
+        End If
 
         Dim mergedDates As New List(Of Date)
         For iCounter As Integer = 0 To series1.Count - 1

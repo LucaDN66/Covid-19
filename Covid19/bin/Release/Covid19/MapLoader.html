@@ -11,32 +11,50 @@
 
       function drawRegionsMap() {
         var data = google.visualization.arrayToDataTable([
-          ['Province', 'Deaths',{role: 'tooltip', p:{html:true}}],
-          ['Lombardia',121.394663962513,'<b>Population:</b> 10.06M<br>Deaths: 12.2K<br>121.39 Per 100K people'],
-          ['Emilia-Romagna',67.7882182148265,'<b>Population:</b> 4.46M<br>Deaths: 3K<br>67.79 Per 100K people'],
-          ['Piemonte',53.5074095481459,'<b>Population:</b> 4.36M<br>Deaths: 2.3K<br>53.51 Per 100K people'],
-          ['Veneto',22.1572023953424,'<b>Population:</b> 4.91M<br>Deaths: 1.1K<br>22.16 Per 100K people'],
-          ['Liguria',59.8462570293556,'<b>Population:</b> 1.55M<br>Deaths: 928<br>59.85 Per 100K people'],
-          ['Marche',52.90863066301,'<b>Population:</b> 1.53M<br>Deaths: 807<br>52.91 Per 100K people'],
-          ['Toscana',17.0793918235026,'<b>Population:</b> 3.73M<br>Deaths: 637<br>17.08 Per 100K people'],
-          ['Trentino-Alto Adige',56.4220405940262,'<b>Population:</b> 1.07M<br>Deaths: 605<br>56.42 Per 100K people'],
-          ['Lazio',5.80022527326545,'<b>Population:</b> 5.88M<br>Deaths: 341<br>5.8 Per 100K people'],
-          ['Puglia',7.84303408269884,'<b>Population:</b> 4.03M<br>Deaths: 316<br>7.84 Per 100K people'],
-          ['Campania',5.23985071941082,'<b>Population:</b> 5.8M<br>Deaths: 304<br>5.24 Per 100K people'],
-          ['Abruzzo',19.6709312432334,'<b>Population:</b> 1.31M<br>Deaths: 258<br>19.67 Per 100K people'],
-          ['Friuli-Venezia Giulia',18.5151659781768,'<b>Population:</b> 1.22M<br>Deaths: 225<br>18.52 Per 100K people'],
-          ['Sicilia',4.000087201901,'<b>Population:</b> 5M<br>Deaths: 200<br>4 Per 100K people'],
-          ['IT-23',99.4700237136537,'<b>Population:</b> 125.7K<br>Deaths: 125<br>99.47 Per 100K people'],
-          ['Sardegna',5.24521054336112,'<b>Population:</b> 1.64M<br>Deaths: 86<br>5.25 Per 100K people'],
-          ['Calabria',3.85182096119881,'<b>Population:</b> 1.95M<br>Deaths: 75<br>3.85 Per 100K people'],
-          ['Umbria',6.57585188460514,'<b>Population:</b> 882K<br>Deaths: 58<br>6.58 Per 100K people'],
-          ['Basilicata',4.26386956822991,'<b>Population:</b> 562.9K<br>Deaths: 24<br>4.26 Per 100K people'],
-          ['Molise',5.56251779187676,'<b>Population:</b> 305.6K<br>Deaths: 17<br>5.56 Per 100K people'],
+          ['Country', 'Deaths',{role: 'tooltip', p:{html:true}}],
+          ['Italy',39.2260888306779,'<b>Population:</b> 60.32M<br>Deaths: 23.7K<br>39.23 Per 100K people'],
+          ['Spain',43.7452617142145,'<b>Population:</b> 46.75M<br>Deaths: 20.5K<br>43.75 Per 100K people'],
+          ['France',30.2481047786751,'<b>Population:</b> 65.27M<br>Deaths: 19.7K<br>30.25 Per 100K people'],
+          ['United Kingdom',23.7088610199825,'<b>Population:</b> 67.89M<br>Deaths: 16.1K<br>23.71 Per 100K people'],
+          ['Belgium',49.0352447184865,'<b>Population:</b> 11.59M<br>Deaths: 5.7K<br>49.04 Per 100K people'],
+          ['Germany',5.47360256694535,'<b>Population:</b> 83.78M<br>Deaths: 4.6K<br>5.47 Per 100K people'],
+          ['Netherlands',21.5758833798116,'<b>Population:</b> 17.13M<br>Deaths: 3.7K<br>21.58 Per 100K people'],
+          ['Sweden',15.2486344303274,'<b>Population:</b> 10.1M<br>Deaths: 1.5K<br>15.25 Per 100K people'],
+          ['Switzerland',16.0954458785144,'<b>Population:</b> 8.65M<br>Deaths: 1.4K<br>16.1 Per 100K people'],
+          ['Portugal',7.00225925835483,'<b>Population:</b> 10.2M<br>Deaths: 714<br>7 Per 100K people'],
+          ['Ireland',12.3537148025451,'<b>Population:</b> 4.94M<br>Deaths: 610<br>12.35 Per 100K people'],
+          ['Austria',5.01865451648928,'<b>Population:</b> 9.01M<br>Deaths: 452<br>5.02 Per 100K people'],
+          ['Romania',2.34435619118739,'<b>Population:</b> 19.24M<br>Deaths: 451<br>2.34 Per 100K people'],
+          ['Russia',0.247371316584564,'<b>Population:</b> 145.93M<br>Deaths: 361<br>0.25 Per 100K people'],
+          ['Poland',0.951208022298218,'<b>Population:</b> 37.85M<br>Deaths: 360<br>0.95 Per 100K people'],
+          ['Denmark',6.12892989574604,'<b>Population:</b> 5.79M<br>Deaths: 355<br>6.13 Per 100K people'],
+          ['Hungary',1.95645065070617,'<b>Population:</b> 9.66M<br>Deaths: 189<br>1.96 Per 100K people'],
+          ['Czech Republic',1.73685993093087,'<b>Population:</b> 10.71M<br>Deaths: 186<br>1.74 Per 100K people'],
+          ['Norway',3.04358356324687,'<b>Population:</b> 5.42M<br>Deaths: 165<br>3.04 Per 100K people'],
+          ['Ukraine',0.322405376422911,'<b>Population:</b> 43.73M<br>Deaths: 141<br>0.32 Per 100K people'],
+          ['Serbia',1.39630101548853,'<b>Population:</b> 8.74M<br>Deaths: 122<br>1.4 Per 100K people'],
+          ['Greece',1.08413522562581,'<b>Population:</b> 10.42M<br>Deaths: 113<br>1.08 Per 100K people'],
+          ['Finland',1.69653041481973,'<b>Population:</b> 5.54M<br>Deaths: 94<br>1.7 Per 100K people'],
+          ['Slovenia',3.55950971120832,'<b>Population:</b> 2.08M<br>Deaths: 74<br>3.56 Per 100K people'],
+          ['Luxembourg',11.661751690954,'<b>Population:</b> 626K<br>Deaths: 73<br>11.66 Per 100K people'],
+          ['Moldova',1.66089773257712,'<b>Population:</b> 4.03M<br>Deaths: 67<br>1.66 Per 100K people'],
+          ['North Macedonia',2.44795221597274,'<b>Population:</b> 2.08M<br>Deaths: 51<br>2.45 Per 100K people'],
+          ['Bosnia and Herzegovina',1.4630493178685,'<b>Population:</b> 3.28M<br>Deaths: 48<br>1.46 Per 100K people'],
+          ['Croatia',1.14487072339022,'<b>Population:</b> 4.11M<br>Deaths: 47<br>1.14 Per 100K people'],
+          ['Belarus',0.497390130488713,'<b>Population:</b> 9.45M<br>Deaths: 47<br>0.5 Per 100K people'],
+          ['Bulgaria',0.604451787414306,'<b>Population:</b> 6.95M<br>Deaths: 42<br>0.6 Per 100K people'],
+          ['Estonia',3.01537464145311,'<b>Population:</b> 1.33M<br>Deaths: 40<br>3.02 Per 100K people'],
+          ['Lithuania',1.28568274712935,'<b>Population:</b> 2.72M<br>Deaths: 35<br>1.29 Per 100K people'],
+          ['Albania',0.903468868721456,'<b>Population:</b> 2.88M<br>Deaths: 26<br>0.9 Per 100K people'],
+          ['Slovakia',0.219794631223073,'<b>Population:</b> 5.46M<br>Deaths: 12<br>0.22 Per 100K people'],
+          ['Iceland',2.63741673821881,'<b>Population:</b> 341.2K<br>Deaths: 9<br>2.64 Per 100K people'],
+          ['Montenegro',0.796094677947859,'<b>Population:</b> 628.1K<br>Deaths: 5<br>0.8 Per 100K people'],
+          ['Latvia',0.265083517212933,'<b>Population:</b> 1.89M<br>Deaths: 5<br>0.27 Per 100K people'],
+          ['Malta',0.679435524965858,'<b>Population:</b> 441.5K<br>Deaths: 3<br>0.68 Per 100K people'],
         ]);
 		//174ea6 Blue
         var options = {};
-		options['resolution'] = 'provinces'
-		options['region'] = 'IT'
+		options['region'] = 150
 		options['colorAxis'] = {colors : ['#E5E5E5','#FF0000']};
 		options['backgroundColor'] = '#FFFFFF';
 		options['datalessRegionColor'] = '#f5f5f5';
@@ -50,6 +68,7 @@
   </head>
   <body>
     <div id="regions_div" style="width: 1400px; height: 900px;"></div>
-	<h3>#HeaderParagraphTitle#</h3>
+	<p>Countries with less than 100K people are not displayed</p>
+	<h3>Deaths (Per 100K people)</h3>
   </body>
 </html>
