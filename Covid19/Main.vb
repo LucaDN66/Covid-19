@@ -984,8 +984,10 @@
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphText#", "Countries with less than 100K people are not displayed")
                 ElseIf displayInfo.ShowUS Then
                     HtmlLines.RemoveAt(lCounter)
+                    lCounter = lCounter - 1
                 Else
                     HtmlLines.RemoveAt(lCounter)
+                    lCounter = lCounter - 1
                 End If
             ElseIf HtmlLines(lCounter).Contains("var options = {};") Then
                 If displayInfo.ShowITA Then
