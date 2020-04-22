@@ -99,7 +99,7 @@ Public Class cITARegionsRecords
         For lCounter As Integer = 0 To allLines.Count - 1
             Dim lineParts() As String = allLines(lCounter).Split(",")
             Dim thisLineRegion As String = lineParts(3)
-            Dim thisLineCoord As New Tuple(Of Double, Double)(CDbl(lineParts(4)), CDbl(lineParts(5)))
+            Dim thisLineCoord As New Tuple(Of Double, Double)(CdblEx(lineParts(4)), CdblEx(lineParts(5)))
             If Not AllRegionNames.Contains(thisLineRegion) Then
                 AllRegionNames.Add(thisLineRegion)
                 AllRegionCoords.Add(thisLineCoord)
@@ -211,7 +211,7 @@ Public Class cITARegionsRecords
                     Dim thisCountryVals As New cCountryValues
                     thisCountryVals.ProvinceOrState = lineParts(0)
                     thisCountryVals.CountryOrRegion = lineParts(1)
-                    thisCountryVals.Coordinates = New Tuple(Of Double, Double)(CDbl(lineParts(2)), CDbl(lineParts(3)))
+                    thisCountryVals.Coordinates = New Tuple(Of Double, Double)(CdblEx(lineParts(2)), CdblEx(lineParts(3)))
                     Dim AllValues As New System.Collections.Generic.List(Of Integer)
                     For partCounter As Integer = 4 To lineParts.Count - 1
                         If lineParts(partCounter).Length > 0 Then

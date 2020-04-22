@@ -69,11 +69,11 @@ Public Class cITAProvincesRecords
         Dim AllProvincesCoords As New List(Of Tuple(Of Double, Double))
         For lCounter As Integer = 0 To allLines.Count - 1
             Dim lineParts() As String = allLines(lCounter).Split(",")
-            Dim thisLinePCode As Double = CDbl(lineParts(4))
+            Dim thisLinePCode As Double = CdblEx(lineParts(4))
             If thisLinePCode < 900 Then
                 Dim thisLineRegion As String = lineParts(3)
                 Dim thisLineProvince As String = lineParts(5)
-                Dim thisLineCoord As New Tuple(Of Double, Double)(CDbl(lineParts(7)), CDbl(lineParts(8)))
+                Dim thisLineCoord As New Tuple(Of Double, Double)(CdblEx(lineParts(7)), CdblEx(lineParts(8)))
                 If Not AllProvincesNames.Contains(thisLineProvince) Then
                     AllProvincesNames.Add(thisLineProvince)
                     AllProvincesCoords.Add(thisLineCoord)
@@ -145,7 +145,7 @@ Public Class cITAProvincesRecords
                     Dim thisCountryVals As New cCountryValues
                     thisCountryVals.ProvinceOrState = lineParts(0)
                     thisCountryVals.CountryOrRegion = lineParts(1)
-                    thisCountryVals.Coordinates = New Tuple(Of Double, Double)(CDbl(lineParts(2)), CDbl(lineParts(3)))
+                    thisCountryVals.Coordinates = New Tuple(Of Double, Double)(CdblEx(lineParts(2)), CdblEx(lineParts(3)))
                     Dim AllValues As New System.Collections.Generic.List(Of Double)
                     For partCounter As Integer = 4 To lineParts.Count - 1
                         If lineParts(partCounter).Length > 0 Then

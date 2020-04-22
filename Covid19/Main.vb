@@ -1229,5 +1229,58 @@
         End If
     End Function
 
+    Public Function CdblEx(ByVal str As String) As Double
+        Try
+            If (str Is Nothing) OrElse (str.Length = 0) Then
+                Return 0
+            End If
+
+            If str.ToUpper = "DOUBLE.MAXVALUE" Then
+                Return Double.MaxValue
+            End If
+            If str.ToUpper = "DOUBLE.MINVALUE" Then
+                Return Double.MinValue
+            End If
+
+            Dim myParts() As String = str.Split(";")
+            If myParts.Length > 0 Then
+                str = myParts(0)
+            End If
+
+            If System.Globalization.NumberFormatInfo.CurrentInfo.NumberDecimalSeparator = "." Then
+                str = str.Replace(",", ".")
+            Else
+                str = str.Replace(".", ",")
+            End If
+            Dim LastChar As Char
+            Do While True
+                If str.Length > 0 Then
+                Else
+                    Exit Do
+                End If
+                LastChar = str.Substring(str.Length - 1, 1)
+                If Not IsNumeric(LastChar) Then
+                    str = str.TrimEnd(LastChar)
+                Else
+                    Exit Do
+                End If
+            Loop
+            If str.Length > 0 Then
+                If str.ToUpper.Contains("E") Then
+                    Dim expNotParts() As String = str.ToUpper.Split("E")
+                    Dim retVal As Double = Double.Parse(expNotParts(0), System.Globalization.NumberFormatInfo.CurrentInfo)
+                    retVal = retVal * 10 ^ (Double.Parse(expNotParts(1), System.Globalization.NumberFormatInfo.CurrentInfo))
+                    Return retVal
+                Else
+                    Return Double.Parse(str, System.Globalization.NumberFormatInfo.CurrentInfo)
+                End If
+            Else
+                Return 0
+            End If
+        Catch ex As Exception
+            MsgBox("DoubleFromString: cannot process string '" + str + "'" + vbCrLf + ex.Message)
+            Return 0
+        End Try
+    End Function
 
 End Module

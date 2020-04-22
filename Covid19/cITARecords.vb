@@ -22,17 +22,17 @@
 
             'ricoverati_con_sintomi,terapia_intensiva,totale_ospedalizzati,isolamento_domiciliare,totale_positivi,variazione_totale_positivi,nuovi_positivi,dimessi_guariti,deceduti,totale_casi,tamponi
             stato = lineParts(1)
-            ricoverati_con_sintomi = New Tuple(Of Double, Double)(CInt(lineParts(2)), CDbl(lineParts(2)) / cPopulation.ITATotalPopulation)
-            terapia_intensiva = New Tuple(Of Double, Double)(CInt(lineParts(3)), CDbl(lineParts(3)) / cPopulation.ITATotalPopulation)
-            totale_ospedalizzati = New Tuple(Of Double, Double)(CInt(lineParts(4)), CDbl(lineParts(4)) / cPopulation.ITATotalPopulation)
-            isolamento_domiciliare = New Tuple(Of Double, Double)(CInt(lineParts(5)), CDbl(lineParts(5)) / cPopulation.ITATotalPopulation)
-            totale_positivi = New Tuple(Of Double, Double)(CInt(lineParts(6)), CDbl(lineParts(6)) / cPopulation.ITATotalPopulation)
-            variazione_totale_positivi = New Tuple(Of Double, Double)(CInt(lineParts(7)), CDbl(lineParts(7)) / cPopulation.ITATotalPopulation)
-            nuovi_positivi = New Tuple(Of Double, Double)(CInt(lineParts(8)), CDbl(lineParts(8)) / cPopulation.ITATotalPopulation)
-            dimessi_guariti = New Tuple(Of Double, Double)(CInt(lineParts(9)), CDbl(lineParts(9)) / cPopulation.ITATotalPopulation)
-            deceduti = New Tuple(Of Double, Double)(CInt(lineParts(10)), CDbl(lineParts(10)) / cPopulation.ITATotalPopulation)
-            totale_casi = New Tuple(Of Double, Double)(CInt(lineParts(11)), CDbl(lineParts(11)) / cPopulation.ITATotalPopulation)
-            tamponi = New Tuple(Of Double, Double)(CInt(lineParts(12)), CDbl(lineParts(12)) / cPopulation.ITATotalPopulation)
+            ricoverati_con_sintomi = New Tuple(Of Double, Double)(CInt(lineParts(2)), CdblEx(lineParts(2)) / cPopulation.ITATotalPopulation)
+            terapia_intensiva = New Tuple(Of Double, Double)(CInt(lineParts(3)), CdblEx(lineParts(3)) / cPopulation.ITATotalPopulation)
+            totale_ospedalizzati = New Tuple(Of Double, Double)(CInt(lineParts(4)), CdblEx(lineParts(4)) / cPopulation.ITATotalPopulation)
+            isolamento_domiciliare = New Tuple(Of Double, Double)(CInt(lineParts(5)), CdblEx(lineParts(5)) / cPopulation.ITATotalPopulation)
+            totale_positivi = New Tuple(Of Double, Double)(CInt(lineParts(6)), CdblEx(lineParts(6)) / cPopulation.ITATotalPopulation)
+            variazione_totale_positivi = New Tuple(Of Double, Double)(CInt(lineParts(7)), CdblEx(lineParts(7)) / cPopulation.ITATotalPopulation)
+            nuovi_positivi = New Tuple(Of Double, Double)(CInt(lineParts(8)), CdblEx(lineParts(8)) / cPopulation.ITATotalPopulation)
+            dimessi_guariti = New Tuple(Of Double, Double)(CInt(lineParts(9)), CdblEx(lineParts(9)) / cPopulation.ITATotalPopulation)
+            deceduti = New Tuple(Of Double, Double)(CInt(lineParts(10)), CdblEx(lineParts(10)) / cPopulation.ITATotalPopulation)
+            totale_casi = New Tuple(Of Double, Double)(CInt(lineParts(11)), CdblEx(lineParts(11)) / cPopulation.ITATotalPopulation)
+            tamponi = New Tuple(Of Double, Double)(CInt(lineParts(12)), CdblEx(lineParts(12)) / cPopulation.ITATotalPopulation)
 
         End If
     End Sub

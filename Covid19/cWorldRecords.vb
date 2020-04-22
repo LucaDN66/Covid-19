@@ -370,10 +370,10 @@ Public Class cWorldRecords
                     If USRecordMode Then
                         thisCountryVals.ProvinceOrState = lineParts(5)
                         thisCountryVals.CountryOrRegion = lineParts(6)
-                        thisCountryVals.Coordinates = New Tuple(Of Double, Double)(CDbl(lineParts(8)), CDbl(lineParts(9)))
+                        thisCountryVals.Coordinates = New Tuple(Of Double, Double)(CdblEx(lineParts(8)), CdblEx(lineParts(9)))
                         If USDeathsHeader Then
                             'These records also contain the population
-                            thisCountryVals.Population = CDbl(lineParts(11))
+                            thisCountryVals.Population = CdblEx(lineParts(11))
                         Else
                             'No population on these lines, we need to add it
                             thisCountryVals.Population = Population.GetUSStatePopulation(thisCountryVals.CountryOrRegion)
@@ -382,7 +382,7 @@ Public Class cWorldRecords
                         'No population on these lines, we need to add it
                         thisCountryVals.ProvinceOrState = lineParts(0)
                         thisCountryVals.CountryOrRegion = lineParts(1)
-                        thisCountryVals.Coordinates = New Tuple(Of Double, Double)(CDbl(lineParts(2)), CDbl(lineParts(3)))
+                        thisCountryVals.Coordinates = New Tuple(Of Double, Double)(CdblEx(lineParts(2)), CdblEx(lineParts(3)))
                         thisCountryVals.Population = Population.GetWorldCountryPopulation(thisCountryVals.CountryOrRegion)
                     End If
                     Dim AllValues As New System.Collections.Generic.List(Of Double)
