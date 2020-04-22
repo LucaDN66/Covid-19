@@ -445,6 +445,4 @@
             Return 0
         End Try
     End Function
-
-
 End Class
