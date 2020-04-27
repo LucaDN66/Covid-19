@@ -120,7 +120,6 @@ End Class
             End If
         Next
     End Sub
-
     Public ReadOnly Property LatestDate As Date
         Get
             Dim retVal As New Date(2000, 1, 1)

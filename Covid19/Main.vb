@@ -8,7 +8,7 @@
         Return myPopulation
     End Function
     Public NormalizeToPopulation As Boolean = False
-
+    Public UseMovingAverage As Boolean = True
     Public Function IniFileName() As String
         Return RootFolder() + "Covid19.ini"
     End Function
@@ -103,6 +103,7 @@
                 End If
             Next
         End If
+        retVal = CalcMovingAverage(retVal)
         Return retVal
     End Function
     Public Function GetPlotPointsItaRegionFirst(ByVal ItaRegionRecords As cITARegionsRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
@@ -124,6 +125,7 @@
                 End If
             Next
         End If
+        retVal = CalcMovingAverage(retVal)
         Return retVal
     End Function
     Public Function GetPlotPointsEURegionFirst(ByVal EURecords As cWorldRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
@@ -145,6 +147,7 @@
                 End If
             Next
         End If
+        retVal = CalcMovingAverage(retVal)
         Return retVal
     End Function
     Public Function GetPlotPointsWorldRegionFirst(ByVal worldRecords As cWorldRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
@@ -166,6 +169,7 @@
                 End If
             Next
         End If
+        retVal = CalcMovingAverage(retVal)
         Return retVal
     End Function
     Public Function GetPlotPointsUSRegionFirst(ByVal usRecords As cWorldRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
@@ -187,6 +191,7 @@
                 End If
             Next
         End If
+        retVal = CalcMovingAverage(retVal)
         Return retVal
     End Function
     Public Function GetPlotPointsIta(ByVal ItaRecords As cITARecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
@@ -257,6 +262,7 @@
                 End If
             Next
         End If
+        retVal = CalcMovingAverage(retVal)
         Return retVal
     End Function
     Public Sub RefreshVisualization(ByVal aChart As DataVisualization.Charting.Chart, ByVal ItaRecords As cITARecords, ByVal italianRegionRecords As cITARegionsRecords, ByVal italianProvincesRecords As cITAProvincesRecords, ByVal worldRecords As cWorldRecords, ByVal USRecords As cWorldRecords, ByVal EURecords As cWorldRecords, ByVal displayInfo As cDisplayInfo)
@@ -265,6 +271,7 @@
         Try
             Dim FillWithExtremeValues As Boolean = Not displayInfo.DailyIncrements
             Dim myChartType As DataVisualization.Charting.SeriesChartType = DataVisualization.Charting.SeriesChartType.Column
+            Dim isolationStartIndex As Integer = -1
 
             aChart.Annotations.Clear()
             aChart.Series.Clear()
@@ -296,6 +303,7 @@
                     Next
                     pointsITARegionsList.Add(pointsGlobal)
                 Next
+                pointsITARegionsList = CalcMovingAverage(pointsITARegionsList)
 
                 'Series need to be aligned
                 If pointsITARegionsList.Count > 0 Then
@@ -336,6 +344,7 @@
                     Next
                     pointsITAProvincesList.Add(pointsGlobal)
                 Next
+                pointsITAProvincesList = CalcMovingAverage(pointsITAProvincesList)
 
                 'Series need to be aligned
                 If pointsITAProvincesList.Count > 0 Then
@@ -376,6 +385,7 @@
                     Next
                     pointsGlobalList.Add(pointsGlobal)
                 Next
+                pointsGlobalList = CalcMovingAverage(pointsGlobalList)
 
                 'Series need to be aligned
                 If pointsGlobalList.Count > 1 Then
@@ -411,6 +421,7 @@
                     Next
                     pointsEUList.Add(pointsEU)
                 Next
+                pointsEUList = CalcMovingAverage(pointsEUList)
 
                 'Series need to be aligned
                 If pointsEUList.Count > 1 Then
@@ -446,6 +457,7 @@
                     Next
                     pointsUSList.Add(pointsUS)
                 Next
+                pointsUSList = CalcMovingAverage(pointsUSList)
 
                 'Series need to be aligned
                 If pointsUSList.Count > 1 Then
@@ -459,7 +471,6 @@
                     Next
                 End If
             End If
-
 
             Dim pointsNormal As New List(Of Tuple(Of Date, Double))
             If displayInfo.ShowEstimate Then
@@ -499,35 +510,21 @@
                 If pointsITA.Count > 0 Then
                     ChartStartingDate = pointsITA(0).Item1
                 End If
-                Dim restrictionStartDate As New Date(2020, 3, 11)
-                Dim ts As New TimeSpan(18, 0, 0)
-                restrictionStartDate = restrictionStartDate.Date + ts
 
-
-                Dim isolationStartIndex As Integer = -1
                 For iCounter As Integer = 0 To pointsITA.Count - 1
                     If pointsITA(iCounter).Item2 > max Then
                         max = pointsITA(iCounter).Item2
                     End If
                     dataSeriesITA.Points.AddXY(pointsITA(iCounter).Item1, pointsITA(iCounter).Item2)
-                    If pointsITA(iCounter).Item1 = restrictionStartDate Then
-                        isolationStartIndex = iCounter
+
+                    If pointsITA(iCounter).Item1 = cITARecords.RestrictionStartDate_ITA Then
+                        If isolationStartIndex = -1 Then
+                            isolationStartIndex = iCounter
+                            AddIsolationAnnotation(aChart, dataSeriesITA, isolationStartIndex)
+                        End If
                     End If
                 Next
-                dataSeriesITA.Name = CStr(max) + " " + displayInfo.ActiveItalianData.ToString + vbCrLf + "(Italia-Protezione Civile)"
-
-                If isolationStartIndex <> -1 Then
-                    Dim la As New DataVisualization.Charting.VerticalLineAnnotation
-                    la.LineColor = Color.Red
-                    la.LineWidth = 2
-                    la.LineDashStyle = DataVisualization.Charting.ChartDashStyle.Dash
-                    la.IsInfinitive = True
-                    la.AnchorDataPoint = dataSeriesITA.Points(isolationStartIndex)
-                    la.SmartLabelStyle.AllowOutsidePlotArea = False
-                    la.ToolTip = "11 March 2020, social distancing introduced"
-                    aChart.Annotations.Add(la)
-                End If
-
+                dataSeriesITA.Name = strCutDecimals(max, 2) + " " + displayInfo.ActiveItalianData.ToString + vbCrLf + "(Italia-Protezione Civile)"
             End If
 
             If displayInfo.ShowWorld Then
@@ -636,6 +633,12 @@
                             End If
                         End If
                         dataSeriesItaRegions.Points.AddXY(pointsITARegionsList(pCounter).Item(iCounter).Item1, pointsITARegionsList(pCounter).Item(iCounter).Item2)
+                        If pointsITARegionsList(pCounter).Item(iCounter).Item1 = cITARecords.RestrictionStartDate_ITA Then
+                            If isolationStartIndex = -1 Then
+                                isolationStartIndex = iCounter
+                                AddIsolationAnnotation(aChart, dataSeriesItaRegions, isolationStartIndex)
+                            End If
+                        End If
                     Next
                 Next
             End If
@@ -663,6 +666,13 @@
                             End If
                         End If
                         dataSeriesItaProvinces.Points.AddXY(pointsITAProvincesList(pCounter).Item(iCounter).Item1, pointsITAProvincesList(pCounter).Item(iCounter).Item2)
+
+                        If pointsITAProvincesList(pCounter).Item(iCounter).Item1 = cITARecords.RestrictionStartDate_ITA Then
+                            If isolationStartIndex = -1 Then
+                                isolationStartIndex = iCounter
+                                AddIsolationAnnotation(aChart, dataSeriesItaProvinces, isolationStartIndex)
+                            End If
+                        End If
                     Next
                 Next
             End If
@@ -686,6 +696,17 @@
         Catch ex As Exception
             MsgBox(ex.Message)
         End Try
+    End Sub
+    Private Sub AddIsolationAnnotation(ByVal aChart As DataVisualization.Charting.Chart, ByVal aSeries As DataVisualization.Charting.Series, ByVal isolationStartIndex As Integer)
+        Dim la As New DataVisualization.Charting.VerticalLineAnnotation
+        la.LineColor = Color.Red
+        la.LineWidth = 2
+        la.LineDashStyle = DataVisualization.Charting.ChartDashStyle.Dash
+        la.IsInfinitive = True
+        la.AnchorDataPoint = aSeries.Points(isolationStartIndex)
+        la.SmartLabelStyle.AllowOutsidePlotArea = False
+        la.ToolTip = "11 March 2020, social distancing introduced"
+        aChart.Annotations.Add(la)
     End Sub
 
     Private Function GetSeriesFirstValue(ByRef aSeries As List(Of Tuple(Of Date, Double))) As Double
@@ -1149,7 +1170,7 @@
                 ''Hello World<br>This is <b>Lombardia</b><br><img src="https://www.gstatic.com/onebox/sports/logos/flags/united_kingdom_icon_square.png"/>'
 
 
-                Dim thisCountryLine As String = "          ['" + thisCountry + "'," + CStr((thisVal)) + "," + thisTooltip + "],"
+                Dim thisCountryLine As String = "          ['" + thisCountry + "'," + strCutDecimals(thisVal, 2) + "," + thisTooltip + "],"
                 countryLines.Add(thisCountryLine)
             Next
 
@@ -1284,5 +1305,57 @@
             Return 0
         End Try
     End Function
+    Private Function CalcMovingAverage_ex(ByVal values As List(Of Double)) As List(Of Double)
+        Dim sideItemsCount As Integer = 3 '7 values will be used, i.e. a week.
+        Dim retVal As New List(Of Double)
+        Dim maItems As New List(Of Double)
+        For iCounter As Integer = 0 To values.Count - 1
+            maItems.Clear()
+            maItems.Add(values(iCounter))
+            For shifter As Integer = 1 To sideItemsCount
+                If ((iCounter - shifter) >= 0) Then
+                    maItems.Add(values(iCounter - shifter))
+                End If
+                If ((iCounter + shifter) <= (values.Count - 1)) Then
+                    maItems.Add(values(iCounter + shifter))
+                End If
+            Next
+            Dim maValue As Double = 0
+            If maItems.Count > 0 Then
+                For maCounter As Integer = 0 To maItems.Count - 1
+                    maValue += maItems(maCounter)
+                Next
+                maValue = maValue / maItems.Count
+            End If
+            retVal.Add(maValue)
+        Next
+        Return retVal
+    End Function
+    Public Function CalcMovingAverage(ByVal values As List(Of Tuple(Of Date, Double))) As List(Of Tuple(Of Date, Double))
+        If Not UseMovingAverage Then Return values
+
+        Dim retVal As New List(Of Tuple(Of Date, Double))
+
+        Dim vals As New List(Of Double)
+        For iCounter As Integer = 0 To values.Count - 1
+            vals.Add(values(iCounter).Item2)
+        Next
+        vals = CalcMovingAverage_ex(vals)
+        For iCounter As Integer = 0 To values.Count - 1
+            retVal.Add(New Tuple(Of Date, Double)(values(iCounter).Item1, vals(iCounter)))
+        Next
+        Return retVal
+
+    End Function
+    Public Function CalcMovingAverage(ByVal values As List(Of List(Of Tuple(Of Date, Double)))) As List(Of List(Of Tuple(Of Date, Double)))
+        If Not UseMovingAverage Then Return values
+
+        Dim retval As New List(Of List(Of Tuple(Of Date, Double)))
+        For lCounter As Integer = 0 To values.Count - 1
+            retval.Add(CalcMovingAverage(values(lCounter)))
+        Next
+        Return retval
+    End Function
+
 
 End Module

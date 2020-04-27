@@ -23,9 +23,9 @@ Partial Class frmMain
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.cbChartItemITA = New System.Windows.Forms.ComboBox()
@@ -86,6 +86,7 @@ Partial Class frmMain
         Me.Panel3 = New System.Windows.Forms.Panel()
         Me.labSelectionHintWorld = New System.Windows.Forms.Label()
         Me.labSnapshot = New System.Windows.Forms.Label()
+        Me.chkMA = New System.Windows.Forms.CheckBox()
         CType(Me.Chart1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.udCurPosition, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.udSigma, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -102,18 +103,18 @@ Partial Class frmMain
         '
         'Chart1
         '
-        ChartArea2.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea2)
+        ChartArea1.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea1)
         Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
-        Legend2.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend2)
+        Legend1.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend1)
         Me.Chart1.Location = New System.Drawing.Point(225, 0)
         Me.Chart1.Margin = New System.Windows.Forms.Padding(0)
         Me.Chart1.Name = "Chart1"
-        Series2.ChartArea = "ChartArea1"
-        Series2.Legend = "Legend1"
-        Series2.Name = "Series1"
-        Me.Chart1.Series.Add(Series2)
+        Series1.ChartArea = "ChartArea1"
+        Series1.Legend = "Legend1"
+        Series1.Name = "Series1"
+        Me.Chart1.Series.Add(Series1)
         Me.Chart1.Size = New System.Drawing.Size(914, 710)
         Me.Chart1.TabIndex = 9
         Me.Chart1.Text = "Chart1"
@@ -191,7 +192,7 @@ Partial Class frmMain
         Me.chkDaily.Anchor = System.Windows.Forms.AnchorStyles.Top
         Me.chkDaily.BackColor = System.Drawing.Color.Transparent
         Me.chkDaily.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.chkDaily.Location = New System.Drawing.Point(523, 2)
+        Me.chkDaily.Location = New System.Drawing.Point(436, 2)
         Me.chkDaily.Margin = New System.Windows.Forms.Padding(0)
         Me.chkDaily.Name = "chkDaily"
         Me.chkDaily.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
@@ -538,11 +539,11 @@ Partial Class frmMain
         Me.chkNormalize.Anchor = System.Windows.Forms.AnchorStyles.Top
         Me.chkNormalize.BackColor = System.Drawing.Color.Transparent
         Me.chkNormalize.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.chkNormalize.Location = New System.Drawing.Point(638, 2)
+        Me.chkNormalize.Location = New System.Drawing.Point(551, 2)
         Me.chkNormalize.Margin = New System.Windows.Forms.Padding(0)
         Me.chkNormalize.Name = "chkNormalize"
         Me.chkNormalize.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.chkNormalize.Size = New System.Drawing.Size(155, 22)
+        Me.chkNormalize.Size = New System.Drawing.Size(139, 22)
         Me.chkNormalize.TabIndex = 40
         Me.chkNormalize.Text = "Per 100K people"
         Me.chkNormalize.TextAlign = System.Drawing.ContentAlignment.BottomLeft
@@ -744,12 +745,30 @@ Partial Class frmMain
         Me.labSnapshot.Text = "Application starting, please wait ..."
         Me.labSnapshot.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
+        'chkMA
+        '
+        Me.chkMA.Anchor = System.Windows.Forms.AnchorStyles.Top
+        Me.chkMA.BackColor = System.Drawing.Color.Transparent
+        Me.chkMA.Checked = True
+        Me.chkMA.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.chkMA.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.chkMA.Location = New System.Drawing.Point(690, 2)
+        Me.chkMA.Margin = New System.Windows.Forms.Padding(0)
+        Me.chkMA.Name = "chkMA"
+        Me.chkMA.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.chkMA.Size = New System.Drawing.Size(142, 22)
+        Me.chkMA.TabIndex = 45
+        Me.chkMA.Text = "Moving average"
+        Me.chkMA.TextAlign = System.Drawing.ContentAlignment.BottomLeft
+        Me.chkMA.UseVisualStyleBackColor = False
+        '
         'frmMain
         '
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.BackColor = System.Drawing.SystemColors.Window
         Me.ClientSize = New System.Drawing.Size(1139, 710)
         Me.Controls.Add(Me.labSnapshot)
+        Me.Controls.Add(Me.chkMA)
         Me.Controls.Add(Me.pnlInvisible)
         Me.Controls.Add(Me.PanelEstimate)
         Me.Controls.Add(Me.btDateShiftLeft)
@@ -842,4 +861,5 @@ Partial Class frmMain
     Friend WithEvents ToolStripMenuItem4 As ToolStripSeparator
     Friend WithEvents CheckForUpdatedDataToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents labLastUpdateInfo As Label
+    Friend WithEvents chkMA As CheckBox
 End Class

@@ -414,6 +414,7 @@ Public Class frmMain
         Try
             myDisplayInfo.ShowEstimate = showEstimate
             NormalizeToPopulation = chkNormalize.Checked
+            UseMovingAverage = chkMA.Checked
 
             If myDisplayInfo.ShowITA Then
                 pnlUS.Visible = False
@@ -715,7 +716,7 @@ Public Class frmMain
             startDate = startDate.AddDays(CInt(Math.Truncate(xValue - 0.5)))
 
             If (xValue <= chArea.AxisX.Maximum) AndAlso (xValue >= chArea.AxisX.Minimum) AndAlso (yValue >= chArea.AxisY.Minimum) AndAlso (yValue <= chArea.AxisY.Maximum) Then
-                ToolTip1.SetToolTip(Chart1, startDate.ToShortDateString + ", " + CStr(CInt(yValue)))
+                ToolTip1.SetToolTip(Chart1, startDate.ToLongDateString + ", " + CStr(CInt(yValue)))
             Else
                 ToolTip1.SetToolTip(Chart1, "")
             End If
@@ -856,6 +857,12 @@ Public Class frmMain
         FillListBoxes()
         UpdateAndRefresh(False)
     End Sub
+    Private Sub chkMA_CheckedChanged(sender As Object, e As EventArgs) Handles chkMA.CheckedChanged
+        If SkipDataRefresh Then Return
+        UseMovingAverage = chkMA.Checked
+        UpdateAndRefresh(False)
+    End Sub
+
     Private Sub mnEurope_Click(sender As Object, e As EventArgs) Handles mnEurope.Click
         myDisplayInfo.ActiveArea = cDisplayInfo.enActiveArea.Europe
         UpdateAndRefresh(False)

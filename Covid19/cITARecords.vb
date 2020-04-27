@@ -49,6 +49,15 @@ Public Class cITARecords
     Public Sub New()
 
     End Sub
+    Public Shared ReadOnly Property RestrictionStartDate_ITA As Date
+        Get
+            Dim restrictionStartDate As New Date(2020, 3, 11)
+            Dim ts As New TimeSpan(18, 0, 0)
+            restrictionStartDate = restrictionStartDate.Date + ts
+            Return restrictionStartDate
+        End Get
+    End Property
+
     Public ReadOnly Property LastDate As Date
         Get
             Dim retVal As New Date(2000, 1, 1)
