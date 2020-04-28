@@ -1170,7 +1170,7 @@
                 ''Hello World<br>This is <b>Lombardia</b><br><img src="https://www.gstatic.com/onebox/sports/logos/flags/united_kingdom_icon_square.png"/>'
 
 
-                Dim thisCountryLine As String = "          ['" + thisCountry + "'," + strCutDecimals(thisVal, 2) + "," + thisTooltip + "],"
+                Dim thisCountryLine As String = "          ['" + thisCountry + "'," + strCutDecimals(thisVal, 2, False) + "," + thisTooltip + "],"
                 countryLines.Add(thisCountryLine)
             Next
 
@@ -1226,7 +1226,7 @@
     End Function
 #End Region
 
-    Public Function strCutDecimals(ByVal Value As Double, ByVal DesiredDecDigits As Integer) As String
+    Public Function strCutDecimals(ByVal Value As Double, ByVal DesiredDecDigits As Integer, Optional ByVal useKMBFormat As Boolean = True) As String
         Try
             If (Value = Double.NegativeInfinity OrElse Value = Double.PositiveInfinity OrElse Value = Double.MaxValue OrElse Value = Double.MinValue) Then
                 Return CStr(Value)
@@ -1235,7 +1235,11 @@
             If DesiredDecDigits > 8 Then
                 DesiredDecDigits = 8
             End If
-            Return ToKMB(Math.Round(Value, DesiredDecDigits))
+            If useKMBFormat Then
+                Return ToKMB(Math.Round(Value, DesiredDecDigits))
+            Else
+                Return CStr(Math.Round(Value, DesiredDecDigits))
+            End If
         Catch ex As Exception
             Return ToKMB(Value)
         End Try
