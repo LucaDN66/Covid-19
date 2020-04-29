@@ -68,16 +68,18 @@ Public Class cITAProvincesRecords
         Dim AllRegionsAndProvinces As New List(Of Tuple(Of String, String))
         Dim AllProvincesCoords As New List(Of Tuple(Of Double, Double))
         For lCounter As Integer = 0 To allLines.Count - 1
-            Dim lineParts() As String = allLines(lCounter).Split(",")
-            Dim thisLinePCode As Double = CdblEx(lineParts(4))
-            If thisLinePCode < 900 Then
-                Dim thisLineRegion As String = lineParts(3)
-                Dim thisLineProvince As String = lineParts(5)
-                Dim thisLineCoord As New Tuple(Of Double, Double)(CdblEx(lineParts(7)), CdblEx(lineParts(8)))
-                If Not AllProvincesNames.Contains(thisLineProvince) Then
-                    AllProvincesNames.Add(thisLineProvince)
-                    AllProvincesCoords.Add(thisLineCoord)
-                    AllRegionsAndProvinces.Add(New Tuple(Of String, String)(thisLineRegion, thisLineProvince))
+            If allLines(lCounter).Trim.Length > 0 Then
+                Dim lineParts() As String = allLines(lCounter).Split(",")
+                Dim thisLinePCode As Double = CdblEx(lineParts(4))
+                If thisLinePCode < 900 Then
+                    Dim thisLineRegion As String = lineParts(3)
+                    Dim thisLineProvince As String = lineParts(5)
+                    Dim thisLineCoord As New Tuple(Of Double, Double)(CdblEx(lineParts(7)), CdblEx(lineParts(8)))
+                    If Not AllProvincesNames.Contains(thisLineProvince) Then
+                        AllProvincesNames.Add(thisLineProvince)
+                        AllProvincesCoords.Add(thisLineCoord)
+                        AllRegionsAndProvinces.Add(New Tuple(Of String, String)(thisLineRegion, thisLineProvince))
+                    End If
                 End If
             End If
         Next

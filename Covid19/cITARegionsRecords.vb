@@ -97,12 +97,14 @@ Public Class cITARegionsRecords
         Dim AllRegionNames As New List(Of String)
         Dim AllRegionCoords As New List(Of Tuple(Of Double, Double))
         For lCounter As Integer = 0 To allLines.Count - 1
-            Dim lineParts() As String = allLines(lCounter).Split(",")
-            Dim thisLineRegion As String = lineParts(3)
-            Dim thisLineCoord As New Tuple(Of Double, Double)(CdblEx(lineParts(4)), CdblEx(lineParts(5)))
-            If Not AllRegionNames.Contains(thisLineRegion) Then
-                AllRegionNames.Add(thisLineRegion)
-                AllRegionCoords.Add(thisLineCoord)
+            If allLines(lCounter).Trim.Length > 0 Then
+                Dim lineParts() As String = allLines(lCounter).Split(",")
+                Dim thisLineRegion As String = lineParts(3)
+                Dim thisLineCoord As New Tuple(Of Double, Double)(CdblEx(lineParts(4)), CdblEx(lineParts(5)))
+                If Not AllRegionNames.Contains(thisLineRegion) Then
+                    AllRegionNames.Add(thisLineRegion)
+                    AllRegionCoords.Add(thisLineCoord)
+                End If
             End If
         Next
 
