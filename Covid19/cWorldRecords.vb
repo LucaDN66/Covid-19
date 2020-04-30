@@ -182,11 +182,6 @@ Public Class cObservedDataCollection
 End Class
 
 Public Class cWorldRecords
-    Public Enum enRecordsVariant As Integer
-        World = 0
-        USCities = 1
-    End Enum
-    Private myRecordsVariant As enRecordsVariant = enRecordsVariant.World
     Public Deaths As New cObservedDataCollection
     Public Confirmed As New cObservedDataCollection
     Public Recovered As New cObservedDataCollection
@@ -218,19 +213,19 @@ Public Class cWorldRecords
         RemoveNonEUEntriesFromList(Recovered)
         RemoveNonEUEntriesFromList(FatalityRates)
     End Sub
-    Public Sub SetDeaths(ByVal csvLines() As String, ByVal recVariant As enRecordsVariant)
+    Public Sub SetDeaths(ByVal csvLines() As String)
         Deaths.Clear()
-        AddValues(csvLines, Deaths, recVariant)
+        AddValues(csvLines, Deaths)
         Deaths = Deaths.OrderAscending(False)
     End Sub
-    Public Sub SetConfirmed(ByVal csvLines() As String, ByVal recVariant As enRecordsVariant)
+    Public Sub SetConfirmed(ByVal csvLines() As String)
         Confirmed.Clear()
-        AddValues(csvLines, Confirmed, recVariant)
+        AddValues(csvLines, Confirmed)
         Confirmed = Confirmed.OrderAscending(False)
     End Sub
-    Public Sub SetRecovered(ByVal csvLines() As String, ByVal recVariant As enRecordsVariant)
+    Public Sub SetRecovered(ByVal csvLines() As String)
         Recovered.Clear()
-        AddValues(csvLines, Recovered, recVariant)
+        AddValues(csvLines, Recovered)
         Recovered = Recovered.OrderAscending(False)
     End Sub
     Public Sub SetFatalityRates()
@@ -254,8 +249,6 @@ Public Class cWorldRecords
                 End If
             End If
         Next
-
-
 
         FatalityRates = FatalityRates.OrderAscending(False)
     End Sub
@@ -316,10 +309,9 @@ Public Class cWorldRecords
         End If
         Return retVal
     End Function
-    Public Sub AddValues(ByVal csvLines() As String, ByVal Countries As cObservedDataCollection, ByVal RecVariant As enRecordsVariant)
+    Public Sub AddValues(ByVal csvLines() As String, ByVal Countries As cObservedDataCollection)
         Try
             If (csvLines IsNot Nothing) AndAlso (csvLines.Count > 0) Then
-                myRecordsVariant = RecVariant
                 'First line is the header, which also contains all the dates covered
                 'Every following line is a country/region, with the data for all the dates defined above
 
@@ -330,6 +322,9 @@ Public Class cWorldRecords
                     If csvLines(0).ToUpper.Contains("POPULATION") Then
                         USDeathsHeader = True
                     End If
+                ElseIf csvLines(0).ToUpper.StartsWith("Area name,Area code,".ToUpper) Then
+                    AddUKValues(csvLines, Countries)
+                    Return
                 Else
                     'World records
                 End If
@@ -428,6 +423,83 @@ Public Class cWorldRecords
             MsgBox(ex.Message)
         End Try
     End Sub
+
+
+    Public Sub AddUKValues(ByVal csvLines() As String, ByVal Countries As cObservedDataCollection)
+        If csvLines.Count <= 0 Then Return
+        Dim DeathsMode As Boolean = False
+        If csvLines(0).ToUpper.Contains("DEATH") Then
+            DeathsMode = True
+        End If
+        Dim allLines As New Generic.List(Of String)
+        allLines.AddRange(csvLines)
+        allLines.RemoveAt(0) 'First line is the header and must be discarded
+
+        allLines.Reverse() 'Britons :(
+
+        'Extract all region names first
+        Dim AllRegionsNames As New List(Of String)
+        For lCounter As Integer = 0 To allLines.Count - 1
+            If allLines(lCounter).Trim.Length > 0 Then
+                Dim lineParts() As String = allLines(lCounter).Split(",")
+                Dim thisLineProvince As String = lineParts(0)
+                If Not AllRegionsNames.Contains(thisLineProvince) Then
+                    AllRegionsNames.Add(thisLineProvince)
+                End If
+            End If
+        Next
+
+        'Prepare the lists for all the regions
+        For rCounter As Integer = 0 To AllRegionsNames.Count - 1
+            Dim emptyCountryValues As New cCountryValues
+            emptyCountryValues.ProvinceOrState = AllRegionsNames(rCounter)
+            emptyCountryValues.CountryOrRegion = "UK"
+            Countries.Add(emptyCountryValues.Clone)
+        Next
+
+        'All lists are now ready to be filled with daily values
+        For lCounter As Integer = 0 To allLines.Count - 1
+            Dim lineParts() As String = allLines(lCounter).Split(",")
+            Dim thisLineRegion As String = "UK"
+            Dim thisLineProvince As String = lineParts(0)
+            If thisLineProvince.ToUpper.EndsWith("-Countyof".ToUpper) Then
+                thisLineProvince = thisLineProvince.Replace("-Countyof", "")
+            End If
+            If thisLineProvince.ToUpper.EndsWith("-Cityof".ToUpper) Then
+                thisLineProvince = thisLineProvince.Replace("-Cityof", "")
+            End If
+            Dim thisLineDate As Date
+            Date.TryParse(lineParts(3), thisLineDate)
+            Dim ts As New TimeSpan(18, 0, 0)
+            thisLineDate = thisLineDate.Date + ts
+
+            Dim thisLine_totale_casi As Integer = 0
+            If DeathsMode Then
+                thisLine_totale_casi = CInt(lineParts(5))
+            Else
+                thisLine_totale_casi = CInt(lineParts(7))
+            End If
+
+            Dim thisProvincePopulation As Double = Population.GetUKProvincePopulation(thisLineProvince) / cPopulation.PerMillionDivider
+            If thisProvincePopulation = 0 Then
+                'Skip this one. Total cases can be taken from the region section, no point in having something 'not defined' here
+                Debug.Assert(False, "Please check this one")
+            Else
+                AddUKEntriesToTargetList(Countries, thisLineProvince, thisLineDate, thisLine_totale_casi, thisLine_totale_casi / thisProvincePopulation)
+            End If
+        Next
+    End Sub
+    Private Sub AddUKEntriesToTargetList(targetList As cObservedDataCollection, ByVal region As String, ByVal entryDate As Date, ByVal entry As Double, ByVal percentEntry As Double)
+        For iCounter As Integer = 0 To targetList.Count - 1
+            If targetList(iCounter).ProvinceOrState = region Then
+                targetList(iCounter).DailyValues.Add(New cDailyValue(entryDate, entry, percentEntry))
+                Exit For
+            End If
+        Next
+    End Sub
+
+
+
     Public Function GetDailyValues(ByVal valueType As cDisplayInfo.enWorldValueType, ByVal region As cCountryListboxItem, ByVal isUSCity As Boolean) As cDailyValues
         Dim retVal As New cDailyValues
         Dim targetList As cObservedDataCollection = Nothing

@@ -54,10 +54,30 @@
     Public Function Csv_World_Recovered_Filename() As String
         Return RootFolder() + "World_Recovered.csv"
     End Function
+
+    Public Function Csv_UK_Deaths_Filename() As String
+        Return RootFolder() + "UK_deaths.csv"
+    End Function
+    Public Function Csv_UK_Confirmed_Filename() As String
+        Return RootFolder() + "UK_Confirmed.csv"
+    End Function
+
     Public Function Csv_TmpPath() As String
         Return RootFolder() + "tmp.csv"
     End Function
-    Public Sub ReplaceCommasInQuotations(ByVal csvLines() As String)
+    Public Sub ReplaceCommasInQuotations(ByVal csvLines As System.Collections.Generic.List(Of String), Optional ByVal RemoveSpaces As Boolean = True)
+        Dim toArr() As String = csvLines.ToArray
+        ReplaceCommasInQuotations(toArr, RemoveSpaces)
+        csvLines.Clear()
+        csvLines.AddRange(toArr)
+    End Sub
+    Public Function MakeComparable(ByVal aString As String) As String
+        aString = aString.Replace(" ", "")
+        aString = aString.Replace(",", "")
+        aString = aString.Replace("-", "")
+        Return aString.ToUpper.Trim
+    End Function
+    Public Sub ReplaceCommasInQuotations(ByVal csvLines() As String, Optional ByVal RemoveSpaces As Boolean = True)
         For lCounter As Integer = 0 To csvLines.Count - 1
             If csvLines(lCounter).Contains("""") Then
                 Dim thisLine As String = csvLines(lCounter)
@@ -67,7 +87,9 @@
                         Dim SecondQuotePos As Integer = thisLine.IndexOf("""", FirstQuote_Pos + 1)
                         If (FirstQuote_Pos >= 0) AndAlso (SecondQuotePos > FirstQuote_Pos) Then
                             Dim QuotedText As String = thisLine.Substring(FirstQuote_Pos + 1, SecondQuotePos - FirstQuote_Pos - 1)
-                            QuotedText = QuotedText.Replace(" ", "")
+                            If RemoveSpaces Then
+                                QuotedText = QuotedText.Replace(" ", "")
+                            End If
                             QuotedText = QuotedText.Replace(",", "-")
                             thisLine = thisLine.Substring(0, FirstQuote_Pos) + QuotedText + thisLine.Substring(SecondQuotePos + 1)
                         Else
@@ -194,6 +216,29 @@
         retVal = CalcMovingAverage(retVal)
         Return retVal
     End Function
+    Public Function GetPlotPointsUKRegionFirst(ByVal ukRecords As cWorldRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
+        Dim retVal As New List(Of Tuple(Of Date, Double))
+        If displayInfo.ActiveUKRegions.Count > 0 Then
+            Dim dailyValsList As New List(Of cDailyValues)
+            Dim prevValue As Double = 0
+            Dim curValue As Double = 0
+            Dim dailyVals As cDailyValues = ukRecords.GetDailyValues(displayInfo.ActiveUKData, displayInfo.ActiveUKRegions(0), True)
+            For iCounter As Integer = 0 To dailyVals.Count - 1
+                If NormalizeToPopulation Then
+                    curValue = dailyVals(iCounter).RecordPercentValue
+                Else
+                    curValue = dailyVals(iCounter).RecordAbsoluteValue
+                End If
+                retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
+                If displayInfo.DailyIncrements Then
+                    prevValue = curValue
+                End If
+            Next
+        End If
+        retVal = CalcMovingAverage(retVal)
+        Return retVal
+    End Function
+
     Public Function GetPlotPointsIta(ByVal ItaRecords As cITARecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
         Dim prevValue As Double = 0
         Dim curValue As Double = 0
@@ -265,7 +310,7 @@
         retVal = CalcMovingAverage(retVal)
         Return retVal
     End Function
-    Public Sub RefreshVisualization(ByVal aChart As DataVisualization.Charting.Chart, ByVal ItaRecords As cITARecords, ByVal italianRegionRecords As cITARegionsRecords, ByVal italianProvincesRecords As cITAProvincesRecords, ByVal worldRecords As cWorldRecords, ByVal USRecords As cWorldRecords, ByVal EURecords As cWorldRecords, ByVal displayInfo As cDisplayInfo)
+    Public Sub RefreshVisualization(ByVal aChart As DataVisualization.Charting.Chart, ByVal ItaRecords As cITARecords, ByVal italianRegionRecords As cITARegionsRecords, ByVal italianProvincesRecords As cITAProvincesRecords, ByVal worldRecords As cWorldRecords, ByVal USRecords As cWorldRecords, ByVal UKRecords As cWorldRecords, ByVal EURecords As cWorldRecords, ByVal displayInfo As cDisplayInfo)
         If Not DataLoaded Then Return
 
         Try
@@ -472,6 +517,42 @@
                 End If
             End If
 
+            Dim pointsUKList As New List(Of List(Of Tuple(Of Date, Double)))
+            If displayInfo.ShowUK Then
+                Dim dailyValsList As New List(Of cDailyValues)
+                For rCounter As Integer = 0 To displayInfo.ActiveUKRegions.Count - 1
+                    Dim prevValue As Double = 0
+                    Dim curValue As Double = 0
+                    Dim pointsUK As New List(Of Tuple(Of Date, Double))
+                    Dim dailyVals As cDailyValues = UKRecords.GetDailyValues(displayInfo.ActiveUKData, displayInfo.ActiveUKRegions(rCounter), True)
+                    For iCounter As Integer = 0 To dailyVals.Count - 1
+                        If NormalizeToPopulation Then
+                            curValue = dailyVals(iCounter).RecordPercentValue
+                        Else
+                            curValue = dailyVals(iCounter).RecordAbsoluteValue
+                        End If
+                        pointsUK.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
+                        If displayInfo.DailyIncrements Then
+                            prevValue = curValue
+                        End If
+                    Next
+                    pointsUKList.Add(pointsUK)
+                Next
+                pointsUKList = CalcMovingAverage(pointsUKList)
+
+                'Series need to be aligned
+                If pointsUKList.Count > 1 Then
+                    'Align first to all others
+                    For pCounter As Integer = 1 To pointsUKList.Count - 1
+                        AlignSeries(pointsUKList(0), pointsUKList(pCounter), FillWithExtremeValues)
+                    Next
+                    'And all others to first
+                    For pCounter As Integer = 1 To pointsUKList.Count - 1
+                        AlignSeries(pointsUKList(0), pointsUKList(pCounter), FillWithExtremeValues)
+                    Next
+                End If
+            End If
+
             Dim pointsNormal As New List(Of Tuple(Of Date, Double))
             If displayInfo.ShowEstimate Then
                 Dim NormalDistribution As New cNormalDist
@@ -606,6 +687,34 @@
                             End If
                         End If
                         dataSeriesUS.Points.AddXY(pointsUSList(pCounter).Item(iCounter).Item1, pointsUSList(pCounter).Item(iCounter).Item2)
+                    Next
+                Next
+            End If
+
+            If displayInfo.ShowUK Then
+                Dim StartDateInitialized As Boolean = False
+                If pointsUKList.Count > 1 Then
+                    myChartType = DataVisualization.Charting.SeriesChartType.Line
+                End If
+                For pCounter As Integer = 0 To pointsUKList.Count - 1
+                    Dim dataSeriesUK As New System.Windows.Forms.DataVisualization.Charting.Series
+                    dataSeriesUK.Name = displayInfo.ActiveUKData.ToString + vbCrLf + " (" + displayInfo.ActiveUKRegions(pCounter).ToString + ")"
+                    '                    dataSeriesGlobal.Color = Color.Green
+                    dataSeriesUK.IsVisibleInLegend = True
+                    dataSeriesUK.BorderWidth = 4
+                    dataSeriesUK.IsXValueIndexed = True
+                    dataSeriesUK.ChartType = myChartType
+                    aChart.Series.Add(dataSeriesUK)
+                    For iCounter As Integer = 0 To pointsUKList(pCounter).Count - 1
+                        If Not StartDateInitialized Then
+                            StartDateInitialized = True
+                            ChartStartingDate = pointsUKList(pCounter).Item(0).Item1
+                        Else
+                            If pointsUKList(pCounter).Item(iCounter).Item1 < ChartStartingDate Then
+                                ChartStartingDate = pointsUKList(pCounter).Item(iCounter).Item1
+                            End If
+                        End If
+                        dataSeriesUK.Points.AddXY(pointsUKList(pCounter).Item(iCounter).Item1, pointsUKList(pCounter).Item(iCounter).Item2)
                     Next
                 Next
             End If

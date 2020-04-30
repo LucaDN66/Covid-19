@@ -19,6 +19,11 @@
             Return ActiveArea = enActiveArea.US
         End Get
     End Property
+    Public ReadOnly Property ShowUK As Boolean
+        Get
+            Return ActiveArea = enActiveArea.UK
+        End Get
+    End Property
     Public ReadOnly Property ShowEurope As Boolean
         Get
             Return ActiveArea = enActiveArea.Europe
@@ -52,9 +57,11 @@
     Public ActiveWorldData As enWorldValueType = enWorldValueType.Deaths
     Public ActiveEUData As enWorldValueType = enWorldValueType.Deaths
     Public ActiveUSData As enWorldValueType = enWorldValueType.Deaths
+    Public ActiveUKData As enWorldValueType = enWorldValueType.Deaths
     Public ActiveWorldRegions As New List(Of cCountryListboxItem)
     Public ActiveEURegions As New List(Of cCountryListboxItem)
     Public ActiveUSRegions As New List(Of cCountryListboxItem)
+    Public ActiveUKRegions As New List(Of cCountryListboxItem)
     Public ActiveITARegions As New List(Of cCountryListboxItem)
     Public ActiveITAProvinces As New List(Of cCountryListboxItem)
     Public DailyIncrements As Boolean = False

@@ -72,6 +72,11 @@ Partial Class frmMain
         Me.btDateShiftLeft = New System.Windows.Forms.Button()
         Me.btDateShiftRight = New System.Windows.Forms.Button()
         Me.pnlInvisible = New System.Windows.Forms.Panel()
+        Me.pnlUK = New System.Windows.Forms.Panel()
+        Me.lstRegionsUK = New System.Windows.Forms.ListBox()
+        Me.Panel6 = New System.Windows.Forms.Panel()
+        Me.cbChartItemUK = New System.Windows.Forms.ComboBox()
+        Me.labSelectionHintUK = New System.Windows.Forms.Label()
         Me.pnlEurope = New System.Windows.Forms.Panel()
         Me.lstRegionsEurope = New System.Windows.Forms.ListBox()
         Me.Panel5 = New System.Windows.Forms.Panel()
@@ -96,6 +101,7 @@ Partial Class frmMain
         Me.mnMain.SuspendLayout()
         Me.PanelEstimate.SuspendLayout()
         Me.pnlInvisible.SuspendLayout()
+        Me.pnlUK.SuspendLayout()
         Me.pnlEurope.SuspendLayout()
         Me.pnlUS.SuspendLayout()
         Me.pnlWorld.SuspendLayout()
@@ -431,19 +437,16 @@ Partial Class frmMain
         '
         'mnUK
         '
-        Me.mnUK.Enabled = False
         Me.mnUK.Image = CType(resources.GetObject("mnUK.Image"), System.Drawing.Image)
         Me.mnUK.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
         Me.mnUK.Name = "mnUK"
         Me.mnUK.Size = New System.Drawing.Size(319, 40)
         Me.mnUK.Text = "UK"
-        Me.mnUK.Visible = False
         '
         'ToolStripMenuItem3
         '
         Me.ToolStripMenuItem3.Name = "ToolStripMenuItem3"
         Me.ToolStripMenuItem3.Size = New System.Drawing.Size(316, 6)
-        Me.ToolStripMenuItem3.Visible = False
         '
         'mnITAFull
         '
@@ -579,6 +582,7 @@ Partial Class frmMain
         '
         Me.pnlInvisible.BackColor = System.Drawing.Color.White
         Me.pnlInvisible.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.pnlInvisible.Controls.Add(Me.pnlUK)
         Me.pnlInvisible.Controls.Add(Me.pnlEurope)
         Me.pnlInvisible.Controls.Add(Me.pnlUS)
         Me.pnlInvisible.Controls.Add(Me.pnlWorld)
@@ -588,13 +592,68 @@ Partial Class frmMain
         Me.pnlInvisible.TabIndex = 43
         Me.pnlInvisible.Visible = False
         '
+        'pnlUK
+        '
+        Me.pnlUK.Controls.Add(Me.lstRegionsUK)
+        Me.pnlUK.Controls.Add(Me.Panel6)
+        Me.pnlUK.Controls.Add(Me.cbChartItemUK)
+        Me.pnlUK.Controls.Add(Me.labSelectionHintUK)
+        Me.pnlUK.Location = New System.Drawing.Point(493, 20)
+        Me.pnlUK.Name = "pnlUK"
+        Me.pnlUK.Padding = New System.Windows.Forms.Padding(4, 2, 2, 2)
+        Me.pnlUK.Size = New System.Drawing.Size(227, 475)
+        Me.pnlUK.TabIndex = 16
+        '
+        'lstRegionsUK
+        '
+        Me.lstRegionsUK.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstRegionsUK.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lstRegionsUK.FormattingEnabled = True
+        Me.lstRegionsUK.ItemHeight = 17
+        Me.lstRegionsUK.Location = New System.Drawing.Point(4, 33)
+        Me.lstRegionsUK.Name = "lstRegionsUK"
+        Me.lstRegionsUK.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
+        Me.lstRegionsUK.Size = New System.Drawing.Size(221, 400)
+        Me.lstRegionsUK.TabIndex = 20
+        '
+        'Panel6
+        '
+        Me.Panel6.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Panel6.Location = New System.Drawing.Point(4, 30)
+        Me.Panel6.Name = "Panel6"
+        Me.Panel6.Size = New System.Drawing.Size(221, 3)
+        Me.Panel6.TabIndex = 38
+        '
+        'cbChartItemUK
+        '
+        Me.cbChartItemUK.Dock = System.Windows.Forms.DockStyle.Top
+        Me.cbChartItemUK.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cbChartItemUK.Font = New System.Drawing.Font("Segoe UI", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cbChartItemUK.FormattingEnabled = True
+        Me.cbChartItemUK.Location = New System.Drawing.Point(4, 2)
+        Me.cbChartItemUK.Name = "cbChartItemUK"
+        Me.cbChartItemUK.Size = New System.Drawing.Size(221, 28)
+        Me.cbChartItemUK.TabIndex = 19
+        '
+        'labSelectionHintUK
+        '
+        Me.labSelectionHintUK.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.labSelectionHintUK.ForeColor = System.Drawing.SystemColors.Highlight
+        Me.labSelectionHintUK.Location = New System.Drawing.Point(4, 433)
+        Me.labSelectionHintUK.Name = "labSelectionHintUK"
+        Me.labSelectionHintUK.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.labSelectionHintUK.Size = New System.Drawing.Size(221, 40)
+        Me.labSelectionHintUK.TabIndex = 36
+        Me.labSelectionHintUK.Text = "Hold <Ctrl> or <Shift> for multiple selection"
+        Me.labSelectionHintUK.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
         'pnlEurope
         '
         Me.pnlEurope.Controls.Add(Me.lstRegionsEurope)
         Me.pnlEurope.Controls.Add(Me.Panel5)
         Me.pnlEurope.Controls.Add(Me.cbChartItemEurope)
         Me.pnlEurope.Controls.Add(Me.labSelectionHintEurope)
-        Me.pnlEurope.Location = New System.Drawing.Point(482, 12)
+        Me.pnlEurope.Location = New System.Drawing.Point(247, 124)
         Me.pnlEurope.Name = "pnlEurope"
         Me.pnlEurope.Padding = New System.Windows.Forms.Padding(4, 2, 2, 2)
         Me.pnlEurope.Size = New System.Drawing.Size(227, 475)
@@ -650,7 +709,7 @@ Partial Class frmMain
         Me.pnlUS.Controls.Add(Me.Panel4)
         Me.pnlUS.Controls.Add(Me.cbChartItemUS)
         Me.pnlUS.Controls.Add(Me.labSelectionHintUS)
-        Me.pnlUS.Location = New System.Drawing.Point(247, 13)
+        Me.pnlUS.Location = New System.Drawing.Point(111, 62)
         Me.pnlUS.Name = "pnlUS"
         Me.pnlUS.Padding = New System.Windows.Forms.Padding(4, 2, 2, 2)
         Me.pnlUS.Size = New System.Drawing.Size(227, 475)
@@ -796,6 +855,7 @@ Partial Class frmMain
         Me.mnMain.PerformLayout()
         Me.PanelEstimate.ResumeLayout(False)
         Me.pnlInvisible.ResumeLayout(False)
+        Me.pnlUK.ResumeLayout(False)
         Me.pnlEurope.ResumeLayout(False)
         Me.pnlUS.ResumeLayout(False)
         Me.pnlWorld.ResumeLayout(False)
@@ -862,4 +922,9 @@ Partial Class frmMain
     Friend WithEvents CheckForUpdatedDataToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents labLastUpdateInfo As Label
     Friend WithEvents chkMA As CheckBox
+    Friend WithEvents pnlUK As Panel
+    Friend WithEvents lstRegionsUK As ListBox
+    Friend WithEvents Panel6 As Panel
+    Friend WithEvents cbChartItemUK As ComboBox
+    Friend WithEvents labSelectionHintUK As Label
 End Class

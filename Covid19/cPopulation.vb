@@ -2,15 +2,17 @@
     Public Shared PopulationCSV As String = RootFolder() + "CountryPopulation.csv"
     Public Shared ITAPopulationCSV As String = RootFolder() + "ITAPopulation.csv"
     Public Shared ITAProvincesPopulationCSV As String = RootFolder() + "ITAProvincesPopulation.csv"
+    Public Shared UKProvincesPopulationCSV As String = RootFolder() + "UKProvincesPopulation.csv"
     Public Shared USPopulationCSV As String = RootFolder() + "USPopulation.csv"
     Public Shared USCitiesPopulationCSV As String = RootFolder() + "USCitiesPopulation.csv"
     Public Shared EuropeanCountriesCSV As String = RootFolder() + "EuropeanCountries.csv"
 
-    Private myITAPopulation As New List(Of Tuple(Of String, Double))
+    Private myITARegionsPopulation As New List(Of Tuple(Of String, Double))
     Private myITAProvincesPopulation As New List(Of Tuple(Of String, Double))
     Private myGlobalPopulation As New List(Of Tuple(Of String, Double))
     Private myUSPopulation As New List(Of Tuple(Of String, Double))
     Private myUSCitiesPopulation As New List(Of Tuple(Of String, Double))
+    Private myUKProvincesPopulation As New List(Of Tuple(Of String, Double))
     Public Const ITATotalPopulation As Double = 60317000
     Public myEuropeanCountries As New List(Of String)
     Public Const PerMillionDivider As Double = 100000.0
@@ -36,12 +38,15 @@
             If System.IO.File.Exists(ITAProvincesPopulationCSV) Then
                 System.IO.File.Delete(ITAProvincesPopulationCSV)
             End If
+            If System.IO.File.Exists(UKProvincesPopulationCSV) Then
+                System.IO.File.Delete(UKProvincesPopulationCSV)
+            End If
 
             'Create files from resource 
             Dim thisAssembly As System.Reflection.Assembly = System.Reflection.Assembly.GetExecutingAssembly()
             Static resourcesNames As String() = thisAssembly.GetManifestResourceNames()
             For Each name As String In resourcesNames
-                If (name.EndsWith("ITAPopulation.csv")) OrElse (name.EndsWith("USPopulation.csv")) OrElse (name.EndsWith("EuropeanCountries.csv")) OrElse (name.EndsWith("USCitiesPopulation.csv")) OrElse (name.EndsWith("CountryPopulation.csv")) OrElse (name.EndsWith("ITAProvincesPopulation.csv")) Then
+                If (name.EndsWith("ITAPopulation.csv")) OrElse (name.EndsWith("USPopulation.csv")) OrElse (name.EndsWith("EuropeanCountries.csv")) OrElse (name.EndsWith("USCitiesPopulation.csv")) OrElse (name.EndsWith("CountryPopulation.csv")) OrElse (name.EndsWith("ITAProvincesPopulation.csv")) OrElse (name.EndsWith("UKProvincesPopulation.csv")) Then
                     Dim resStream As System.IO.Stream = thisAssembly.GetManifestResourceStream(name)
                     Dim resBytes(resStream.Length - 1) As Byte
                     resStream.Read(resBytes, 0, resStream.Length)
@@ -58,6 +63,8 @@
                         fileStream = New System.IO.FileStream(EuropeanCountriesCSV, IO.FileMode.Create, IO.FileAccess.Write)
                     ElseIf (name.EndsWith("ITAProvincesPopulation.csv")) Then
                         fileStream = New System.IO.FileStream(ITAProvincesPopulationCSV, IO.FileMode.Create, IO.FileAccess.Write)
+                    ElseIf (name.EndsWith("UKProvincesPopulation.csv")) Then
+                        fileStream = New System.IO.FileStream(UKProvincesPopulationCSV, IO.FileMode.Create, IO.FileAccess.Write)
                     End If
                     fileStream.Write(resBytes, 0, resBytes.Length)
                     fileStream.Flush()
@@ -72,6 +79,7 @@
 
             'Global
             popLines.AddRange(System.IO.File.ReadAllLines(PopulationCSV))
+            ReplaceCommasInQuotations(popLines, False)
             For lCounter As Integer = 0 To popLines.Count - 1
                 Dim thisLineParts() As String = popLines(lCounter).Split(",")
                 Dim thisLineData As New Tuple(Of String, Double)(thisLineParts(0), CInt(thisLineParts(1)))
@@ -81,6 +89,7 @@
             'US
             popLines.Clear()
             popLines.AddRange(System.IO.File.ReadAllLines(USPopulationCSV))
+            ReplaceCommasInQuotations(popLines, False)
             For lCounter As Integer = 0 To popLines.Count - 1
                 Dim thisLineParts() As String = popLines(lCounter).Split(",")
                 Dim thisLineData As New Tuple(Of String, Double)(thisLineParts(0), CInt(thisLineParts(1)))
@@ -90,6 +99,7 @@
             'US Cities
             popLines.Clear()
             popLines.AddRange(System.IO.File.ReadAllLines(USCitiesPopulationCSV))
+            ReplaceCommasInQuotations(popLines, False)
             For lCounter As Integer = 0 To popLines.Count - 1
                 Dim thisLineParts() As String = popLines(lCounter).Split(",")
                 If thisLineParts(0).Length > 0 Then
@@ -107,19 +117,31 @@
             'ITA regions
             popLines.Clear()
             popLines.AddRange(System.IO.File.ReadAllLines(ITAPopulationCSV, System.Text.Encoding.GetEncoding("Windows-1252")))
+            ReplaceCommasInQuotations(popLines, False)
             For lCounter As Integer = 0 To popLines.Count - 1
                 Dim thisLineParts() As String = popLines(lCounter).Split(",")
                 Dim thisLineData As New Tuple(Of String, Double)(thisLineParts(0), CInt(thisLineParts(1)))
-                myITAPopulation.Add(thisLineData)
+                myITARegionsPopulation.Add(thisLineData)
             Next
 
             'ITA provinces
             popLines.Clear()
             popLines.AddRange(System.IO.File.ReadAllLines(ITAProvincesPopulationCSV, System.Text.Encoding.GetEncoding("Windows-1252")))
+            ReplaceCommasInQuotations(popLines, False)
             For lCounter As Integer = 0 To popLines.Count - 1
                 Dim thisLineParts() As String = popLines(lCounter).Split(",")
                 Dim thisLineData As New Tuple(Of String, Double)(thisLineParts(0), CInt(thisLineParts(1)))
                 myITAProvincesPopulation.Add(thisLineData)
+            Next
+
+            'UK provinces
+            popLines.Clear()
+            popLines.AddRange(System.IO.File.ReadAllLines(UKProvincesPopulationCSV, System.Text.Encoding.GetEncoding("Windows-1252")))
+            ReplaceCommasInQuotations(popLines, False)
+            For lCounter As Integer = 0 To popLines.Count - 1
+                Dim thisLineParts() As String = popLines(lCounter).Split(",")
+                Dim thisLineData As New Tuple(Of String, Double)(thisLineParts(0), CInt(thisLineParts(2)))
+                myUKProvincesPopulation.Add(thisLineData)
             Next
 
             'Loads european countries
@@ -133,9 +155,9 @@
     End Sub
     Public ReadOnly Property GetUSCityPopulation(ByVal City_State As String) As Double
         Get
-            Dim nameCopy As String = City_State.Replace(" ", "-").ToUpper.Trim
+            Dim nameCopy As String = MakeComparable(City_State)
             For pCounter As Integer = 0 To myUSCitiesPopulation.Count - 1
-                Dim itemCopy As String = myUSCitiesPopulation(pCounter).Item1.Replace(" ", "-").ToUpper.Trim
+                Dim itemCopy As String = MakeComparable(myUSCitiesPopulation(pCounter).Item1)
                 If itemCopy.StartsWith(nameCopy) Then
                     Return myUSCitiesPopulation(pCounter).Item2
                 End If
@@ -143,12 +165,11 @@
             Return 0
         End Get
     End Property
-
     Public ReadOnly Property GetUSStatePopulation(ByVal state As String) As Double
         Get
-            Dim stateCopy As String = state.Replace(" ", "-").ToUpper.Trim
+            Dim stateCopy As String = MakeComparable(state)
             For pCounter As Integer = 0 To myUSPopulation.Count - 1
-                Dim itemCopy As String = myUSPopulation(pCounter).Item1.Replace(" ", "-").ToUpper.Trim
+                Dim itemCopy As String = MakeComparable(myUSPopulation(pCounter).Item1)
                 If stateCopy = itemCopy Then
                     Return myUSPopulation(pCounter).Item2
                 End If
@@ -156,12 +177,23 @@
             Return 0
         End Get
     End Property
-
+    Public ReadOnly Property GetUKProvincePopulation(ByVal province As String) As Double
+        Get
+            Dim provinceCopy As String = MakeComparable(province).ToUpper.Trim
+            For pCounter As Integer = 0 To myUKProvincesPopulation.Count - 1
+                Dim itemCopy As String = MakeComparable(myUKProvincesPopulation(pCounter).Item1)
+                If itemCopy.StartsWith(provinceCopy) Then
+                    Return myUKProvincesPopulation(pCounter).Item2
+                End If
+            Next
+            Return 0
+        End Get
+    End Property
     Public ReadOnly Property GetITAProvincePopulation(ByVal province As String) As Double
         Get
-            Dim provinceCopy As String = province.Replace(" ", "-").ToUpper.Trim
+            Dim provinceCopy As String = MakeComparable(province)
             For pCounter As Integer = 0 To myITAProvincesPopulation.Count - 1
-                Dim itemCopy As String = myITAProvincesPopulation(pCounter).Item1.Replace(" ", "-").ToUpper.Trim
+                Dim itemCopy As String = MakeComparable(myITAProvincesPopulation(pCounter).Item1)
                 If itemCopy.StartsWith(provinceCopy) Then
                     Return myITAProvincesPopulation(pCounter).Item2
                 End If
@@ -171,12 +203,12 @@
     End Property
     Public ReadOnly Property GetITARegionPopulation(ByVal region As String) As Double
         Get
-            Dim regionCopy As String = region.Replace(" ", "-").ToUpper.Trim
+            Dim regionCopy As String = MakeComparable(region)
 
-            For pCounter As Integer = 0 To myITAPopulation.Count - 1
-                Dim itemCopy As String = myITAPopulation(pCounter).Item1.Replace(" ", "-").ToUpper.Trim
+            For pCounter As Integer = 0 To myITARegionsPopulation.Count - 1
+                Dim itemCopy As String = MakeComparable(myITARegionsPopulation(pCounter).Item1)
                 If regionCopy = itemCopy Then
-                    Return myITAPopulation(pCounter).Item2
+                    Return myITARegionsPopulation(pCounter).Item2
                 End If
             Next
 
@@ -188,9 +220,9 @@
     End Property
     Public ReadOnly Property GetWorldCountryPopulation(ByVal country As String) As Double
         Get
-            Dim regionCopy As String = country.Replace(" ", "-").ToUpper.Trim
+            Dim regionCopy As String = MakeComparable(country)
             For pCounter As Integer = 0 To myGlobalPopulation.Count - 1
-                Dim itemCopy As String = myGlobalPopulation(pCounter).Item1.Replace(" ", "-").ToUpper.Trim
+                Dim itemCopy As String = MakeComparable(myGlobalPopulation(pCounter).Item1)
                 If itemCopy = regionCopy Then
                     Return myGlobalPopulation(pCounter).Item2
                 Else
