@@ -1317,10 +1317,8 @@
             maItems.Clear()
             maItems.Add(values(iCounter))
             For shifter As Integer = 1 To sideItemsCount
-                If ((iCounter - shifter) >= 0) Then
+                If ((iCounter - shifter) >= 0) AndAlso ((iCounter + shifter) <= (values.Count - 1)) Then  'Must be symmetrical
                     maItems.Add(values(iCounter - shifter))
-                End If
-                If ((iCounter + shifter) <= (values.Count - 1)) Then
                     maItems.Add(values(iCounter + shifter))
                 End If
             Next
