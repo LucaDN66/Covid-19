@@ -39,12 +39,6 @@
     Public Function Csv_ItaProvinces_Filename() As String
         Return RootFolder() + "Ita_provinces.csv"
     End Function
-    Public Function Csv_US_Deaths_Filename() As String
-        Return RootFolder() + "US_deaths.csv"
-    End Function
-    Public Function Csv_US_Confirmed_Filename() As String
-        Return RootFolder() + "US_Confirmed.csv"
-    End Function
     Public Function Csv_World_Deaths_Filename() As String
         Return RootFolder() + "World_deaths.csv"
     End Function
@@ -54,14 +48,6 @@
     Public Function Csv_World_Recovered_Filename() As String
         Return RootFolder() + "World_Recovered.csv"
     End Function
-
-    Public Function Csv_UK_Deaths_Filename() As String
-        Return RootFolder() + "UK_deaths.csv"
-    End Function
-    Public Function Csv_UK_Confirmed_Filename() As String
-        Return RootFolder() + "UK_Confirmed.csv"
-    End Function
-
     Public Function Csv_TmpPath() As String
         Return RootFolder() + "tmp.csv"
     End Function
@@ -194,51 +180,6 @@
         retVal = CalcMovingAverage(retVal)
         Return retVal
     End Function
-    Public Function GetPlotPointsUSRegionFirst(ByVal usRecords As cWorldRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
-        Dim retVal As New List(Of Tuple(Of Date, Double))
-        If displayInfo.ActiveUSRegions.Count > 0 Then
-            Dim dailyValsList As New List(Of cDailyValues)
-            Dim prevValue As Double = 0
-            Dim curValue As Double = 0
-            Dim dailyVals As cDailyValues = usRecords.GetDailyValues(displayInfo.ActiveUSData, displayInfo.ActiveUSRegions(0), True)
-            For iCounter As Integer = 0 To dailyVals.Count - 1
-                If NormalizeToPopulation Then
-                    curValue = dailyVals(iCounter).RecordPercentValue
-                Else
-                    curValue = dailyVals(iCounter).RecordAbsoluteValue
-                End If
-                retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
-                If displayInfo.DailyIncrements Then
-                    prevValue = curValue
-                End If
-            Next
-        End If
-        retVal = CalcMovingAverage(retVal)
-        Return retVal
-    End Function
-    Public Function GetPlotPointsUKRegionFirst(ByVal ukRecords As cWorldRecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
-        Dim retVal As New List(Of Tuple(Of Date, Double))
-        If displayInfo.ActiveUKRegions.Count > 0 Then
-            Dim dailyValsList As New List(Of cDailyValues)
-            Dim prevValue As Double = 0
-            Dim curValue As Double = 0
-            Dim dailyVals As cDailyValues = ukRecords.GetDailyValues(displayInfo.ActiveUKData, displayInfo.ActiveUKRegions(0), True)
-            For iCounter As Integer = 0 To dailyVals.Count - 1
-                If NormalizeToPopulation Then
-                    curValue = dailyVals(iCounter).RecordPercentValue
-                Else
-                    curValue = dailyVals(iCounter).RecordAbsoluteValue
-                End If
-                retVal.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
-                If displayInfo.DailyIncrements Then
-                    prevValue = curValue
-                End If
-            Next
-        End If
-        retVal = CalcMovingAverage(retVal)
-        Return retVal
-    End Function
-
     Public Function GetPlotPointsIta(ByVal ItaRecords As cITARecords, ByVal displayInfo As cDisplayInfo) As List(Of Tuple(Of Date, Double))
         Dim prevValue As Double = 0
         Dim curValue As Double = 0
@@ -249,6 +190,10 @@
                 Select Case displayInfo.ActiveItalianData
                     Case cDisplayInfo.enItalianValueType.Deaths
                         curValue = ItaRecords(iCounter).deceduti.Item2
+                    Case cDisplayInfo.enItalianValueType.Cases_FromSuspectDiagnostics
+                        curValue = ItaRecords(iCounter).casi_da_sospetto_diagnostico.Item2
+                    Case cDisplayInfo.enItalianValueType.Cases_FromScreening
+                        curValue = ItaRecords(iCounter).casi_da_screening.Item2
                     Case cDisplayInfo.enItalianValueType.Recovered
                         curValue = ItaRecords(iCounter).dimessi_guariti.Item2
                     Case cDisplayInfo.enItalianValueType.Self_Isolating
@@ -278,6 +223,10 @@
         Else
             For iCounter As Integer = 0 To ItaRecords.Count - 1
                 Select Case displayInfo.ActiveItalianData
+                    Case cDisplayInfo.enItalianValueType.Cases_FromSuspectDiagnostics
+                        curValue = ItaRecords(iCounter).casi_da_sospetto_diagnostico.Item1
+                    Case cDisplayInfo.enItalianValueType.Cases_FromScreening
+                        curValue = ItaRecords(iCounter).casi_da_screening.Item1
                     Case cDisplayInfo.enItalianValueType.Deaths
                         curValue = ItaRecords(iCounter).deceduti.Item1
                     Case cDisplayInfo.enItalianValueType.Recovered
@@ -481,78 +430,6 @@
                 End If
             End If
 
-            Dim pointsUSList As New List(Of List(Of Tuple(Of Date, Double)))
-            If displayInfo.ShowUS Then
-                Dim dailyValsList As New List(Of cDailyValues)
-                For rCounter As Integer = 0 To displayInfo.ActiveUSRegions.Count - 1
-                    Dim prevValue As Double = 0
-                    Dim curValue As Double = 0
-                    Dim pointsUS As New List(Of Tuple(Of Date, Double))
-                    Dim dailyVals As cDailyValues = USRecords.GetDailyValues(displayInfo.ActiveUSData, displayInfo.ActiveUSRegions(rCounter), True)
-                    For iCounter As Integer = 0 To dailyVals.Count - 1
-                        If NormalizeToPopulation Then
-                            curValue = dailyVals(iCounter).RecordPercentValue
-                        Else
-                            curValue = dailyVals(iCounter).RecordAbsoluteValue
-                        End If
-                        pointsUS.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
-                        If displayInfo.DailyIncrements Then
-                            prevValue = curValue
-                        End If
-                    Next
-                    pointsUSList.Add(pointsUS)
-                Next
-                pointsUSList = CalcMovingAverage(pointsUSList)
-
-                'Series need to be aligned
-                If pointsUSList.Count > 1 Then
-                    'Align first to all others
-                    For pCounter As Integer = 1 To pointsUSList.Count - 1
-                        AlignSeries(pointsUSList(0), pointsUSList(pCounter), FillWithExtremeValues)
-                    Next
-                    'And all others to first
-                    For pCounter As Integer = 1 To pointsUSList.Count - 1
-                        AlignSeries(pointsUSList(0), pointsUSList(pCounter), FillWithExtremeValues)
-                    Next
-                End If
-            End If
-
-            Dim pointsUKList As New List(Of List(Of Tuple(Of Date, Double)))
-            If displayInfo.ShowUK Then
-                Dim dailyValsList As New List(Of cDailyValues)
-                For rCounter As Integer = 0 To displayInfo.ActiveUKRegions.Count - 1
-                    Dim prevValue As Double = 0
-                    Dim curValue As Double = 0
-                    Dim pointsUK As New List(Of Tuple(Of Date, Double))
-                    Dim dailyVals As cDailyValues = UKRecords.GetDailyValues(displayInfo.ActiveUKData, displayInfo.ActiveUKRegions(rCounter), True)
-                    For iCounter As Integer = 0 To dailyVals.Count - 1
-                        If NormalizeToPopulation Then
-                            curValue = dailyVals(iCounter).RecordPercentValue
-                        Else
-                            curValue = dailyVals(iCounter).RecordAbsoluteValue
-                        End If
-                        pointsUK.Add(New Tuple(Of Date, Double)(dailyVals(iCounter).RecordDate, curValue - prevValue))
-                        If displayInfo.DailyIncrements Then
-                            prevValue = curValue
-                        End If
-                    Next
-                    pointsUKList.Add(pointsUK)
-                Next
-                pointsUKList = CalcMovingAverage(pointsUKList)
-
-                'Series need to be aligned
-                If pointsUKList.Count > 1 Then
-                    'Align first to all others
-                    For pCounter As Integer = 1 To pointsUKList.Count - 1
-                        AlignSeries(pointsUKList(0), pointsUKList(pCounter), FillWithExtremeValues)
-                    Next
-                    'And all others to first
-                    For pCounter As Integer = 1 To pointsUKList.Count - 1
-                        AlignSeries(pointsUKList(0), pointsUKList(pCounter), FillWithExtremeValues)
-                    Next
-                End If
-            End If
-
             Dim pointsNormal As New List(Of Tuple(Of Date, Double))
             If displayInfo.ShowEstimate Then
                 Dim NormalDistribution As New cNormalDist
@@ -571,10 +448,6 @@
                 ElseIf displayInfo.ShowEurope Then
                     For dCounter As Integer = 0 To pointsEUList(0).Count - 1
                         allDates.Add(pointsEUList(0).Item(dCounter).Item1)
-                    Next
-                ElseIf displayInfo.ShowUS Then
-                    For dCounter As Integer = 0 To pointsUSList(0).Count - 1
-                        allDates.Add(pointsUSList(0).Item(dCounter).Item1)
                     Next
                 End If
                 pointsNormal = NormalDistribution.GetPlotValues(allDates)
@@ -659,62 +532,6 @@
                             End If
                         End If
                         dataSeriesEU.Points.AddXY(pointsEUList(pCounter).Item(iCounter).Item1, pointsEUList(pCounter).Item(iCounter).Item2)
-                    Next
-                Next
-            End If
-
-            If displayInfo.ShowUS Then
-                Dim StartDateInitialized As Boolean = False
-                If pointsUSList.Count > 1 Then
-                    myChartType = DataVisualization.Charting.SeriesChartType.Line
-                End If
-                For pCounter As Integer = 0 To pointsUSList.Count - 1
-                    Dim dataSeriesUS As New System.Windows.Forms.DataVisualization.Charting.Series
-                    dataSeriesUS.Name = displayInfo.ActiveUSData.ToString + vbCrLf + " (" + displayInfo.ActiveUSRegions(pCounter).ToString + ")"
-                    '                    dataSeriesGlobal.Color = Color.Green
-                    dataSeriesUS.IsVisibleInLegend = True
-                    dataSeriesUS.BorderWidth = 4
-                    dataSeriesUS.IsXValueIndexed = True
-                    dataSeriesUS.ChartType = myChartType
-                    aChart.Series.Add(dataSeriesUS)
-                    For iCounter As Integer = 0 To pointsUSList(pCounter).Count - 1
-                        If Not StartDateInitialized Then
-                            StartDateInitialized = True
-                            ChartStartingDate = pointsUSList(pCounter).Item(0).Item1
-                        Else
-                            If pointsUSList(pCounter).Item(iCounter).Item1 < ChartStartingDate Then
-                                ChartStartingDate = pointsUSList(pCounter).Item(iCounter).Item1
-                            End If
-                        End If
-                        dataSeriesUS.Points.AddXY(pointsUSList(pCounter).Item(iCounter).Item1, pointsUSList(pCounter).Item(iCounter).Item2)
-                    Next
-                Next
-            End If
-
-            If displayInfo.ShowUK Then
-                Dim StartDateInitialized As Boolean = False
-                If pointsUKList.Count > 1 Then
-                    myChartType = DataVisualization.Charting.SeriesChartType.Line
-                End If
-                For pCounter As Integer = 0 To pointsUKList.Count - 1
-                    Dim dataSeriesUK As New System.Windows.Forms.DataVisualization.Charting.Series
-                    dataSeriesUK.Name = displayInfo.ActiveUKData.ToString + vbCrLf + " (" + displayInfo.ActiveUKRegions(pCounter).ToString + ")"
-                    '                    dataSeriesGlobal.Color = Color.Green
-                    dataSeriesUK.IsVisibleInLegend = True
-                    dataSeriesUK.BorderWidth = 4
-                    dataSeriesUK.IsXValueIndexed = True
-                    dataSeriesUK.ChartType = myChartType
-                    aChart.Series.Add(dataSeriesUK)
-                    For iCounter As Integer = 0 To pointsUKList(pCounter).Count - 1
-                        If Not StartDateInitialized Then
-                            StartDateInitialized = True
-                            ChartStartingDate = pointsUKList(pCounter).Item(0).Item1
-                        Else
-                            If pointsUKList(pCounter).Item(iCounter).Item1 < ChartStartingDate Then
-                                ChartStartingDate = pointsUKList(pCounter).Item(iCounter).Item1
-                            End If
-                        End If
-                        dataSeriesUK.Points.AddXY(pointsUKList(pCounter).Item(iCounter).Item1, pointsUKList(pCounter).Item(iCounter).Item2)
                     Next
                 Next
             End If
@@ -1036,16 +853,6 @@
             System.IO.File.Delete(MapHtml)
         End If
 
-        If displayInfo.ShowUS Then
-            'We only have deceased and positives from US, and these data are already available on google, so why bother?
-            Dim startInfo As New ProcessStartInfo
-            startInfo.FileName = "https://www.google.com/covid19-map/"
-            startInfo.UseShellExecute = True
-            startInfo.WindowStyle = ProcessWindowStyle.Normal
-            Process.Start(startInfo)
-            Return
-        End If
-
         'Create new ones from template
         Dim thisAssembly As System.Reflection.Assembly = System.Reflection.Assembly.GetExecutingAssembly()
         Static resourcesNames As String() = thisAssembly.GetManifestResourceNames()
@@ -1087,10 +894,6 @@
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Country")
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#Value", displayInfo.ActiveEUData.ToString)
                     tooltipValueDescriptor = displayInfo.ActiveEUData.ToString
-                ElseIf displayInfo.ShowUS Then
-                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Country")
-                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#Value", displayInfo.ActiveUSData.ToString)
-                    tooltipValueDescriptor = displayInfo.ActiveUSData.ToString
                 Else
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("Country", "Province")
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#Value", displayInfo.ActiveItalianData.ToString)
@@ -1102,8 +905,6 @@
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveWorldData.ToString + every1MText)
                 ElseIf displayInfo.ShowEurope Then
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveEUData.ToString + every1MText)
-                ElseIf displayInfo.ShowUS Then
-                    HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveUSData.ToString + every1MText)
                 Else
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphTitle#", displayInfo.ActiveItalianData.ToString + every1MText)
                 End If
@@ -1112,9 +913,6 @@
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphText#", "Countries with less than 100K people are not displayed")
                 ElseIf displayInfo.ShowEurope Then
                     HtmlLines(lCounter) = HtmlLines(lCounter).Replace("#HeaderParagraphText#", "Countries with less than 100K people are not displayed")
-                ElseIf displayInfo.ShowUS Then
-                    HtmlLines.RemoveAt(lCounter)
-                    lCounter = lCounter - 1
                 Else
                     HtmlLines.RemoveAt(lCounter)
                     lCounter = lCounter - 1
@@ -1122,9 +920,6 @@
             ElseIf HtmlLines(lCounter).Contains("var options = {};") Then
                 If displayInfo.ShowITA Then
                     HtmlLines.Insert(lCounter + 1, "		options['region'] = 'IT'")
-                    HtmlLines.Insert(lCounter + 1, "		options['resolution'] = 'provinces'")
-                ElseIf displayInfo.ShowUS Then
-                    HtmlLines.Insert(lCounter + 1, "		options['region'] = 'US'")
                     HtmlLines.Insert(lCounter + 1, "		options['resolution'] = 'provinces'")
                 ElseIf displayInfo.ShowEurope Then
                     HtmlLines.Insert(lCounter + 1, "		options['region'] = 150")
@@ -1157,15 +952,6 @@
                     Case cDisplayInfo.enWorldValueType.FatalityRates
                         targetList = EURecords.FatalityRates
                 End Select
-            ElseIf displayInfo.ShowUS Then
-                Select Case displayInfo.ActiveUSData
-                    Case cDisplayInfo.enWorldValueType.Confirmed
-                        targetList = USRecords.Confirmed
-                    Case cDisplayInfo.enWorldValueType.Deaths
-                        targetList = USRecords.Deaths
-                    Case cDisplayInfo.enWorldValueType.Recovered
-                        targetList = USRecords.Recovered
-                End Select
             Else
                 targetList = itaRegionsRecords.GetCountryValuesFromType(displayInfo.ActiveItalianData)
             End If
@@ -1174,8 +960,6 @@
                 Dim regionName As String = targetList(cCounter).CountryOrRegion
                 If displayInfo.ShowITA Then
                     regionName = targetList(cCounter).ProvinceOrState
-                ElseIf displayInfo.ShowUS Then
-                    regionName = targetList(cCounter).CountryOrRegion
                 End If
                 If regionName.Contains("'") Then
                     regionName = regionName.Replace("'", "")
@@ -1209,8 +993,6 @@
                     Else
                         totalPopulation = Population.GetITARegionPopulation(regionName)
                     End If
-                ElseIf displayInfo.ShowUS Then
-                    totalPopulation = Population.GetUSStatePopulation(regionName)
                 ElseIf displayInfo.ShowWorld Then
                     totalPopulation = Population.GetWorldCountryPopulation(regionName)
                 ElseIf displayInfo.ShowEurope Then
@@ -1257,8 +1039,6 @@
                     Else
                         totalPopulation = Population.GetITARegionPopulation(thisCountry)
                     End If
-                ElseIf displayInfo.ShowUS Then
-                    totalPopulation = Population.GetUSStatePopulation(thisCountry)
                 ElseIf displayInfo.ShowWorld Then
                     totalPopulation = Population.GetWorldCountryPopulation(thisCountry)
                 ElseIf displayInfo.ShowEurope Then

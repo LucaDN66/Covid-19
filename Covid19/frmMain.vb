@@ -30,9 +30,6 @@ Public Class frmMain
             Dim UKDeathsDataUrl As String = "https://c19downloads.azureedge.net/downloads/csv/coronavirus-deaths_latest.csv" 'https://coronavirus.data.gov.uk/downloads/csv/coronavirus-deaths_latest.csv
             Dim UKConfirmedDataUrl As String = "https://c19downloads.azureedge.net/downloads/csv/coronavirus-cases_latest.csv" '"https://coronavirus.data.gov.uk/downloads/csv/coronavirus-cases_latest.csv"
 
-            UKConfirmedDataUrl = UKConfirmedDataUrl.Replace("/open?id=", "/uc?export=download&id=")
-
-
             Dim tmpWebClient As New WebClient()
 
             AddInfoText("Checking for available updates, please wait ..." + vbCrLf)
@@ -128,68 +125,6 @@ Public Class frmMain
                 MsgBox("An error occurred downloading World Recovered Data")
             End Try
 
-            Try
-                If System.IO.File.Exists(Csv_TmpPath) Then
-                    System.IO.File.Delete(Csv_TmpPath)
-                End If
-                AddInfoText("US Confirmed")
-                Application.DoEvents()
-                tmpWebClient.DownloadFile(USConfirmedDataUrl, Csv_TmpPath)
-                Application.DoEvents()
-                If System.IO.File.Exists(Csv_TmpPath) Then
-                    System.IO.File.Copy(Csv_TmpPath, Csv_US_Confirmed_Filename, True)
-                End If
-            Catch ex As Exception
-                MsgBox("An error occurred downloading US Confirmed Data")
-            End Try
-
-            Try
-                If System.IO.File.Exists(Csv_TmpPath) Then
-                    System.IO.File.Delete(Csv_TmpPath)
-                End If
-                AddInfoText("US Deaths")
-                Application.DoEvents()
-                tmpWebClient.DownloadFile(USDeathsDataUrl, Csv_TmpPath)
-                Application.DoEvents()
-                If System.IO.File.Exists(Csv_TmpPath) Then
-                    System.IO.File.Copy(Csv_TmpPath, Csv_US_Deaths_Filename, True)
-                End If
-            Catch ex As Exception
-                MsgBox("An error occurred downloading US Deaths Data")
-            End Try
-
-
-
-            Try
-                If System.IO.File.Exists(Csv_TmpPath) Then
-                    System.IO.File.Delete(Csv_TmpPath)
-                End If
-                AddInfoText("UK Confirmed")
-                Application.DoEvents()
-                tmpWebClient.DownloadFile(UKConfirmedDataUrl, Csv_TmpPath)
-                Application.DoEvents()
-                If System.IO.File.Exists(Csv_TmpPath) Then
-                    System.IO.File.Copy(Csv_TmpPath, Csv_UK_Confirmed_Filename, True)
-                End If
-            Catch ex As Exception
-                MsgBox("An error occurred downloading UK Confirmed Data")
-            End Try
-
-            Try
-                If System.IO.File.Exists(Csv_TmpPath) Then
-                    System.IO.File.Delete(Csv_TmpPath)
-                End If
-                AddInfoText("UK Deaths")
-                Application.DoEvents()
-                tmpWebClient.DownloadFile(UKDeathsDataUrl, Csv_TmpPath)
-                Application.DoEvents()
-                If System.IO.File.Exists(Csv_TmpPath) Then
-                    System.IO.File.Copy(Csv_TmpPath, Csv_UK_Deaths_Filename, True)
-                End If
-            Catch ex As Exception
-                MsgBox("An error occurred downloading UK Deaths Data")
-            End Try
-
             Return LoadInfoFromLocalFiles()
         Catch ex As Exception
             Call MsgBox(ex.Message)
@@ -274,29 +209,6 @@ Public Class frmMain
             europeanRecords.RemoveNonEuropeanEntries()
             'Already normalized if needed, as they've been cloned after the normalization
 
-            If System.IO.File.Exists(Csv_US_Confirmed_Filename) Then
-                Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_US_Confirmed_Filename)
-                ReplaceCommasInQuotations(infoLines)
-                USRecords.SetConfirmed(infoLines)
-            End If
-            If System.IO.File.Exists(Csv_US_Deaths_Filename) Then
-                Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_US_Deaths_Filename)
-                ReplaceCommasInQuotations(infoLines)
-                USRecords.SetDeaths(infoLines)
-            End If
-
-            If System.IO.File.Exists(Csv_UK_Confirmed_Filename) Then
-                Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_UK_Confirmed_Filename)
-                ReplaceCommasInQuotations(infoLines)
-                UKRecords.SetConfirmed(infoLines)
-            End If
-            If System.IO.File.Exists(Csv_UK_Deaths_Filename) Then
-                Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_UK_Deaths_Filename)
-                ReplaceCommasInQuotations(infoLines)
-                UKRecords.SetDeaths(infoLines)
-            End If
-            UKRecords.SetFatalityRates()
-
             FillListBoxes()
 
             DataLoaded = True
@@ -311,16 +223,6 @@ Public Class frmMain
         End Try
     End Function
     Private Sub FillListBoxes()
-
-        lstRegionsUS.SuspendLayout()
-        lstRegionsUS.Items.Clear()
-        Dim allUSNames As System.Collections.Generic.List(Of cCountryListboxItem) = USRecords.GetListBoxItems(myDisplayInfo.ActiveUSData, False)
-        lstRegionsUS.Items.AddRange(allUSNames.ToArray)
-        lstRegionsUS.ResumeLayout(True)
-        If lstRegionsUS.Items.Count > 0 Then
-            lstRegionsUS.SelectedIndex = 0
-        End If
-
 
         lstRegions.SuspendLayout()
         lstRegions.Items.Clear()
@@ -356,15 +258,6 @@ Public Class frmMain
         lstItaProvinces.ResumeLayout(True)
         If lstItaProvinces.Items.Count > 0 Then
             lstItaProvinces.SelectedIndex = 0
-        End If
-
-        lstRegionsUK.SuspendLayout()
-        lstRegionsUK.Items.Clear()
-        Dim allUKProvinceNames As System.Collections.Generic.List(Of cCountryListboxItem) = UKRecords.GetListBoxItems(myDisplayInfo.ActiveUKData, False)
-        lstRegionsUK.Items.AddRange(allUKProvinceNames.ToArray)
-        lstRegionsUK.ResumeLayout(True)
-        If lstRegionsUK.Items.Count > 0 Then
-            lstRegionsUK.SelectedIndex = 0
         End If
     End Sub
     Private Sub FillCombos()
@@ -402,27 +295,6 @@ Public Class frmMain
             Next
             Try
                 cbChartItemEurope.SelectedIndex = cDisplayInfo.enWorldValueType.Deaths
-            Catch ex2 As Exception
-            End Try
-
-
-            cbChartItemUS.Items.Clear()
-            Dim myUSTypes() As cDisplayInfo.enWorldValueType = System.Enum.GetValues(GetType(cDisplayInfo.enWorldValueType))
-            For iCounter As Integer = 0 To myUSTypes.Length - 1
-                cbChartItemUS.Items.Add(myUSTypes(iCounter).ToString)
-            Next
-            Try
-                cbChartItemUS.SelectedIndex = cDisplayInfo.enWorldValueType.Deaths
-            Catch ex2 As Exception
-            End Try
-
-            cbChartItemUK.Items.Clear()
-            Dim myUKTypes() As cDisplayInfo.enWorldValueType = System.Enum.GetValues(GetType(cDisplayInfo.enWorldValueType))
-            For iCounter As Integer = 0 To myUKTypes.Length - 1
-                cbChartItemUK.Items.Add(myUKTypes(iCounter).ToString)
-            Next
-            Try
-                cbChartItemUK.SelectedIndex = cDisplayInfo.enWorldValueType.Deaths
             Catch ex2 As Exception
             End Try
 
@@ -470,10 +342,8 @@ Public Class frmMain
             UseMovingAverage = chkMA.Checked
 
             If myDisplayInfo.ShowITA Then
-                pnlUS.Visible = False
                 pnlWorld.Visible = False
                 pnlEurope.Visible = False
-                pnlUK.Visible = False
                 pnlIta.Visible = True
                 If Not pnlLeft.Controls.Contains(pnlIta) Then
                     pnlLeft.Controls.Add(pnlIta)
@@ -508,9 +378,7 @@ Public Class frmMain
                 End Select
             ElseIf myDisplayInfo.ShowWorld Then
                 pnlIta.Visible = False
-                pnlUS.Visible = False
                 pnlEurope.Visible = False
-                pnlUK.Visible = False
                 pnlWorld.Visible = True
                 mnMainItem.Text = mnWorld.Text
                 mnMainItem.Image = mnWorld.Image
@@ -523,9 +391,7 @@ Public Class frmMain
                 lstRegions.BringToFront()
             ElseIf myDisplayInfo.ShowEurope Then
                 pnlIta.Visible = False
-                pnlUS.Visible = False
                 pnlWorld.Visible = False
-                pnlUK.Visible = False
                 pnlEurope.Visible = True
                 mnMainItem.Text = mnEurope.Text
                 mnMainItem.Image = mnEurope.Image
@@ -536,36 +402,6 @@ Public Class frmMain
                     pnlEurope.BringToFront()
                 End If
                 lstRegionsEurope.BringToFront()
-            ElseIf myDisplayInfo.ShowUS Then
-                pnlIta.Visible = False
-                pnlWorld.Visible = False
-                pnlEurope.Visible = False
-                pnlUK.Visible = False
-                pnlUS.Visible = True
-                mnMainItem.Text = mnUS.Text
-                mnMainItem.Image = mnUS.Image
-                labLastUpdateInfo.Text = "Last update:" + vbCrLf + USRecords.LastDate.ToLongDateString
-                If Not pnlLeft.Controls.Contains(pnlUS) Then
-                    pnlLeft.Controls.Add(pnlUS)
-                    pnlUS.Dock = DockStyle.Fill
-                    pnlUS.BringToFront()
-                End If
-                lstRegionsUS.BringToFront()
-            ElseIf myDisplayInfo.ShowUK Then
-                pnlIta.Visible = False
-                pnlWorld.Visible = False
-                pnlEurope.Visible = False
-                pnlUS.Visible = False
-                pnlUK.Visible = True
-                mnMainItem.Text = mnUK.Text
-                mnMainItem.Image = mnUK.Image
-                labLastUpdateInfo.Text = "Last update:" + vbCrLf + UKRecords.LastDate.ToLongDateString
-                If Not pnlLeft.Controls.Contains(pnlUK) Then
-                    pnlLeft.Controls.Add(pnlUK)
-                    pnlUK.Dock = DockStyle.Fill
-                    pnlUK.BringToFront()
-                End If
-                lstRegionsUK.BringToFront()
             End If
 
             myDisplayInfo.DailyIncrements = chkDaily.Checked
@@ -583,20 +419,6 @@ Public Class frmMain
             If lstRegionsEurope.SelectedItems.Count > 0 Then
                 For iCounter As Integer = 0 To lstRegionsEurope.SelectedItems.Count - 1
                     myDisplayInfo.ActiveEURegions.Add(lstRegionsEurope.SelectedItems(iCounter))
-                Next
-            End If
-
-            myDisplayInfo.ActiveUSRegions.Clear()
-            If lstRegionsUS.SelectedItems.Count > 0 Then
-                For iCounter As Integer = 0 To lstRegionsUS.SelectedItems.Count - 1
-                    myDisplayInfo.ActiveUSRegions.Add(lstRegionsUS.SelectedItems(iCounter))
-                Next
-            End If
-
-            myDisplayInfo.ActiveUKRegions.Clear()
-            If lstRegionsUK.SelectedItems.Count > 0 Then
-                For iCounter As Integer = 0 To lstRegionsUK.SelectedItems.Count - 1
-                    myDisplayInfo.ActiveUKRegions.Add(lstRegionsUK.SelectedItems(iCounter))
                 Next
             End If
 
@@ -626,24 +448,6 @@ Public Class frmMain
             ElseIf myDisplayInfo.ShowEurope Then
                 btShowMap.Enabled = True
                 If myDisplayInfo.ActiveEURegions.Count = 1 Then
-                    btDateShiftLeft.Visible = False
-                    btDateShiftRight.Visible = False
-                Else
-                    btDateShiftLeft.Visible = True
-                    btDateShiftRight.Visible = True
-                End If
-            ElseIf myDisplayInfo.ShowUS Then
-                btShowMap.Enabled = True
-                If myDisplayInfo.ActiveUSRegions.Count = 1 Then
-                    btDateShiftLeft.Visible = False
-                    btDateShiftRight.Visible = False
-                Else
-                    btDateShiftLeft.Visible = True
-                    btDateShiftRight.Visible = True
-                End If
-            ElseIf myDisplayInfo.ShowUK Then
-                btShowMap.Enabled = True
-                If myDisplayInfo.ActiveUKRegions.Count = 1 Then
                     btDateShiftLeft.Visible = False
                     btDateShiftRight.Visible = False
                 Else
@@ -691,18 +495,6 @@ Public Class frmMain
                 Else
                     EnableEstimateSection(False)
                 End If
-            ElseIf myDisplayInfo.ShowUS Then
-                If myDisplayInfo.ActiveUSRegions.Count = 1 Then
-                    EnableEstimateSection((Not myDisplayInfo.DailyIncrements) AndAlso (Not NormalizeToPopulation))
-                Else
-                    EnableEstimateSection(False)
-                End If
-            ElseIf myDisplayInfo.ShowUK Then
-                If myDisplayInfo.ActiveUKRegions.Count = 1 Then
-                    EnableEstimateSection((Not myDisplayInfo.DailyIncrements) AndAlso (Not NormalizeToPopulation))
-                Else
-                    EnableEstimateSection(False)
-                End If
             ElseIf myDisplayInfo.ShowITA Then
                 If myDisplayInfo.ActiveITARegions.Count = 1 Then
                     EnableEstimateSection(Not myDisplayInfo.DailyIncrements AndAlso (Not NormalizeToPopulation))
@@ -710,7 +502,6 @@ Public Class frmMain
                     EnableEstimateSection(False)
                 End If
             End If
-
 
         Catch ex As Exception
             MsgBox(ex.Message)
@@ -743,8 +534,6 @@ Public Class frmMain
                     distErr = NormalDistribution.EstimateDiffFromValues(GetPlotPointsWorldRegionFirst(worldRecords, myDisplayInfo))
                 ElseIf myDisplayInfo.ShowEurope Then
                     distErr = NormalDistribution.EstimateDiffFromValues(GetPlotPointsEURegionFirst(europeanRecords, myDisplayInfo))
-                ElseIf myDisplayInfo.ShowUS Then
-                    distErr = NormalDistribution.EstimateDiffFromValues(GetPlotPointsUSRegionFirst(USRecords, myDisplayInfo))
                 End If
                 labErrorValue.Text = CStr(CInt(distErr))
             Else
@@ -754,13 +543,9 @@ Public Class frmMain
             MsgBox(ex.Message)
         End Try
     End Sub
-    Private Sub cbChartItem_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbChartItemITA.SelectedIndexChanged, cbChartItemWorld.SelectedIndexChanged, cbChartItemUS.SelectedIndexChanged, cbChartItemEurope.SelectedIndexChanged, cbChartItemUK.SelectedIndexChanged
+    Private Sub cbChartItem_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbChartItemITA.SelectedIndexChanged, cbChartItemWorld.SelectedIndexChanged, cbChartItemEurope.SelectedIndexChanged
         If sender Is cbChartItemWorld Then
             myDisplayInfo.ActiveWorldData = cbChartItemWorld.SelectedIndex
-        ElseIf sender Is cbChartItemUS Then
-            myDisplayInfo.ActiveUSData = cbChartItemUS.SelectedIndex
-        ElseIf sender Is cbChartItemUK Then
-            myDisplayInfo.ActiveUKData = cbChartItemUK.SelectedIndex
         ElseIf sender Is cbChartItemEurope Then
             myDisplayInfo.ActiveEUData = cbChartItemEurope.SelectedIndex
         ElseIf sender Is cbChartItemITA Then
@@ -778,7 +563,7 @@ Public Class frmMain
             Select Case myDisplayInfo.ActiveArea
                 Case cDisplayInfo.enActiveArea.ITA, cDisplayInfo.enActiveArea.ITA_Provinces, cDisplayInfo.enActiveArea.ITA_Regions
                     startInfo.FileName = "https://opendatadpc.maps.arcgis.com/apps/opsdashboard/index.html#/b0c68bce2cce478eaac82fe38d4138b1"
-                Case cDisplayInfo.enActiveArea.US, cDisplayInfo.enActiveArea.World
+                Case cDisplayInfo.enActiveArea.World
                     startInfo.FileName = "https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6"
             End Select
             startInfo.UseShellExecute = True
@@ -883,18 +668,6 @@ Public Class frmMain
                         UpdateAndRefresh(False)
                     End If
                 End If
-
-            ElseIf myDisplayInfo.ShowUS Then
-                If lstRegionsUS.SelectedIndices.Count > 1 Then
-                    If daysShift <> 0 Then
-                        'First one will not be affected
-                        For lCounter As Integer = 1 To lstRegionsUS.SelectedIndices.Count - 1
-                            USRecords.ShiftDays(myDisplayInfo.ActiveUSData, lstRegionsUS.Items(lstRegionsUS.SelectedIndices(lCounter)), daysShift)
-                        Next
-                        UpdateAndRefresh(False)
-                    End If
-                End If
-
             Else
                 Select Case myDisplayInfo.ActiveArea
                     Case cDisplayInfo.enActiveArea.ITA
@@ -979,15 +752,7 @@ Public Class frmMain
         myDisplayInfo.ActiveArea = cDisplayInfo.enActiveArea.World
         UpdateAndRefresh(False)
     End Sub
-    Private Sub mnUS_Click(sender As Object, e As EventArgs) Handles mnUS.Click
-        myDisplayInfo.ActiveArea = cDisplayInfo.enActiveArea.US
-        UpdateAndRefresh(False)
-    End Sub
-    Private Sub mnUK_Click(sender As Object, e As EventArgs) Handles mnUK.Click
-        myDisplayInfo.ActiveArea = cDisplayInfo.enActiveArea.UK
-        UpdateAndRefresh(False)
-    End Sub
-    Private Sub lstRegionsUS_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstRegionsUS.SelectedIndexChanged
+    Private Sub lstRegionsUS_SelectedIndexChanged(sender As Object, e As EventArgs)
         UpdateAndRefresh(False)
     End Sub
     Private Sub lstRegionsEurope_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstRegionsEurope.SelectedIndexChanged
@@ -997,7 +762,7 @@ Public Class frmMain
         GetLatestInfo()
         UpdateAndRefresh(False)
     End Sub
-    Private Sub lstRegionsUK_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstRegionsUK.SelectedIndexChanged
+    Private Sub lstRegionsUK_SelectedIndexChanged(sender As Object, e As EventArgs)
         UpdateAndRefresh(False)
     End Sub
 End Class

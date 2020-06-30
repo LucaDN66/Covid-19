@@ -4,24 +4,12 @@
         ITA_Regions = 1
         ITA_Provinces = 2
         World = 3
-        US = 4
-        UK = 5
-        Europe = 6
+        Europe = 4
     End Enum
     Public ActiveArea As enActiveArea = enActiveArea.World
     Public ReadOnly Property ShowITA As Boolean
         Get
             Return (ActiveArea = enActiveArea.ITA) Or (ActiveArea = enActiveArea.ITA_Provinces) Or (ActiveArea = enActiveArea.ITA_Regions)
-        End Get
-    End Property
-    Public ReadOnly Property ShowUS As Boolean
-        Get
-            Return ActiveArea = enActiveArea.US
-        End Get
-    End Property
-    Public ReadOnly Property ShowUK As Boolean
-        Get
-            Return ActiveArea = enActiveArea.UK
         End Get
     End Property
     Public ReadOnly Property ShowEurope As Boolean
@@ -44,8 +32,10 @@
         New_Positives = 6
         Recovered = 7
         Deaths = 8
-        Total_Cases = 9
-        Tests = 10
+        Cases_FromSuspectDiagnostics = 9
+        Cases_FromScreening = 10
+        Total_Cases = 11
+        Tests = 12
     End Enum
     Public Enum enWorldValueType
         Deaths = 0
@@ -56,12 +46,8 @@
     Public ActiveItalianData As enItalianValueType = enItalianValueType.Deaths
     Public ActiveWorldData As enWorldValueType = enWorldValueType.Deaths
     Public ActiveEUData As enWorldValueType = enWorldValueType.Deaths
-    Public ActiveUSData As enWorldValueType = enWorldValueType.Deaths
-    Public ActiveUKData As enWorldValueType = enWorldValueType.Deaths
     Public ActiveWorldRegions As New List(Of cCountryListboxItem)
     Public ActiveEURegions As New List(Of cCountryListboxItem)
-    Public ActiveUSRegions As New List(Of cCountryListboxItem)
-    Public ActiveUKRegions As New List(Of cCountryListboxItem)
     Public ActiveITARegions As New List(Of cCountryListboxItem)
     Public ActiveITAProvinces As New List(Of cCountryListboxItem)
     Public DailyIncrements As Boolean = False

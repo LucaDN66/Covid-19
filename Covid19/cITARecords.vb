@@ -10,6 +10,8 @@
     Public nuovi_positivi As New Tuple(Of Double, Double)(0, 0)
     Public dimessi_guariti As New Tuple(Of Double, Double)(0, 0)
     Public deceduti As New Tuple(Of Double, Double)(0, 0)
+    Public casi_da_sospetto_diagnostico As New Tuple(Of Double, Double)(0, 0)
+    Public casi_da_screening As New Tuple(Of Double, Double)(0, 0)
     Public totale_casi As New Tuple(Of Double, Double)(0, 0)
     Public tamponi As New Tuple(Of Double, Double)(0, 0)
     Public Sub New(ByVal csvLine As String)
@@ -31,8 +33,13 @@
             nuovi_positivi = New Tuple(Of Double, Double)(CInt(lineParts(8)), CdblEx(lineParts(8) / cPopulation.ITATotalPopulation * cPopulation.PerMillionDivider))
             dimessi_guariti = New Tuple(Of Double, Double)(CInt(lineParts(9)), CdblEx(lineParts(9) / cPopulation.ITATotalPopulation * cPopulation.PerMillionDivider))
             deceduti = New Tuple(Of Double, Double)(CInt(lineParts(10)), CdblEx(lineParts(10) / cPopulation.ITATotalPopulation * cPopulation.PerMillionDivider))
-            totale_casi = New Tuple(Of Double, Double)(CInt(lineParts(11)), CdblEx(lineParts(11) / cPopulation.ITATotalPopulation * cPopulation.PerMillionDivider))
-            tamponi = New Tuple(Of Double, Double)(CInt(lineParts(12)), CdblEx(lineParts(12) / cPopulation.ITATotalPopulation * cPopulation.PerMillionDivider))
+            If lineParts(11).Length = 0 Then lineParts(11) = "0"
+            If lineParts(12).Length = 0 Then lineParts(12) = "0"
+
+            casi_da_sospetto_diagnostico = New Tuple(Of Double, Double)(CInt(lineParts(11)), CdblEx(lineParts(11) / cPopulation.ITATotalPopulation * cPopulation.PerMillionDivider))
+            casi_da_screening = New Tuple(Of Double, Double)(CInt(lineParts(12)), CdblEx(lineParts(12) / cPopulation.ITATotalPopulation * cPopulation.PerMillionDivider))
+            totale_casi = New Tuple(Of Double, Double)(CInt(lineParts(13)), CdblEx(lineParts(13) / cPopulation.ITATotalPopulation * cPopulation.PerMillionDivider))
+            tamponi = New Tuple(Of Double, Double)(CInt(lineParts(14)), CdblEx(lineParts(14) / cPopulation.ITATotalPopulation * cPopulation.PerMillionDivider))
 
         End If
     End Sub

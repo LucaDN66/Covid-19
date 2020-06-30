@@ -315,76 +315,32 @@ Public Class cWorldRecords
                 'First line is the header, which also contains all the dates covered
                 'Every following line is a country/region, with the data for all the dates defined above
 
-                Dim USRecordMode As Boolean = False
-                Dim USDeathsHeader As Boolean = False
-                If csvLines(0).ToUpper.StartsWith("UID,iso2,iso3,code3,FIPS,Admin2".ToUpper) Then
-                    USRecordMode = True
-                    If csvLines(0).ToUpper.Contains("POPULATION") Then
-                        USDeathsHeader = True
-                    End If
-                ElseIf csvLines(0).ToUpper.StartsWith("Area name,Area code,".ToUpper) Then
-                    AddUKValues(csvLines, Countries)
-                    Return
-                Else
-                    'World records
-                End If
-
-
                 'Let's start by saving all the dates
                 Dim AllDates As New System.Collections.Generic.List(Of Date)
                 Dim headerParts() As String = csvLines(0).Split(",")
                 Dim AdditionalShift As Integer = 0
-                If USRecordMode Then
-                    If USDeathsHeader Then
-                        AdditionalShift = 1
-                    End If
-                    'Parts from 12 up are dates
-                    If headerParts.Count > 11 Then
-                        For pCounter As Integer = (11 + AdditionalShift) To headerParts.Count - 1
-                            Dim dateParts() As String = headerParts(pCounter).Split("/")
-                            Dim thisDate As New Date(2000 + CInt(dateParts(2)), CInt(dateParts(0)), CInt(dateParts(1)))
-                            AllDates.Add(thisDate)
-                        Next
-                    End If
-                Else
-                    If headerParts.Count > 4 Then
-                        'Parts from 4 up are dates
-                        For pCounter As Integer = 4 To headerParts.Count - 1
-                            Dim dateParts() As String = headerParts(pCounter).Split("/")
-                            Dim thisDate As New Date(2000 + CInt(dateParts(2)), CInt(dateParts(0)), CInt(dateParts(1)))
-                            AllDates.Add(thisDate)
-                        Next
-                    End If
+                If headerParts.Count > 4 Then
+                    'Parts from 4 up are dates
+                    For pCounter As Integer = 4 To headerParts.Count - 1
+                        Dim dateParts() As String = headerParts(pCounter).Split("/")
+                        Dim thisDate As New Date(2000 + CInt(dateParts(2)), CInt(dateParts(0)), CInt(dateParts(1)))
+                        AllDates.Add(thisDate)
+                    Next
                 End If
 
                 'Following lines contains the data for every region at the specified dates
                 For lineCounter As Integer = 1 To csvLines.Count - 1
                     Dim lineParts() As String = csvLines(lineCounter).Split(",")
                     Dim thisCountryVals As New cCountryValues
-                    If USRecordMode Then
-                        thisCountryVals.ProvinceOrState = lineParts(5)
-                        thisCountryVals.CountryOrRegion = lineParts(6)
-                        thisCountryVals.Coordinates = New Tuple(Of Double, Double)(CdblEx(lineParts(8)), CdblEx(lineParts(9)))
-                        If USDeathsHeader Then
-                            'These records also contain the population
-                            thisCountryVals.Population = CdblEx(lineParts(11))
-                        Else
-                            'No population on these lines, we need to add it
-                            thisCountryVals.Population = Population.GetUSStatePopulation(thisCountryVals.CountryOrRegion)
-                        End If
-                    Else
-                        'No population on these lines, we need to add it
-                        thisCountryVals.ProvinceOrState = lineParts(0)
-                        thisCountryVals.CountryOrRegion = lineParts(1)
-                        thisCountryVals.Coordinates = New Tuple(Of Double, Double)(CdblEx(lineParts(2)), CdblEx(lineParts(3)))
-                        thisCountryVals.Population = Population.GetWorldCountryPopulation(thisCountryVals.CountryOrRegion)
-                    End If
+                    'No population on these lines, we need to add it
+                    thisCountryVals.ProvinceOrState = lineParts(0)
+                    thisCountryVals.CountryOrRegion = lineParts(1)
+                    thisCountryVals.Coordinates = New Tuple(Of Double, Double)(CdblEx(lineParts(2)), CdblEx(lineParts(3)))
+                    thisCountryVals.Population = Population.GetWorldCountryPopulation(thisCountryVals.CountryOrRegion)
+
                     Dim AllValues As New System.Collections.Generic.List(Of Double)
 
                     Dim startIndex As Integer = 4
-                    If USRecordMode Then
-                        startIndex = 11 + AdditionalShift
-                    End If
                     For partCounter As Integer = startIndex To lineParts.Count - 1
                         If lineParts(partCounter).Length > 0 Then
                             AllValues.Add(CInt(lineParts(partCounter)))
@@ -403,18 +359,14 @@ Public Class cWorldRecords
                             thisCountryVals.DailyValues.Add(thisDailyValue)
                         Next
 
-                        If USRecordMode Then
-                            Countries.Add(thisCountryVals)
+                        'We are doing world countries here, and if data are given for different regions of a country, we merge them
+                        'If we need to analyze the situation inside a country, we will do that somewhere else
+                        Dim preExistingIndex As Integer = Countries.IndexOfCountry(thisCountryVals.CountryOrRegion)
+                        If preExistingIndex >= 0 Then
+                            Countries(preExistingIndex).ProvinceOrState = "" 'Get rid of this, we are taking all provinces together
+                            Countries(preExistingIndex).SumDailyAbsoluteValues(thisCountryVals.DailyValues, thisCountryVals.Population)
                         Else
-                            'We are doing world countries here, and if data are given for different regions of a country, we merge them
-                            'If we need to analyze the situation inside a country, we will do that somewhere else
-                            Dim preExistingIndex As Integer = Countries.IndexOfCountry(thisCountryVals.CountryOrRegion)
-                            If preExistingIndex >= 0 Then
-                                Countries(preExistingIndex).ProvinceOrState = "" 'Get rid of this, we are taking all provinces together
-                                Countries(preExistingIndex).SumDailyAbsoluteValues(thisCountryVals.DailyValues, thisCountryVals.Population)
-                            Else
-                                Countries.Add(thisCountryVals)
-                            End If
+                            Countries.Add(thisCountryVals)
                         End If
                     End If
                 Next
@@ -423,82 +375,6 @@ Public Class cWorldRecords
             MsgBox(ex.Message)
         End Try
     End Sub
-
-
-    Public Sub AddUKValues(ByVal csvLines() As String, ByVal Countries As cObservedDataCollection)
-        If csvLines.Count <= 0 Then Return
-        Dim DeathsMode As Boolean = False
-        If csvLines(0).ToUpper.Contains("DEATH") Then
-            DeathsMode = True
-        End If
-        Dim allLines As New Generic.List(Of String)
-        allLines.AddRange(csvLines)
-        allLines.RemoveAt(0) 'First line is the header and must be discarded
-
-        allLines.Reverse() 'Britons :(
-
-        'Extract all region names first
-        Dim AllRegionsNames As New List(Of String)
-        For lCounter As Integer = 0 To allLines.Count - 1
-            If allLines(lCounter).Trim.Length > 0 Then
-                Dim lineParts() As String = allLines(lCounter).Split(",")
-                Dim thisLineProvince As String = lineParts(0)
-                If Not AllRegionsNames.Contains(thisLineProvince) Then
-                    AllRegionsNames.Add(thisLineProvince)
-                End If
-            End If
-        Next
-
-        'Prepare the lists for all the regions
-        For rCounter As Integer = 0 To AllRegionsNames.Count - 1
-            Dim emptyCountryValues As New cCountryValues
-            emptyCountryValues.ProvinceOrState = AllRegionsNames(rCounter)
-            emptyCountryValues.CountryOrRegion = "UK"
-            Countries.Add(emptyCountryValues.Clone)
-        Next
-
-        'All lists are now ready to be filled with daily values
-        For lCounter As Integer = 0 To allLines.Count - 1
-            Dim lineParts() As String = allLines(lCounter).Split(",")
-            Dim thisLineRegion As String = "UK"
-            Dim thisLineProvince As String = lineParts(0)
-            If thisLineProvince.ToUpper.EndsWith("-Countyof".ToUpper) Then
-                thisLineProvince = thisLineProvince.Replace("-Countyof", "")
-            End If
-            If thisLineProvince.ToUpper.EndsWith("-Cityof".ToUpper) Then
-                thisLineProvince = thisLineProvince.Replace("-Cityof", "")
-            End If
-            Dim thisLineDate As Date
-            Date.TryParse(lineParts(3), thisLineDate)
-            Dim ts As New TimeSpan(18, 0, 0)
-            thisLineDate = thisLineDate.Date + ts
-
-            Dim thisLine_totale_casi As Integer = 0
-            If DeathsMode Then
-                thisLine_totale_casi = CInt(lineParts(5))
-            Else
-                thisLine_totale_casi = CInt(lineParts(7))
-            End If
-
-            Dim thisProvincePopulation As Double = Population.GetUKProvincePopulation(thisLineProvince) / cPopulation.PerMillionDivider
-            If thisProvincePopulation = 0 Then
-                'Skip this one. Total cases can be taken from the region section, no point in having something 'not defined' here
-                Debug.Assert(False, "Please check this one")
-            Else
-                AddUKEntriesToTargetList(Countries, thisLineProvince, thisLineDate, thisLine_totale_casi, thisLine_totale_casi / thisProvincePopulation)
-            End If
-        Next
-    End Sub
-    Private Sub AddUKEntriesToTargetList(targetList As cObservedDataCollection, ByVal region As String, ByVal entryDate As Date, ByVal entry As Double, ByVal percentEntry As Double)
-        For iCounter As Integer = 0 To targetList.Count - 1
-            If targetList(iCounter).ProvinceOrState = region Then
-                targetList(iCounter).DailyValues.Add(New cDailyValue(entryDate, entry, percentEntry))
-                Exit For
-            End If
-        Next
-    End Sub
-
-
 
     Public Function GetDailyValues(ByVal valueType As cDisplayInfo.enWorldValueType, ByVal region As cCountryListboxItem, ByVal isUSCity As Boolean) As cDailyValues
         Dim retVal As New cDailyValues

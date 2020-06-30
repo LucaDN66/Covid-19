@@ -10,6 +10,8 @@ Public Class cITARegionsRecords
     Public nuovi_positivi As New cObservedDataCollection
     Public dimessi_guariti As New cObservedDataCollection
     Public deceduti As New cObservedDataCollection
+    Public Cases_FromSuspectDiagnostics As New cObservedDataCollection
+    Public Cases_FromScreening As New cObservedDataCollection
     Public totale_casi As New cObservedDataCollection
     Public tamponi As New cObservedDataCollection
     Public ReadOnly Property StartingDate As Date
@@ -53,6 +55,10 @@ Public Class cITARegionsRecords
                 targetList = dimessi_guariti
             Case cDisplayInfo.enItalianValueType.Deaths
                 targetList = deceduti
+            Case cDisplayInfo.enItalianValueType.Cases_FromSuspectDiagnostics
+                targetList = Cases_FromSuspectDiagnostics
+            Case cDisplayInfo.enItalianValueType.Cases_FromScreening
+                targetList = Cases_FromScreening
             Case cDisplayInfo.enItalianValueType.Total_Cases
                 targetList = totale_casi
             Case cDisplayInfo.enItalianValueType.Tests
@@ -127,6 +133,8 @@ Public Class cITARegionsRecords
             deceduti.Add(emptyCountryValues.Clone)
             totale_casi.Add(emptyCountryValues.Clone)
             tamponi.Add(emptyCountryValues.Clone)
+            Cases_FromScreening.Add(emptyCountryValues.Clone)
+            Cases_FromSuspectDiagnostics.Add(emptyCountryValues.Clone)
         Next
 
         'All lists are now ready to be filled with daily values
@@ -144,6 +152,9 @@ Public Class cITARegionsRecords
             Dim ts As New TimeSpan(18, 0, 0)
             thisLineDate = thisLineDate.Date + ts
 
+            If lineParts(15) = "" Then lineParts(15) = "0"
+            If lineParts(16) = "" Then lineParts(16) = "0"
+
             Dim thisLine_ricoverati_con_sintomi As Integer = CInt(lineParts(6))
             Dim thisLine_terapia_intensiva As Integer = CInt(lineParts(7))
             Dim thisLine_totale_ospedalizzati As Integer = CInt(lineParts(8))
@@ -153,8 +164,10 @@ Public Class cITARegionsRecords
             Dim thisLine_nuovi_positivi As Integer = CInt(lineParts(12))
             Dim thisLine_dimessi_guariti As Integer = CInt(lineParts(13))
             Dim thisLine_deceduti As Integer = CInt(lineParts(14))
-            Dim thisLine_totale_casi As Integer = CInt(lineParts(15))
-            Dim thisLine_tamponi As Integer = CInt(lineParts(16))
+            Dim thisLine_suspectDiag As Integer = CInt(lineParts(15))
+            Dim thisLine_Screening As Integer = CInt(lineParts(16))
+            Dim thisLine_totale_casi As Integer = CInt(lineParts(17))
+            Dim thisLine_tamponi As Integer = CInt(lineParts(18))
 
             AddEntriesToTargetList(ricoverati_con_sintomi, thisLineRegion, thisLineDate, thisLine_ricoverati_con_sintomi, thisLine_ricoverati_con_sintomi / thisLinePopulationDivider)
             AddEntriesToTargetList(terapia_intensiva, thisLineRegion, thisLineDate, thisLine_terapia_intensiva, thisLine_terapia_intensiva / thisLinePopulationDivider)
@@ -165,6 +178,10 @@ Public Class cITARegionsRecords
             AddEntriesToTargetList(variazione_totale_positivi, thisLineRegion, thisLineDate, thisLine_variazione_totale_positivi, thisLine_variazione_totale_positivi / thisLinePopulationDivider)
             AddEntriesToTargetList(dimessi_guariti, thisLineRegion, thisLineDate, thisLine_dimessi_guariti, thisLine_dimessi_guariti / thisLinePopulationDivider)
             AddEntriesToTargetList(deceduti, thisLineRegion, thisLineDate, thisLine_deceduti, thisLine_deceduti / thisLinePopulationDivider)
+
+            AddEntriesToTargetList(Cases_FromSuspectDiagnostics, thisLineRegion, thisLineDate, thisLine_suspectDiag, thisLine_suspectDiag / thisLinePopulationDivider)
+            AddEntriesToTargetList(Cases_FromScreening, thisLineRegion, thisLineDate, thisLine_Screening, thisLine_Screening / thisLinePopulationDivider)
+
             AddEntriesToTargetList(totale_casi, thisLineRegion, thisLineDate, thisLine_totale_casi, thisLine_totale_casi / thisLinePopulationDivider)
             AddEntriesToTargetList(tamponi, thisLineRegion, thisLineDate, thisLine_tamponi, thisLine_tamponi / thisLinePopulationDivider)
         Next
