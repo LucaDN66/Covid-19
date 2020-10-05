@@ -79,6 +79,8 @@ Partial Class frmMain
         Me.labSelectionHintWorld = New System.Windows.Forms.Label()
         Me.labSnapshot = New System.Windows.Forms.Label()
         Me.chkMA = New System.Windows.Forms.CheckBox()
+        Me.dtpStartDate = New System.Windows.Forms.DateTimePicker()
+        Me.labStartDate = New System.Windows.Forms.Label()
         CType(Me.Chart1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.udCurPosition, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.udSigma, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -183,7 +185,7 @@ Partial Class frmMain
         Me.chkDaily.Anchor = System.Windows.Forms.AnchorStyles.Top
         Me.chkDaily.BackColor = System.Drawing.Color.Transparent
         Me.chkDaily.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.chkDaily.Location = New System.Drawing.Point(436, 2)
+        Me.chkDaily.Location = New System.Drawing.Point(602, 2)
         Me.chkDaily.Margin = New System.Windows.Forms.Padding(0)
         Me.chkDaily.Name = "chkDaily"
         Me.chkDaily.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
@@ -506,7 +508,7 @@ Partial Class frmMain
         Me.chkNormalize.Anchor = System.Windows.Forms.AnchorStyles.Top
         Me.chkNormalize.BackColor = System.Drawing.Color.Transparent
         Me.chkNormalize.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.chkNormalize.Location = New System.Drawing.Point(551, 2)
+        Me.chkNormalize.Location = New System.Drawing.Point(717, 2)
         Me.chkNormalize.Margin = New System.Windows.Forms.Padding(0)
         Me.chkNormalize.Name = "chkNormalize"
         Me.chkNormalize.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
@@ -663,7 +665,7 @@ Partial Class frmMain
         Me.chkMA.Checked = True
         Me.chkMA.CheckState = System.Windows.Forms.CheckState.Checked
         Me.chkMA.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.chkMA.Location = New System.Drawing.Point(690, 2)
+        Me.chkMA.Location = New System.Drawing.Point(856, 2)
         Me.chkMA.Margin = New System.Windows.Forms.Padding(0)
         Me.chkMA.Name = "chkMA"
         Me.chkMA.Padding = New System.Windows.Forms.Padding(4, 0, 4, 0)
@@ -673,11 +675,37 @@ Partial Class frmMain
         Me.chkMA.TextAlign = System.Drawing.ContentAlignment.BottomLeft
         Me.chkMA.UseVisualStyleBackColor = False
         '
+        'dtpStartDate
+        '
+        Me.dtpStartDate.Anchor = System.Windows.Forms.AnchorStyles.Top
+        Me.dtpStartDate.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
+        Me.dtpStartDate.Location = New System.Drawing.Point(478, 1)
+        Me.dtpStartDate.MaxDate = New Date(2022, 12, 31, 0, 0, 0, 0)
+        Me.dtpStartDate.MinDate = New Date(2020, 1, 1, 0, 0, 0, 0)
+        Me.dtpStartDate.Name = "dtpStartDate"
+        Me.dtpStartDate.Size = New System.Drawing.Size(112, 25)
+        Me.dtpStartDate.TabIndex = 46
+        '
+        'labStartDate
+        '
+        Me.labStartDate.Anchor = System.Windows.Forms.AnchorStyles.Top
+        Me.labStartDate.Cursor = System.Windows.Forms.Cursors.Default
+        Me.labStartDate.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.labStartDate.ImageAlign = System.Drawing.ContentAlignment.BottomRight
+        Me.labStartDate.Location = New System.Drawing.Point(396, 4)
+        Me.labStartDate.Name = "labStartDate"
+        Me.labStartDate.Size = New System.Drawing.Size(79, 19)
+        Me.labStartDate.TabIndex = 47
+        Me.labStartDate.Text = "Start Date"
+        Me.labStartDate.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'frmMain
         '
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.BackColor = System.Drawing.SystemColors.Window
         Me.ClientSize = New System.Drawing.Size(1139, 710)
+        Me.Controls.Add(Me.labStartDate)
+        Me.Controls.Add(Me.dtpStartDate)
         Me.Controls.Add(Me.chkMA)
         Me.Controls.Add(Me.pnlInvisible)
         Me.Controls.Add(Me.PanelEstimate)
@@ -764,4 +792,6 @@ Partial Class frmMain
     Friend WithEvents CheckForUpdatedDataToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents labLastUpdateInfo As Label
     Friend WithEvents chkMA As CheckBox
+    Friend WithEvents dtpStartDate As DateTimePicker
+    Friend WithEvents labStartDate As Label
 End Class

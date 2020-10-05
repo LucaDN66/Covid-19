@@ -169,6 +169,8 @@ Public Class frmMain
             End If
             AddInfoText("Loading data")
 
+            Dim startDate As Date = dtpStartDate.Value
+
             If System.IO.File.Exists(Csv_Ita_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_Ita_Filename)
                 ReplaceCommasInQuotations(infoLines)
@@ -191,17 +193,17 @@ Public Class frmMain
             If System.IO.File.Exists(Csv_World_Confirmed_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_World_Confirmed_Filename)
                 ReplaceCommasInQuotations(infoLines)
-                worldRecords.SetConfirmed(infoLines)
+                worldRecords.SetConfirmed(infoLines, startDate)
             End If
             If System.IO.File.Exists(Csv_World_Deaths_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_World_Deaths_Filename)
                 ReplaceCommasInQuotations(infoLines)
-                worldRecords.SetDeaths(infoLines)
+                worldRecords.SetDeaths(infoLines, startDate)
             End If
             If System.IO.File.Exists(Csv_World_Recovered_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_World_Recovered_Filename)
                 ReplaceCommasInQuotations(infoLines)
-                worldRecords.SetRecovered(infoLines)
+                worldRecords.SetRecovered(infoLines, startDate)
             End If
             worldRecords.SetFatalityRates()
 
@@ -305,23 +307,33 @@ Public Class frmMain
     End Sub
     Private myFirstActivationDone As Boolean = False
     Private Sub frmMain_Activated(sender As Object, e As EventArgs) Handles Me.Activated
-        If Not myFirstActivationDone Then
-            chkNormalize.Text = cPopulation.PerMillionString
-            Me.Text = Application.ProductName + " V" + Application.ProductVersion
+        Try
+            If Not myFirstActivationDone Then
+                dtpStartDate.MaxDate = Now
+                Dim oldestDate As Date = Now
+                oldestDate = oldestDate.AddDays(-31)
+                dtpStartDate.Value = oldestDate
+
+                chkNormalize.Text = cPopulation.PerMillionString
+                Me.Text = Application.ProductName + " V" + Application.ProductVersion
+                RestoreWindowPosition(Me)
+                Me.Show()
+                Application.DoEvents()
+                Me.Refresh()
+                FillCombos()
+                Application.DoEvents()
+                Me.Refresh()
+                labSnapshot.Text = ""
+                GetLatestInfo()
+                SkipDataRefresh = False
+                LoadInfoFromLocalFiles()
+                UpdateAndRefresh(False)
+            End If
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        Finally
             myFirstActivationDone = True
-            RestoreWindowPosition(Me)
-            Me.Show()
-            Application.DoEvents()
-            Me.Refresh()
-            FillCombos()
-            Application.DoEvents()
-            Me.Refresh()
-            labSnapshot.Text = ""
-            GetLatestInfo()
-            SkipDataRefresh = False
-            LoadInfoFromLocalFiles()
-            UpdateAndRefresh(False)
-        End If
+        End Try
     End Sub
     Private Sub chkDaily_CheckedChanged(sender As Object, e As EventArgs) Handles chkDaily.CheckedChanged
         If SkipDataRefresh Then Return
@@ -342,6 +354,7 @@ Public Class frmMain
             UseMovingAverage = chkMA.Checked
 
             If myDisplayInfo.ShowITA Then
+                dtpStartDate.Enabled = False
                 pnlWorld.Visible = False
                 pnlEurope.Visible = False
                 pnlIta.Visible = True
@@ -377,6 +390,7 @@ Public Class frmMain
                         labSelectionHintITA.Visible = True
                 End Select
             ElseIf myDisplayInfo.ShowWorld Then
+                dtpStartDate.Enabled = True
                 pnlIta.Visible = False
                 pnlEurope.Visible = False
                 pnlWorld.Visible = True
@@ -390,6 +404,7 @@ Public Class frmMain
                 End If
                 lstRegions.BringToFront()
             ElseIf myDisplayInfo.ShowEurope Then
+                dtpStartDate.Enabled = True
                 pnlIta.Visible = False
                 pnlWorld.Visible = False
                 pnlEurope.Visible = True
@@ -764,5 +779,12 @@ Public Class frmMain
     End Sub
     Private Sub lstRegionsUK_SelectedIndexChanged(sender As Object, e As EventArgs)
         UpdateAndRefresh(False)
+    End Sub
+    Private Sub dtpStartDate_ValueChanged(sender As Object, e As EventArgs) Handles dtpStartDate.ValueChanged
+        If Not myFirstActivationDone Then
+            Return
+        Else
+            LoadInfoFromLocalFiles()
+        End If
     End Sub
 End Class

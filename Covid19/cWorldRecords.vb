@@ -179,6 +179,7 @@ Public Class cObservedDataCollection
         newColl.AddRange(orderedList)
         Return newColl
     End Function
+
 End Class
 
 Public Class cWorldRecords
@@ -213,19 +214,19 @@ Public Class cWorldRecords
         RemoveNonEUEntriesFromList(Recovered)
         RemoveNonEUEntriesFromList(FatalityRates)
     End Sub
-    Public Sub SetDeaths(ByVal csvLines() As String)
+    Public Sub SetDeaths(ByVal csvLines() As String, ByVal startDate As Date)
         Deaths.Clear()
-        AddValues(csvLines, Deaths)
+        AddValues(csvLines, Deaths, startDate)
         Deaths = Deaths.OrderAscending(False)
     End Sub
-    Public Sub SetConfirmed(ByVal csvLines() As String)
+    Public Sub SetConfirmed(ByVal csvLines() As String, ByVal startDate As Date)
         Confirmed.Clear()
-        AddValues(csvLines, Confirmed)
+        AddValues(csvLines, Confirmed, startDate)
         Confirmed = Confirmed.OrderAscending(False)
     End Sub
-    Public Sub SetRecovered(ByVal csvLines() As String)
+    Public Sub SetRecovered(ByVal csvLines() As String, ByVal startDate As Date)
         Recovered.Clear()
-        AddValues(csvLines, Recovered)
+        AddValues(csvLines, Recovered, startDate)
         Recovered = Recovered.OrderAscending(False)
     End Sub
     Public Sub SetFatalityRates()
@@ -309,7 +310,7 @@ Public Class cWorldRecords
         End If
         Return retVal
     End Function
-    Public Sub AddValues(ByVal csvLines() As String, ByVal Countries As cObservedDataCollection)
+    Public Sub AddValues(ByVal csvLines() As String, ByVal Countries As cObservedDataCollection, ByVal startDate As Date)
         Try
             If (csvLines IsNot Nothing) AndAlso (csvLines.Count > 0) Then
                 'First line is the header, which also contains all the dates covered
@@ -354,9 +355,14 @@ Public Class cWorldRecords
                         'Skip this one, no population no way of comparing it to others
                         divider = 1
                     Else
+                        Dim initValue As Double = -1
                         For vCounter As Integer = 0 To AllValues.Count - 1
-                            Dim thisDailyValue As New cDailyValue(AllDates(vCounter), AllValues(vCounter), AllValues(vCounter) / divider)
-                            thisCountryVals.DailyValues.Add(thisDailyValue)
+                            If AllDates(vCounter) < startDate Then
+                                initValue = AllValues(vCounter)
+                            Else
+                                Dim thisDailyValue As New cDailyValue(AllDates(vCounter), AllValues(vCounter) - initValue, (AllValues(vCounter) - initValue) / divider)
+                                thisCountryVals.DailyValues.Add(thisDailyValue)
+                            End If
                         Next
 
                         'We are doing world countries here, and if data are given for different regions of a country, we merge them
@@ -375,7 +381,6 @@ Public Class cWorldRecords
             MsgBox(ex.Message)
         End Try
     End Sub
-
     Public Function GetDailyValues(ByVal valueType As cDisplayInfo.enWorldValueType, ByVal region As cCountryListboxItem, ByVal isUSCity As Boolean) As cDailyValues
         Dim retVal As New cDailyValues
         Dim targetList As cObservedDataCollection = Nothing
