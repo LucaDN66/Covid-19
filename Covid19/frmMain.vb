@@ -174,14 +174,14 @@ Public Class frmMain
             If System.IO.File.Exists(Csv_Ita_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_Ita_Filename)
                 ReplaceCommasInQuotations(infoLines)
-                italianRecords = New cITARecords(infoLines)
+                italianRecords = New cITARecords(infoLines, startDate)
                 labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianRecords.LastDate.ToLongDateString
             End If
 
             If System.IO.File.Exists(Csv_ItaRegions_Filename) Then
                 Dim infoLines() As String = System.IO.File.ReadAllLines(Csv_ItaRegions_Filename)
                 ReplaceCommasInQuotations(infoLines)
-                italianRegionRecords = New cITARegionsRecords(infoLines)
+                italianRegionRecords = New cITARegionsRecords(infoLines, startDate)
             End If
 
             If System.IO.File.Exists(Csv_ItaProvinces_Filename) Then
@@ -354,7 +354,6 @@ Public Class frmMain
             UseMovingAverage = chkMA.Checked
 
             If myDisplayInfo.ShowITA Then
-                dtpStartDate.Enabled = False
                 pnlWorld.Visible = False
                 pnlEurope.Visible = False
                 pnlIta.Visible = True
@@ -366,6 +365,7 @@ Public Class frmMain
                 End If
                 Select Case myDisplayInfo.ActiveArea
                     Case cDisplayInfo.enActiveArea.ITA
+                        dtpStartDate.Enabled = True
                         labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianRecords.LastDate.ToLongDateString
                         mnMainItem.Text = mnITAFull.Text
                         mnMainItem.Image = mnITAFull.Image
@@ -373,6 +373,7 @@ Public Class frmMain
                         lstItaRegions.Visible = False
                         labSelectionHintITA.Visible = False
                     Case cDisplayInfo.enActiveArea.ITA_Provinces
+                        dtpStartDate.Enabled = False
                         labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianProvincesRecords.LastDate.ToLongDateString
                         mnMainItem.Text = mnITAProvinces.Text
                         mnMainItem.Image = mnITAProvinces.Image
@@ -381,6 +382,7 @@ Public Class frmMain
                         lstItaProvinces.BringToFront()
                         labSelectionHintITA.Visible = True
                     Case cDisplayInfo.enActiveArea.ITA_Regions
+                        dtpStartDate.Enabled = True
                         labLastUpdateInfo.Text = "Last update:" + vbCrLf + italianRegionRecords.LastDate.ToLongDateString
                         mnMainItem.Text = mnITARegions.Text
                         mnMainItem.Image = mnITARegions.Image

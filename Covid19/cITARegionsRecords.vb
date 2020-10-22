@@ -91,7 +91,7 @@ Public Class cITARegionsRecords
     Public Sub New()
 
     End Sub
-    Public Sub New(ByVal csvLines() As String)
+    Public Sub New(ByVal csvLines() As String, ByVal startDate As Date)
         If csvLines.Count <= 0 Then Return
 
         Dim allLines As New Generic.List(Of String)
@@ -137,11 +137,28 @@ Public Class cITARegionsRecords
             Cases_FromSuspectDiagnostics.Add(emptyCountryValues.Clone)
         Next
 
+        Dim startDate_ricoverati_con_sintomi(AllRegionNames.Count - 1) As Integer
+        Dim startDate_terapia_intensiva(AllRegionNames.Count - 1) As Integer
+        Dim startDate_totale_ospedalizzati(AllRegionNames.Count - 1) As Integer
+        Dim startDate_isolamento_domiciliare(AllRegionNames.Count - 1) As Integer
+        Dim startDate_totale_positivi(AllRegionNames.Count - 1) As Integer
+        Dim startDate_variazione_totale_positivi(AllRegionNames.Count - 1) As Integer
+        Dim startDate_nuovi_positivi(AllRegionNames.Count - 1) As Integer
+        Dim startDate_dimessi_guariti(AllRegionNames.Count - 1) As Integer
+        Dim startDate_deceduti(AllRegionNames.Count - 1) As Integer
+        Dim startDate_suspectDiag(AllRegionNames.Count - 1) As Integer
+        Dim startDate_Screening(AllRegionNames.Count - 1) As Integer
+        Dim startDate_totale_casi(AllRegionNames.Count - 1) As Integer
+        Dim startDate_tamponi(AllRegionNames.Count - 1) As Integer
+
         'All lists are now ready to be filled with daily values
         For lCounter As Integer = 0 To allLines.Count - 1
             Dim lineParts() As String = allLines(lCounter).Split(",")
 
             Dim thisLineRegion As String = lineParts(3)
+
+            Dim regionIndex As Integer = AllRegionNames.IndexOf(thisLineRegion)
+
             Dim thisLinePopulationDivider As Double = Population.GetITARegionPopulation(thisLineRegion) / cPopulation.PerMillionDivider
             If thisLinePopulationDivider = 0 Then
                 thisLinePopulationDivider = 1
@@ -155,35 +172,52 @@ Public Class cITARegionsRecords
             If lineParts(15) = "" Then lineParts(15) = "0"
             If lineParts(16) = "" Then lineParts(16) = "0"
 
-            Dim thisLine_ricoverati_con_sintomi As Integer = CInt(lineParts(6))
-            Dim thisLine_terapia_intensiva As Integer = CInt(lineParts(7))
-            Dim thisLine_totale_ospedalizzati As Integer = CInt(lineParts(8))
-            Dim thisLine_isolamento_domiciliare As Integer = CInt(lineParts(9))
-            Dim thisLine_totale_positivi As Integer = CInt(lineParts(10))
-            Dim thisLine_variazione_totale_positivi As Integer = CInt(lineParts(11))
-            Dim thisLine_nuovi_positivi As Integer = CInt(lineParts(12))
-            Dim thisLine_dimessi_guariti As Integer = CInt(lineParts(13))
-            Dim thisLine_deceduti As Integer = CInt(lineParts(14))
-            Dim thisLine_suspectDiag As Integer = CInt(lineParts(15))
-            Dim thisLine_Screening As Integer = CInt(lineParts(16))
-            Dim thisLine_totale_casi As Integer = CInt(lineParts(17))
-            Dim thisLine_tamponi As Integer = CInt(lineParts(18))
+            If thisLineDate < startDate Then
+                startDate_ricoverati_con_sintomi(regionIndex) = CInt(lineParts(6))
+                startDate_terapia_intensiva(regionIndex) = CInt(lineParts(7))
+                startDate_totale_ospedalizzati(regionIndex) = CInt(lineParts(8))
+                startDate_isolamento_domiciliare(regionIndex) = CInt(lineParts(9))
+                startDate_totale_positivi(regionIndex) = CInt(lineParts(10))
+                startDate_variazione_totale_positivi(regionIndex) = CInt(lineParts(11))
+                startDate_nuovi_positivi(regionIndex) = CInt(lineParts(12))
+                startDate_dimessi_guariti(regionIndex) = CInt(lineParts(13))
+                startDate_deceduti(regionIndex) = CInt(lineParts(14))
+                startDate_suspectDiag(regionIndex) = CInt(lineParts(15))
+                startDate_Screening(regionIndex) = CInt(lineParts(16))
+                startDate_totale_casi(regionIndex) = CInt(lineParts(17))
+                startDate_tamponi(regionIndex) = CInt(lineParts(18))
+            Else
+                Dim thisLine_ricoverati_con_sintomi As Integer = CInt(lineParts(6)) - startDate_ricoverati_con_sintomi(regionIndex)
+                Dim thisLine_terapia_intensiva As Integer = CInt(lineParts(7)) - startDate_terapia_intensiva(regionIndex)
+                Dim thisLine_totale_ospedalizzati As Integer = CInt(lineParts(8)) - startDate_totale_ospedalizzati(regionIndex)
+                Dim thisLine_isolamento_domiciliare As Integer = CInt(lineParts(9)) - startDate_isolamento_domiciliare(regionIndex)
+                Dim thisLine_totale_positivi As Integer = CInt(lineParts(10)) - startDate_totale_positivi(regionIndex)
+                Dim thisLine_variazione_totale_positivi As Integer = CInt(lineParts(11)) - startDate_variazione_totale_positivi(regionIndex)
+                Dim thisLine_nuovi_positivi As Integer = CInt(lineParts(12)) - startDate_nuovi_positivi(regionIndex)
+                Dim thisLine_dimessi_guariti As Integer = CInt(lineParts(13)) - startDate_dimessi_guariti(regionIndex)
+                Dim thisLine_deceduti As Integer = CInt(lineParts(14)) - startDate_deceduti(regionIndex)
+                Dim thisLine_suspectDiag As Integer = CInt(lineParts(15)) - startDate_suspectDiag(regionIndex)
+                Dim thisLine_Screening As Integer = CInt(lineParts(16)) - startDate_Screening(regionIndex)
+                Dim thisLine_totale_casi As Integer = CInt(lineParts(17)) - startDate_totale_casi(regionIndex)
+                Dim thisLine_tamponi As Integer = CInt(lineParts(18)) - startDate_tamponi(regionIndex)
 
-            AddEntriesToTargetList(ricoverati_con_sintomi, thisLineRegion, thisLineDate, thisLine_ricoverati_con_sintomi, thisLine_ricoverati_con_sintomi / thisLinePopulationDivider)
-            AddEntriesToTargetList(terapia_intensiva, thisLineRegion, thisLineDate, thisLine_terapia_intensiva, thisLine_terapia_intensiva / thisLinePopulationDivider)
-            AddEntriesToTargetList(totale_ospedalizzati, thisLineRegion, thisLineDate, thisLine_totale_ospedalizzati, thisLine_totale_ospedalizzati / thisLinePopulationDivider)
-            AddEntriesToTargetList(isolamento_domiciliare, thisLineRegion, thisLineDate, thisLine_isolamento_domiciliare, thisLine_isolamento_domiciliare / thisLinePopulationDivider)
-            AddEntriesToTargetList(totale_positivi, thisLineRegion, thisLineDate, thisLine_totale_positivi, thisLine_totale_positivi / thisLinePopulationDivider)
-            AddEntriesToTargetList(nuovi_positivi, thisLineRegion, thisLineDate, thisLine_nuovi_positivi, thisLine_nuovi_positivi / thisLinePopulationDivider)
-            AddEntriesToTargetList(variazione_totale_positivi, thisLineRegion, thisLineDate, thisLine_variazione_totale_positivi, thisLine_variazione_totale_positivi / thisLinePopulationDivider)
-            AddEntriesToTargetList(dimessi_guariti, thisLineRegion, thisLineDate, thisLine_dimessi_guariti, thisLine_dimessi_guariti / thisLinePopulationDivider)
-            AddEntriesToTargetList(deceduti, thisLineRegion, thisLineDate, thisLine_deceduti, thisLine_deceduti / thisLinePopulationDivider)
+                AddEntriesToTargetList(ricoverati_con_sintomi, thisLineRegion, thisLineDate, thisLine_ricoverati_con_sintomi, thisLine_ricoverati_con_sintomi / thisLinePopulationDivider)
+                AddEntriesToTargetList(terapia_intensiva, thisLineRegion, thisLineDate, thisLine_terapia_intensiva, thisLine_terapia_intensiva / thisLinePopulationDivider)
+                AddEntriesToTargetList(totale_ospedalizzati, thisLineRegion, thisLineDate, thisLine_totale_ospedalizzati, thisLine_totale_ospedalizzati / thisLinePopulationDivider)
+                AddEntriesToTargetList(isolamento_domiciliare, thisLineRegion, thisLineDate, thisLine_isolamento_domiciliare, thisLine_isolamento_domiciliare / thisLinePopulationDivider)
+                AddEntriesToTargetList(totale_positivi, thisLineRegion, thisLineDate, thisLine_totale_positivi, thisLine_totale_positivi / thisLinePopulationDivider)
+                AddEntriesToTargetList(nuovi_positivi, thisLineRegion, thisLineDate, thisLine_nuovi_positivi, thisLine_nuovi_positivi / thisLinePopulationDivider)
+                AddEntriesToTargetList(variazione_totale_positivi, thisLineRegion, thisLineDate, thisLine_variazione_totale_positivi, thisLine_variazione_totale_positivi / thisLinePopulationDivider)
+                AddEntriesToTargetList(dimessi_guariti, thisLineRegion, thisLineDate, thisLine_dimessi_guariti, thisLine_dimessi_guariti / thisLinePopulationDivider)
+                AddEntriesToTargetList(deceduti, thisLineRegion, thisLineDate, thisLine_deceduti, thisLine_deceduti / thisLinePopulationDivider)
 
-            AddEntriesToTargetList(Cases_FromSuspectDiagnostics, thisLineRegion, thisLineDate, thisLine_suspectDiag, thisLine_suspectDiag / thisLinePopulationDivider)
-            AddEntriesToTargetList(Cases_FromScreening, thisLineRegion, thisLineDate, thisLine_Screening, thisLine_Screening / thisLinePopulationDivider)
+                AddEntriesToTargetList(Cases_FromSuspectDiagnostics, thisLineRegion, thisLineDate, thisLine_suspectDiag, thisLine_suspectDiag / thisLinePopulationDivider)
+                AddEntriesToTargetList(Cases_FromScreening, thisLineRegion, thisLineDate, thisLine_Screening, thisLine_Screening / thisLinePopulationDivider)
 
-            AddEntriesToTargetList(totale_casi, thisLineRegion, thisLineDate, thisLine_totale_casi, thisLine_totale_casi / thisLinePopulationDivider)
-            AddEntriesToTargetList(tamponi, thisLineRegion, thisLineDate, thisLine_tamponi, thisLine_tamponi / thisLinePopulationDivider)
+                AddEntriesToTargetList(totale_casi, thisLineRegion, thisLineDate, thisLine_totale_casi, thisLine_totale_casi / thisLinePopulationDivider)
+                AddEntriesToTargetList(tamponi, thisLineRegion, thisLineDate, thisLine_tamponi, thisLine_tamponi / thisLinePopulationDivider)
+
+            End If
         Next
 
         ricoverati_con_sintomi = ricoverati_con_sintomi.OrderAscending(False)
